@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/python,django,vue,windows
-# Edit at https://www.toptal.com/developers/gitignore?templates=python,django,vue,windows
+# Created by https://www.toptal.com/developers/gitignore/api/django,python,vuejs,windows
+# Edit at https://www.toptal.com/developers/gitignore?templates=django,python,vuejs,windows
 
 ### Django ###
 *.log
@@ -214,16 +214,12 @@ cython_debug/
 
 # Cython debug symbols
 
-### Vue ###
-# gitignore template for Vue.js projects
-#
+### Vuejs ###
 # Recommended template: Node.gitignore
 
-# TODO: where does this rule come from?
-docs/_book
-
-# TODO: where does this rule come from?
-test/
+node_modules/
+npm-debug.log
+yarn-error.log
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -251,4 +247,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/python,django,vue,windows
+# End of https://www.toptal.com/developers/gitignore/api/django,python,vuejs,windows
