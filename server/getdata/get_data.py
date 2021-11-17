@@ -64,7 +64,6 @@ for i in range(len(movie_list.get('results'))):
         'model': 'movies.Movie',
         'pk': i+1,
         'fields': {
-            'movie_id': movies.get('id'),
             'title': movies.get('title'),
             'release_date': movies.get('release_date'),
             'poster_path': movies.get('poster_path'),
@@ -72,7 +71,10 @@ for i in range(len(movie_list.get('results'))):
             'vote_average': movies.get('vote_average'),
             'adult': movies.get('adult'),
             'original_title': movies.get('original_title'),
+            'genres': movies.get('genre_ids'),
             'overview': movies.get('overview'),
+            'tmdb_id': movies.get('id'),
+            'popularity': movies.get('popularity'),
         }
     }
     movie_database.append(movie_contents)
@@ -90,4 +92,81 @@ for movie_id_num in range(0,20):
     movie_list_id.append(movie_list.get('results')[movie_id_num].get('id'))
     #pprint(movie_list_id)
 
-#print(movie_list_id)
+
+######## 장르 추출하기
+
+genre_url = get_request_url(method='/genre/movie/list', region='KR', language='ko')
+genre_list = requests.get(genre_url).json()
+genre_database = []
+for i in range(len(requests.get(genre_url).json().get('genres'))):
+    genre = genre_list.get('genres')[i]
+    contents = {
+        'model': 'movies.genre',
+        'pk': genre.get('id'),
+        'fields': {
+            'name': genre.get('name'),
+        }
+    }
+    genre_database.append(contents)
+
+#print(genre_url) 장르목록 출력하기
+with open('genre.json', 'w', encoding='UTF-8') as file:
+    json.dump(genre_database, file, ensure_ascii=False)
+
+
+#######
+# 인물 db를 가져오고, 인물db와 영화 db를 이어줘야한다.
+# 영화db에서 영화id를 가져오고 그영화를 조회해서 인물 목록 추출하고, 
+# 그 인물 목록의 db를 저장하자
+####### 인물 db저장
+person_database = []
+pk = 1
+for i in range(20): #샘플로 20개 까지만 range(len(movie_list_id)):
+    credits_url = get_request_url(method=f'/movie/{movie_list_id[i]}/credits', region='KR', language='ko')
+    #print(credits_url)
+    credits_list = requests.get(credits_url).json() 
+    for j in range(5):
+        person = credits_list.get('cast')[j]
+        #print(person)
+        #order 4까지만 일단 만들어보자
+        contents = {
+            'model': 'movies.people',
+            'pk': pk,
+            'fields': {
+                'name': person.get('name'),
+                'popularity': person.get('popularity'),
+                'profile_path': person.get('profile_path'),
+                'adult': person.get('adult'),
+                'gender': person.get('gender'),
+                'tmdb_id': person.get('id')
+            #  'also_known_as': person.get('al')
+            #  'birthday': get('birthday')
+            }
+        }
+        person_database.append(contents)
+        pk += 1
+
+#print(person_database)
+person_database_id = []
+for i in range(len(person_database)):
+    #print(person_database[i]['fields']['tmdb_id'])
+    person_database_id.append(person_database[i]['fields']['tmdb_id'])
+
+##########
+# 인물 상세페이지로 가기 '또다른이름' 추개헛 한글이름도 추가해준거임
+profile_count = 0
+for i in person_database_id:
+    person_api = get_request_url(method=f"/person/{i}") #바이오그라피가 한글로 나올라면 한글설정추가
+    
+    person_profile_database = requests.get(person_api).json() 
+    #print(person_profile_database)
+    #person_profile_database['also_known_as']
+    # print(len(person_database_id))
+    #pprint(person_database)
+    person_database[profile_count]['fields']['also_known_as'] = person_profile_database['also_known_as']
+    profile_count += 1
+   
+# 인물 목록 출력하기
+with open('people.json', 'w', encoding='UTF-8') as file:
+    json.dump(person_database, file, ensure_ascii=False)
+
