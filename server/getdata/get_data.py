@@ -61,16 +61,17 @@ movie_database = []
 for i in range(len(movie_list.get('results'))):
     movies = movie_list.get('results')[i]
     movie_contents = {
-        'model': 'movies.movie',
+        'model': 'movies.Movie',
         'pk': i+1,
         'fields': {
+            'movie_id': movies.get('id'),
             'title': movies.get('title'),
             'release_date': movies.get('release_date'),
             'poster_path': movies.get('poster_path'),
             'vote_count': movies.get('vote_count'),
+            'vote_average': movies.get('vote_average'),
             'adult': movies.get('adult'),
             'original_title': movies.get('original_title'),
-            'genres': movies.get('genre_ids'),
             'overview': movies.get('overview'),
         }
     }

@@ -25,6 +25,7 @@ class Movie(models.Model):
     vote_average = models.FloatField()
     adult = models.BooleanField()
     original_title = models.CharField(max_length=100)
+    movie_id = models.IntegerField()
     genres = models.ManyToManyField(Genre, related_name='genre_movies')
     people = models.ManyToManyField(People, related_name='people_movies')
 
