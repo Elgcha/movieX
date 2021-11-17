@@ -5,6 +5,7 @@
       <div>
         <router-link to="/">Home</router-link> |
         <router-link to="/community/forum/">Forum</router-link> |
+        <router-link to="/movies/">Movies</router-link> |
         <router-link to="/accounts/login/">Login</router-link> |
         <router-link to="/accounts/signup/">signup</router-link> |
         <a href="http://127.0.0.1:8000/admin">Admin</a> |

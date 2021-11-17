@@ -1,6 +1,6 @@
 <template>
   <div id="face">
-    <img :src="imgSrc" alt="" v-if="movie" class='opacity-50 w-100'>
+    <img :src="imgSrc" alt="" v-if="movie" class='opacity-50 w-100'  @click="moveToDetail(movie.id)">
     <span v-if='movie' class="title">
       <p>{{ movie.title }}</p>
 
@@ -14,6 +14,7 @@
 
 <script>
 import FaceMoviesSimilar from '@/components/Home/FaceMoviesSimilar.vue'
+import { mapActions } from 'vuex'
 
 export default {
   components: { FaceMoviesSimilar },
@@ -23,11 +24,16 @@ export default {
       type: Object,
     }
   },
+  methods: {
+    ...mapActions([
+      'moveToDetail',
+    ])
+  },
   computed: {
     imgSrc: function () {
       return 'https://image.tmdb.org/t/p/w500/' + this.movie.backdrop_path
     }
-  }
+  },
 }
 </script>
 
