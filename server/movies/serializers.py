@@ -8,11 +8,11 @@ class MovieSerializer(serializers.ModelSerializer):
         model = Movie
         fields = '__all__'
 
-class PeopletSerializer(serializers.ModelSerializer):
+class PeopleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = People
-        fields = '_all__'
+        fields = '__all__'
 
 class GenreSerializer(serializers.ModelSerializer):
 

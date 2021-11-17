@@ -9,7 +9,14 @@ from .serializers import ArticleSerializer, CommentSerializer
 
 # Create your views here.
 
-api_view(['POST'])
+@api_view(['GET'])
+def community(request):
+    if request.method == 'GET':
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        return Response(serializer.data)
+
+@api_view(['POST'])
 def create(request):
     serializer = ArticleSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
@@ -17,13 +24,14 @@ def create(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 #게시글 상세조회, 수정, 삭제
-api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def detail(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
+    
 
     if request.method == 'GET':  #게시글 조회
         serializer = ArticleSerializer(article)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     if request.method == 'PUT': #게시글 수정
         serializer= ArticleSerializer(article, data= request.data) 
@@ -44,6 +52,7 @@ def update(request):
 def delete(request):
     pass
 
+@api_view(['POST'])
 def comment_create(request, article_pk):
     article = get_object_or_404(Article, pk = article_pk)
     serializer = CommentSerializer(data=request.data)
@@ -54,18 +63,18 @@ def comment_create(request, article_pk):
 def comment_detail(request):
     pass
 
-api_view(['PUT', 'DELETE'])
+@api_view(['PUT', 'DELETE'])
 def comment_update(request, article_pk, comment_pk):
-    article = get_object_or_404(Article, article_pk)
-    comment = get_object_or_404(Comment, comment_pk)
+    article = get_object_or_404(Article, pk=article_pk)
+    comment = article.comment_set.get(pk=comment_pk)
 
     #if not request.user.articles.filter(pk=article_pk).exist():
     #    return Response({'message': '권한이 없습니다.'})
 
     if request.method == 'PUT':
-        serializer = ArticleSerializer(article, data=request.data)
-        if serializer.is_vaild(raise_exception=True):
-            serializers.Serializer.save(user=request.user)
+        serializer = CommentSerializer(comment, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
             return Response(serializer.data)
     
     elif request.method == 'DELETE':

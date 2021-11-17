@@ -1,7 +1,10 @@
 <template>
   <div>
     <button @click="ArticleCreate">글 작성</button>
-    
+    <div v-for="article in articles" :key="article.id">
+      <p>제목 : {{ article.title }}</p>
+      
+    </div>
   </div>
 </template>
 
@@ -19,6 +22,10 @@ export default {
     ArticleCreate: function () {
       this.$router.push({name: 'ArticleCreate'})
     },
+    ArticleDetail: function (event) {
+      console.log(event.target)
+      // this.$router.push({name: 'ArticleDetail', params: {articlePk: event.target.}})
+    },
     getArticles: function () {
       axios({
         method: 'get',
@@ -26,11 +33,15 @@ export default {
       })
         .then(res => {
           console.log(res)
+          this.articles = res.data
         })
         .catch(err => {
           console.log(err)
         })
     }
+  },
+  created: function() {
+    this.getArticles()
   }
 }
 </script>

@@ -9,7 +9,7 @@
       <label for="content">내용 </label>
       <input type="text" @input="inputContent" id='content'>
     </div>
-    <button>제출</button>
+    <button @click="ArticleCreate">제출</button>
   </div>
 </template>
 
@@ -38,11 +38,11 @@ export default {
         url: 'http://127.0.0.1:8000/community/create/',
         data: this.Article,
       })
-        .then(()=>{
-
+        .then((res)=>{
+          this.$router.push({name: 'ArticleDetail', params: {articlePk: res.data.id}})
         })
         .catch(() => {
-          
+
         })
     }
     
