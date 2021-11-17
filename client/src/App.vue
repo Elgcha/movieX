@@ -1,10 +1,18 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <div id="nav" class="bg-dark bg-opacity-50 d-flex justify-content-between">
+      <p class="my-0 text-white">moiveX</p>
+      <div>
+        <router-link to="/">Home</router-link> |
+        <router-link to="/community/">Forum</router-link> |
+      </div>
     </div>
-    <router-view/>
+    <div class="container">
+      <router-view/>
+    </div>
+    <div id="footer">
+      <p>footer</p>
+    </div>
   </div>
 </template>
 
@@ -18,7 +26,7 @@
 }
 
 #nav {
-  padding: 30px;
+  padding: 10px;
 }
 
 #nav a {
@@ -27,6 +35,16 @@
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  color: #84b9a2;
+}
+
+body {
+  background-color: rgba(61, 26, 26, 0.568);
+}
+
+#footer {
+  background-color: black;
+  color: white;
+  padding: 10px;
 }
 </style>
