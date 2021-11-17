@@ -1,14 +1,20 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
-import Forum from '@/views/community/Forum.vue'
+
 import Login from '@/views/accounts/Login.vue'
 import Signup from '@/views/accounts/Signup.vue'
-import ArticleCreate from '@/views/community/ArticleCreate.vue'
-import err404 from '@/views/err/err404.vue'
+import Profile from '@/views/accounts/Profile.vue'
+
 import MovieList from '@/views/movies/MovieList.vue'
 import MovieDetail from '@/views/movies/MovieDetail.vue'
+
+import Forum from '@/views/community/Forum.vue'
+import ArticleCreate from '@/views/community/ArticleCreate.vue'
 import ArticleDetail from '@/views/community/ArticleDetail.vue'
+import ArticleUpdate from '@/views/community/ArticleUpdate.vue'
+
+import err404 from '@/views/err/err404.vue'
 
 Vue.use(VueRouter)
 
@@ -46,6 +52,11 @@ const routes = [
     name: 'ArticleDetail',
     component: ArticleDetail,
   },
+  {
+    path: '/community/forum/:articlePk/update',
+    name: 'ArticleUpdate',
+    component: ArticleUpdate,
+  },
   // accounts 관련
   {
     path: '/accounts/login/',
@@ -56,6 +67,11 @@ const routes = [
     path: '/accounts/signup/',
     name: 'Signup',
     component: Signup,
+  },
+  {
+    path: '/accounts/:username/',
+    name: 'Profile',
+    component: Profile,
   },
   // 에러페이지
   {

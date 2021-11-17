@@ -9,7 +9,7 @@ from .serializers import ArticleSerializer, CommentSerializer
 
 # Create your views here.
 
-api_view(['POST'])
+@api_view(['POST'])
 def create(request):
     serializer = ArticleSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
@@ -17,13 +17,14 @@ def create(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 #게시글 상세조회, 수정, 삭제
-api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def detail(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
+    
 
     if request.method == 'GET':  #게시글 조회
         serializer = ArticleSerializer(article)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     if request.method == 'PUT': #게시글 수정
         serializer= ArticleSerializer(article, data= request.data) 
