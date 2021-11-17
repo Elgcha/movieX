@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'Forum',
+  name: 'err404'
 }
 </script>
 
