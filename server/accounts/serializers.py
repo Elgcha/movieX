@@ -7,7 +7,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'password', 'email', 'followings', 'followers', 'article_set',  'comment_set') #'want_movies',
+        fields = ('username', 'password', 'email', 'followings', 'followers', 'article_set', 'comment_set')
 
         # 유저등록시 작성할 필요가 없도록 read_only_fields
-        read_only_fields = ('followings', 'followers', 'article_set',  'comment_set')#'want_movies',
+        read_only_fields = ('followings', 'followers', 'article_set', 'comment_set')
+
