@@ -1,10 +1,12 @@
+from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from community.serializers import CommentSerializer
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from .models import Movie, People, Genre
-from .serializers import MovieSerializer, PeopleSerializer
+from .models import Movie, People, Genre, MovieComment
+from .serializers import MovieSerializer, PeopleSerializer, MovieCommentSerializer
 from rest_framework.permissions import AllowAny
 
 
@@ -68,14 +70,14 @@ def people_detail(request, people_pk):
     people = get_object_or_404(People, pk=people_pk)
 
     if request.method == 'GET':
-        serialzer = PeopleSerializer(people)
-        return Response(serialzer.data, status=status.HTTP_200_OK)
+        serializer = PeopleSerializer(people)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     if request.method == "PUT":
-        serialzer = MovieSerializer(people, data = request.data)
-        if serialzer.is_valid(raise_exception=True):
-            serialzer.save(people=people)
-            return Response(serialzer.data, status=status.HTTP_200_OK)
+        serializer = MovieSerializer(people, data = request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(people=people)
+            return Response(serializer.data, status=status.HTTP_200_OK)
     
     if request.method == "DELETE":
         people.delete()
@@ -86,3 +88,59 @@ def people_detail(request, people_pk):
 
 def people_update(request):
     pass
+
+### comment
+@api_view(['POST'])
+def comment_create(request, movie_pk):
+    movie = get_object_or_404(Movie, pk= movie_pk)
+    serializer = MovieCommentSerializer(movie, data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(movie=movie)
+        return Response(serializer, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+def comment_list(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    comments = movie.moviecomment_set.all()
+    serializer = MovieCommentSerializer(comments, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET','PUT','DELETE'])
+def comment_update(request, movie_pk, moviecomment_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    comment = movie.moviecomment_set.get(pk= moviecomment_pk)
+
+    if request.method == 'GET':  # 조회
+        serializer = MovieCommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    if request.method == 'PUT': # 수정
+        serializer= MovieCommentSerializer(comment, data=request.data) 
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
+    if request.method == 'DELETE': # 삭제
+        comment.delete()
+        data = {
+            'message': '평가가 삭제 되었습니다.',
+        }
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
+   
+### want
+@api_view(['POST'])
+def want_movie(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+
+    if movie.want.filter(pk=request.user.pk).exists():
+        movie.want.remove(request.user)
+        wanted = False
+    else:
+        movie.want.add(request.user)
+        wanted = True
+    data = {
+        'wanted' : wanted,
+        'count' : movie.want.count(), #영화 찜한 사람수
+    }
+    return Response(data)
+
