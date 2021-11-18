@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div id="nav" class="bg-dark bg-opacity-50 d-flex justify-content-between">
+    <div id="nav" class="flex justify-between bg-gray-400">
       <p class="my-0 text-white">moiveX</p>
       <div>
         <router-link to="/">Home</router-link> |
@@ -11,7 +11,7 @@
         <a href="http://127.0.0.1:8000/admin">Admin</a> |
       </div>
     </div>
-    <div class="container">
+    <div class="container px-4 mx-auto">
       <router-view/>
     </div>
     <div id="footer">
