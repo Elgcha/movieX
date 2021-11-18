@@ -1,13 +1,15 @@
 from django.shortcuts import get_object_or_404, render
 from rest_framework import serializers, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .serializers import UserSerializer
 from django.contrib.auth import get_user_model
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # Create your views here.
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def signup(request):
     # Client에서 데이터 받아오기
     password = request.data.get('password')
@@ -31,9 +33,10 @@ def signup(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 #프로필 페이지 구성할거 가져오기
-@api_view(['POST'])
+@api_view(['GET'])
+
 def profile(request):
-    user = get_object_or_404(get_user_model(), pk = request.data.get('user_pk'))
+    user = get_object_or_404(get_user_model(), pk=request.user.pk)
     serializer = UserSerializer(user)
     return Response(serializer.data)
 

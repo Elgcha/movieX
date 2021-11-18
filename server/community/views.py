@@ -1,15 +1,17 @@
 from django.shortcuts import get_object_or_404, render
 from rest_framework import serializers, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 #from .serializers import UserSerializer
 from django.contrib.auth import get_user_model
 from .models import Article, Comment
 from .serializers import ArticleSerializer, CommentSerializer
+from rest_framework.permissions import AllowAny
 
 # Create your views here.
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def community(request):
     if request.method == 'GET':
         articles = Article.objects.all()
@@ -25,6 +27,7 @@ def create(request):
 
 #게시글 상세조회, 수정, 삭제
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([AllowAny])
 def detail(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
     
