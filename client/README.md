@@ -34,6 +34,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 * 장고와 연결 - 데이터 가져오기
 * fixtures 데이터 생성
 * 혹시 모를 상황 대비해서 성인 영화 거르도록 filter 이용
+* bootstrap -> tailwind css로 변경
+* vue-awesome-swiper 추가
+* 메인 페이지 carousel로 변경
 
 ## 11 / 16
 

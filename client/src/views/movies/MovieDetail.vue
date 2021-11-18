@@ -13,11 +13,14 @@
     </div>
     <div>
       <h3>비슷한 영화</h3>
-      <similar-movie 
-      v-for="similarMovie in similarMovies"
-      :key="similarMovie.id"
-      :movie="similarMovie"
-      ></similar-movie>
+      <div class="flex flex-wrap">
+        <similar-movie 
+        v-for="similarMovie in similarMovies"
+        :key="similarMovie.id"
+        :movie="similarMovie"
+        class=""
+        ></similar-movie>
+      </div>
     </div>
   </div>
 </template>

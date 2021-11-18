@@ -1,12 +1,9 @@
 <template>
-  <div class='col-2 p-2 h-100 d-inline-block' @click="moveToDetail(movie.id)">
-    <div v-if='movie' class='card popular'>
-      <img :src="imgSrc" alt="popularmovie" class="img-responsive img-rounded">
+  <div class='p-2 flex-6 popular' @click="moveToDetail(movie.tmdb_id)">
+      <img :src="imgSrc" alt="popularmovie" class="object-cover h-full">
       <div class="overlay">
-        <h3 class="description">{{ movie.title }}</h3>
-      </div>
+      <h3 class="description">{{ movie.title }}</h3>
     </div>
-    
   </div>
 </template>
 
