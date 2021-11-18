@@ -5,9 +5,9 @@
       <p>내용 : {{ article.content }}</p>
       <p>작성일 : {{ article.created_at }}</p>
       <p>수정일 : {{ article.updated_at }}</p>
-      <button @click="updateArticle">수정</button>
-      <button @click="deleteArticle">삭제</button>
-      <button @click="back">>back</button>
+      <button class="mx-1 border btn btn-blue btn-blue:hover" @click="updateArticle">수정</button>
+      <button class="mx-1 border btn btn-blue btn-blue:hover" @click="deleteArticle">삭제</button>
+      <button class="mx-1 border btn btn-blue btn-blue:hover" @click="back">>back</button>
     </div>
   </div>
 </template>
@@ -29,7 +29,6 @@ export default {
         url: `http://127.0.0.1:8000/community/${this.articlePk}/`
       })
         .then(res => {
-          console.log(res)
           this.article = res.data
         })
         .catch(err => {

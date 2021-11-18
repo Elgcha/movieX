@@ -1,12 +1,10 @@
 <template>
   <div>
-    <div v-if="movies[0]">
-      <div v-for="movie in movies" :key="movie.id" class='col-2 p-2 h-100 d-inline-block' @click="moveToDetail(movie.id)">
-        <div v-if='movie' class='card popular'>
-          <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" alt="popularmovie" class="img-responsive img-rounded">
-          <div class="overlay">
-            <h3 class="description">{{ movie.title }}</h3>
-          </div>
+    <div v-if="movies[0]" class="flex flex-wrap">
+      <div v-for="movie in movies" :key="movie.id" class='p-2 flex-6 popular' @click="moveToDetail(movie.tmdb_id)">
+        <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" alt="popularmovie" class="object-cover h-full">
+        <div class="overlay">
+          <h3 class="description">{{ movie.title }}</h3>
         </div>
       </div>
     </div>

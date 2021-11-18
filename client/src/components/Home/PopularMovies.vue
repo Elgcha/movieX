@@ -1,10 +1,9 @@
 <template>
-  <div class='flex-auto m-2 popular' @click="moveToDetail(movie.id)">
+  <div class='flex-auto m-2 popular' @click="moveToDetail(movie.tmdb_id)">
       <img :src="imgSrc" alt="popularmovie" class="object-cover h-full">
       <div class="overlay">
       <h3 class="description">{{ movie.title }}</h3>
     </div>
-    
   </div>
 </template>
 
