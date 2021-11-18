@@ -55,13 +55,18 @@ def update(request):
 def delete(request):
     pass
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def comment_create(request, article_pk):
     article = get_object_or_404(Article, pk = article_pk)
-    serializer = CommentSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(user=request.user, article=article)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    if request.method == 'POST':
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=request.user, article=article)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        comments = Comment.objects.filter(article=article)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
 
 def comment_detail(request):
     pass

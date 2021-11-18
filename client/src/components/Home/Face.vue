@@ -1,7 +1,7 @@
 <template>
   <div v-swiper:mySwiper="swiperOption" class="swiper-container" id="face-container">
     <div class="swiper-wrapper">
-      <face-movies v-for="movie in movies" :key="movie.id" :movie="movie" class="swiper-slide"></face-movies>
+      <face-movies v-for="movie in movies" :key="movie.id" :movie="movie" class="cursor-pointer swiper-slide"></face-movies>
     </div>
   </div>
 </template>

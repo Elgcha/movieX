@@ -1,8 +1,8 @@
 <template>
-  <div>
+<div>
   <div class="w-1/2 p-2 pt-4 rounded ">
     <div class="w-full p-3 mt-3">
-      <textarea rows="3" class="w-full p-2 border rounded" @input="inputChange" placeholder="" id="Moviecontent"></textarea>
+      <textarea rows="3" class="w-full p-2 border rounded" @input="inputChange" placeholder="" id="content"></textarea>
     </div>
     <div class="flex justify-between mx-3">
       <div><button 
@@ -25,24 +25,45 @@
     </div>
   </div>
 </div>
+
 </template>
 
 <script>
 import axios from 'axios'
+
 export default {
-  name: 'Comment',
+  name: 'ForumComment',
   data: function () {
     return {
       content: null,
-      comments: null,
+      comments: [],
     }
   },
   methods: {
-    inputChange: function(event) {
-      this.content = event.target.value
+    setToken: function () {
+      const token = localStorage.getItem('jwt')
+      const config = {
+        Authorization: `JWT ${token}`
+      }
+      return config
+    },
+    getComments: function () {
+      const url = process.env.VUE_APP_URL + `community/${this.articleId}/comment/create/`
+      const key = this.setToken()
+      axios({
+        method: 'get',
+        url: url,
+        headers: key,
+      })
+        .then(res => {
+          this.comments = res.data
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     createComment: function () {
-      const url = process.env.VUE_APP_URL + `movie/${this.movie.id}/comment/create/`
+      const url = process.env.VUE_APP_URL + `community/${this.articleId}/comment/create/`
       const key = this.setToken()
 
       axios({
@@ -55,7 +76,7 @@ export default {
       })
         .then(() => {
           this.content = null
-          const contentInput = document.querySelector('#Moviecontent')
+          const contentInput = document.querySelector('#content')
           contentInput.value = null
           this.getComments()
         })
@@ -64,10 +85,23 @@ export default {
         })
       
     },
+    inputChange: function(event) {
+      this.content = event.target.value
+    }
   },
   props: {
-    movie: {
+    article: {
       type: Object,
+    }
+  },
+  computed: {
+    articleId: function () {
+      return this.article.id
+    }
+  },
+  watch: {
+    article: function () {
+      this.getComments()
     }
   }
 }

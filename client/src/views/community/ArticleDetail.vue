@@ -7,14 +7,19 @@
       <p>수정일 : {{ article.updated_at }}</p>
       <button class="mx-1 border btn btn-blue btn-blue:hover" @click="updateArticle">수정</button>
       <button class="mx-1 border btn btn-blue btn-blue:hover" @click="deleteArticle">삭제</button>
-      <button class="mx-1 border btn btn-blue btn-blue:hover" @click="back">>back</button>
+      <button class="mx-1 border btn btn-blue btn-blue:hover" @click="back">back</button>
+    </div>
+    <div>
+      <forum-comment :article="article"></forum-comment>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import ForumComment from '@/components/community/ForumComment.vue'
 export default {
+  components: { ForumComment },
   name: 'ArticleDetail',
   data: function () {
     return {

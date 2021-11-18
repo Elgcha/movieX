@@ -13,6 +13,13 @@ export default new Vuex.Store({
     moveToDetail: function (context, moviePk) {
       router.push({ name: 'MovieDetail', params: {moviePk: moviePk}})
     },
+    setToken: function () {
+      const token = localStorage.getItem('jwt')
+      const config = {
+        Authorization: `JWT ${token}`
+      }
+      return config
+    },
   },
   modules: {
   }

@@ -37,12 +37,18 @@ export default ({
   },
   methods: {
     logout: function () {
-      this.isLogin = true
+      this.isLogin = false
       localStorage.removeItem('jwt')
       this.$router.push({ name: 'Login' })
     },
     
   },
+  created: function () {
+    const token = localStorage.getItem('jwt')
+    if (token) {
+      this.isLogin = true
+    }
+  }
 })
 </script>
 
