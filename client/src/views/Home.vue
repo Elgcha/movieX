@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <face :movie="playingMovie[1]"></face>
+    <face :movies="playingMovie"></face>
     <h2>인기 있는 영화</h2>
     <popular :movies="popularMovie"></popular>
   </div>

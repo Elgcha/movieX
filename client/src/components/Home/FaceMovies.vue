@@ -1,6 +1,6 @@
 <template>
   <div id="face">
-    <img :src="imgSrc" alt="" v-if="movie" class='opacity-50 w-100'  @click="moveToDetail(movie.id)">
+    <img :src="imgSrc" alt="" v-if="movie" class='w-full opacity-50'  @click="moveToDetail(movie.id)">
     <span v-if='movie' class="title">
       <p>{{ movie.title }}</p>
 

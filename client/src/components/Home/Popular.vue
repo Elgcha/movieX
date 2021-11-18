@@ -1,9 +1,10 @@
 <template>
-  <div class="bg-dark">
+  <div class="flex bg-dark">
     <popular-movies
     v-for="movie in movies"
     :key="movie.id"
     :movie="movie"
+    class="h-100"
     >
     </popular-movies>
   </div>
