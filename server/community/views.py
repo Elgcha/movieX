@@ -44,7 +44,7 @@ def detail(request, article_pk):
         data = {
             'message': '글이 삭제 되었습니다.',
         }
-        return Response(data, status.HTTP_204_NO_CONTENT)
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
         
 def update(request):
     pass

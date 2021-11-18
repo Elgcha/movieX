@@ -7,6 +7,7 @@ urlpatterns = [
     path('profile/', views.profile),
     path('api-token-auth/', obtain_jwt_token),
     path('<username>/follow', views.follow),
+
     
 
     # 로그인이나 업데이트는 vue에서 처리해서 필요 없을듯?

@@ -30,12 +30,19 @@ def signup(request):
         # password는 직렬화 과정에는 포함 되지만 → 표현(response)할 때는 나타나지 않는다.
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-#프로필 페이지 구성할거 가져오기
+#프로필 페이지 구성할거 가져오기 유저네임으로 가져오기
 @api_view(['POST'])
 def profile(request):
     user = get_object_or_404(get_user_model(), pk = request.data.get('user_pk'))
     serializer = UserSerializer(user)
     return Response(serializer.data)
+
+# @api_view(['POST'])
+# def profile2(request, user_pk):
+#     user = get_object_or_404(get_user_model(), pk=user_pk)
+#     serializer = UserSerializer(user)
+
+#     return Response(serializer.data)
 
 def follow(request, user_pk):
     #팔로우할 대상
