@@ -14,4 +14,15 @@ urlpatterns = [
     path('people/<int:people_pk>/', views.people_detail),
    # path('people/<int_peoele_pk/update/', views.people_update),
 
+   ### comment
+   path('<int:movie_pk>/comment/', views.comment_create),
+   path('<int:movie_pk>/<int:moviecomment_pk>/', views.comment_update),
+   path('<int:movie_pk>/commentlist/', views.comment_list), #comment에 평점도
+   #path('<int:movie_pk>/rate/', views.rate_movie),
+
+   ### 찜 기능
+   path('<int:movie_pk>/want/', views.want_movie), #이 영화를 좋아하는 사람들을 출력?
+
+#영화코멘트관련
+#보고싶은영화
 ]
