@@ -121,6 +121,7 @@ with open('genre.json', 'w', encoding='UTF-8') as file:
 ####### 인물 db저장
 person_database = []
 pk = 1
+check_id = []
 for i in range(20): #샘플로 20개 까지만 range(len(movie_list_id)):
     credits_url = get_request_url(method=f'/movie/{movie_list_id[i]}/credits', region='KR', language='ko')
     #print(credits_url)
@@ -143,6 +144,9 @@ for i in range(20): #샘플로 20개 까지만 range(len(movie_list_id)):
             #  'birthday': get('birthday')
             }
         }
+        if person.get('id') in check_id:
+            continue
+        check_id.append(person.get('id'))
         person_database.append(contents)
         pk += 1
 
@@ -151,6 +155,7 @@ person_database_id = []
 for i in range(len(person_database)):
     #print(person_database[i]['fields']['tmdb_id'])
     person_database_id.append(person_database[i]['fields']['tmdb_id'])
+
 
 ##########
 # 인물 상세페이지로 가기 '또다른이름' 추개헛 한글이름도 추가해준거임

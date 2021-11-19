@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.deletion import CASCADE
 
-# Create your models here.
+# Create your models here. # 조회수 저장
 class Article(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
     title = models.CharField(max_length=200)
