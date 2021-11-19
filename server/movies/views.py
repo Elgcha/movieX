@@ -20,6 +20,7 @@ def index(request): #전체 영화 목록 조회
         return Response(serializer.data)
 
 @api_view(['GET','PUT','DELETE'])
+@permission_classes([AllowAny])
 def movie_detail(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
 
@@ -48,6 +49,13 @@ def movie_create(request):
 
 def movie_update(request, movie_pk):
     pass
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def movie_date(request):
+    movies = Movie.objects.order_by('-release_date')[:20]
+    serializer = MovieSerializer(movies, many=True)
+    return Response(serializer.data)
 
 ### for people
 
@@ -93,12 +101,14 @@ def people_update(request):
 @api_view(['POST'])
 def comment_create(request, movie_pk):
     movie = get_object_or_404(Movie, pk= movie_pk)
-    serializer = MovieCommentSerializer(movie, data=request.data)
+    serializer = MovieCommentSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
-        serializer.save(movie=movie)
-        return Response(serializer, status=status.HTTP_201_CREATED)
+        serializer.save(movie=movie, user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def comment_list(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     comments = movie.moviecomment_set.all()
@@ -144,3 +154,16 @@ def want_movie(request, movie_pk):
     }
     return Response(data)
 
+@api_view(['POST'])
+def want_check(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    if movie.want.filter(pk=request.user.pk).exists():
+        wanted = True
+    else:
+        movie.want.add(request.user)
+        wanted = False
+    data = {
+        'wanted' : wanted,
+        'count' : movie.want.count(), #영화 찜한 사람수
+    }
+    return Response(data)

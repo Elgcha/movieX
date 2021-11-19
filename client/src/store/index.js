@@ -6,8 +6,15 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    isLogin: false,
   },
   mutations: {
+    USER_LOGIN: function (state) {
+      state.isLogin = true
+    },
+    USER_LOGOUT: function(state) {
+      state.isLogin = false
+    }
   },
   actions: {
     moveToDetail: function (context, moviePk) {
@@ -20,6 +27,13 @@ export default new Vuex.Store({
       }
       return config
     },
+    userLogin: function ({commit}, token) {
+      if (token) {
+        commit('USER_LOGIN')
+      } else {
+        commit('USER_LOGOUT')
+      }
+    }
   },
   modules: {
   }

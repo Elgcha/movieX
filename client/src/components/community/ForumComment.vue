@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="w-1/2 p-2 pt-4 rounded ">
+  <div v-if="isLogin" class="w-1/2 p-2 pt-4 rounded ">
     <div class="w-full p-3 mt-3">
       <textarea rows="3" class="w-full p-2 border rounded" @input="inputChange" placeholder="" id="content"></textarea>
     </div>
@@ -11,11 +11,7 @@
       >
       Submit
       </button></div>
-      <div>
-        <div tabindex="0" class="dropdown">
-          <div tabindex="0" class="cursor-pointer">...</div>
-        </div>
-      </div>
+      
     </div>
   </div>
   <div>
@@ -30,6 +26,7 @@
 
 <script>
 import axios from 'axios'
+import {mapState} from 'vuex'
 
 export default {
   name: 'ForumComment',
@@ -95,6 +92,9 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'isLogin'
+    ]),
     articleId: function () {
       return this.article.id
     }
