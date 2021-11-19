@@ -23,6 +23,13 @@ urlpatterns = [
    ### 찜 기능
    path('<int:movie_pk>/want/', views.want_movie), #이 영화를 좋아하는 사람들을 출력?
 
+   path('<int:movie_pk>/likes/', views.likes_movie),
+
 #영화코멘트관련
 #보고싶은영화
+
+
+# ### search
+# path(<'search/<str:keyword>/', views.search),
 ]
+
