@@ -5,6 +5,7 @@ import Home from '@/views/Home.vue'
 import Login from '@/views/accounts/Login.vue'
 import Signup from '@/views/accounts/Signup.vue'
 import Profile from '@/views/accounts/Profile.vue'
+import Admin from '@/views/accounts/Admin.vue'
 
 import MovieList from '@/views/movies/MovieList.vue'
 import MovieDetail from '@/views/movies/MovieDetail.vue'
@@ -78,6 +79,11 @@ const routes = [
     path: '/accounts/:username/',
     name: 'Profile',
     component: Profile,
+  },
+  {
+    path: '/accounts/admin/',
+    name: 'Admin',
+    component: Admin,
   },
   // 에러페이지
   {
