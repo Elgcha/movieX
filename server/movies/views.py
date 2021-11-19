@@ -156,7 +156,6 @@ def want_movie(request, movie_pk):
     }
     return Response(data)
 
-
 @api_view(['POST'])
 def want_check(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
@@ -173,7 +172,40 @@ def want_check(request, movie_pk):
 
 
 
-# @api_view(['GET']) #비슷한 영화 찾기
+
+## movie connect people
+## 가져온 영화값에 인물이 연결되어있지 않다.
+## 인물 크레딧에 영화정보가 있고 그걸 연결한다
+def people_to_movie(request): #get_objects_404로바꿀수잇으면 바꾸자
+    movies = Movie.objects.all()
+    people = People.objects.all()
+    # 사람의 id값을 조회해서 영화목록을 가져오자
+    for person_code in people:
+        url =f'https://api.themoviedb.org/3/person/{person_code.tmdb_id}/movie_credits?api_key=953a5848d0ceb3adab0a2109622b61b6&region=KR&language=ko'
+        data = requests.get(url).json()
+        dataset = data.get('cast')
+
+        person = People.objects.get(tmdb_id=person_code.tmdb_id)
+        movieset = []
+      # 출연한영화 목록을 리스트로 만들어준다.  
+        for i in range(len(dataset)):
+            movieset.append(data.get('cast')[i].get('id'))
+        #만들어진 리스트에서 db에 맞는 영화가 있는지 찾는다.
+            for j in movieset:
+                if movies.filter(tmdb_id=j):
+                    movie = Movie.objects.get(tmdb_id=j)
+                    movie.people.add(person)
+                    # print(movies)
+    #                 # update = movies.objects.get(tmdb_id=j)
+    #                 # update.people += person_code
+    #                 # update.save()
+    return Response(status=status.HTTP_200_OK)
+                  
+
+#     return Response(data)
+
+#@api_view(['GET']) #비슷한 영화 찾기
+
 # def likes_movie(request, movie_pk):
 #     '''
 #     영화 

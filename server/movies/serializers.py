@@ -2,25 +2,31 @@ from rest_framework import serializers
 from rest_framework.utils import field_mapping
 from .models import Movie, People, Genre, MovieComment
 
-class MovieSerializer(serializers.ModelSerializer):
+class GenreSerializer(serializers.ModelSerializer):
+    name = Genre.objects.filter()
 
     class Meta:
-        model = Movie
-        fields = '__all__' #영화 한줄평, 영화 좋아요, 
-        read_only_fields = ('vote_count', 'vote_average', 'genres', 'people', 'want',)
+        model = Genre
+        fields = '__all__'
 
 class PeopleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = People
-        fields = '__all__'
+        fields = ('__all__')
         read_only_fields = ('',)
 
-class GenreSerializer(serializers.ModelSerializer):
+class MovieSerializer(serializers.ModelSerializer):
+
+    genres = GenreSerializer(many=True, read_only=True)
+   # people = PeopleSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Genre
-        fields = '__all__'
+        model = Movie
+        fields = ('__all__') #영화 한줄평, 영화 좋아요, 
+        read_only_fields = ('vote_count', 'vote_average', 'people', 'want','genres')
+
+
 
 #영화 코멘트 모델만들기
 class MovieCommentSerializer(serializers.ModelSerializer):
