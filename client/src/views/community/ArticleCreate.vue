@@ -26,6 +26,13 @@ export default {
     }
   },
   methods: {
+    setToken: function () {
+      const token = localStorage.getItem('jwt')
+      const config = {
+        Authorization: `JWT ${token}`
+      }
+      return config
+    },
     inputTitle: function(event) {
       this.Article.title = event.target.value
     },
@@ -37,6 +44,7 @@ export default {
         method: 'post',
         url: 'http://127.0.0.1:8000/community/create/',
         data: this.Article,
+        headers: this.setToken(),
       })
         .then((res)=>{
           this.$router.push({name: 'ArticleDetail', params: {articlePk: res.data.id}})

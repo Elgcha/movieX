@@ -37,8 +37,8 @@ def signup(request):
 #프로필 페이지 구성할거 가져오기
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def profile(request):
-    user = get_object_or_404(get_user_model(), pk=request.user.pk)
+def profile(request, username):
+    user = get_object_or_404(get_user_model(), username=username)
     serializer = UserSerializer(user)
     return Response(serializer.data)
 
