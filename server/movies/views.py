@@ -1,5 +1,6 @@
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, render
+import requests
 from community.serializers import CommentSerializer
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
@@ -103,7 +104,7 @@ def comment_create(request, movie_pk):
     movie = get_object_or_404(Movie, pk= movie_pk)
     serializer = MovieCommentSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
-        serializer.save(movie=movie, user=request.user)
+        serializer.save(movie=movie)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -154,6 +155,7 @@ def want_movie(request, movie_pk):
     }
     return Response(data)
 
+
 @api_view(['POST'])
 def want_check(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
@@ -167,3 +169,41 @@ def want_check(request, movie_pk):
         'count' : movie.want.count(), #영화 찜한 사람수
     }
     return Response(data)
+
+@api_view(['GET']) #비슷한 영화 찾기
+def likes_movie(request, movie_pk):
+    '''
+    영화 
+    '''
+    movies = Movie.objects.all() #
+    serializer = MovieSerializer(movies, many=True)
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    movie_code = movie.tmdb_id
+    #임시
+    url =f'https://api.themoviedb.org/3/movie/{movie_code}/similar?api_key=953a5848d0ceb3adab0a2109622b61b6&region=KR&language=ko'
+    data = requests.get(url).json()
+    movies.filter(tmdb_id='movie')
+    for choice in data.get('results'):
+        choice.get('id') in movies.
+
+    return Response(data)
+
+
+
+# #### search
+# def search(request, keyword):
+#     movie = Movie.objects.all()
+#     people = People.objects.all()
+#     genre = Genre.objects.all()
+#     if keyword in  movie:
+#         k = movie.find('keyword')
+#     request_url = get_request_url('/search/movie', query=title, region='KR', language='ko')
+#     data = requests.get(request_url).json()
+#     results = data.get('results')
+#     if results:
+#         movie = results[0]
+#         movie_id = movie['id']
+#         return movie_id
+#     else:
+#         return None
+
