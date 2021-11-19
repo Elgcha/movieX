@@ -7,7 +7,7 @@
         <router-link to="/community/forum/">Forum</router-link> |
         <router-link to="/movies/">Movies</router-link> |
         <span v-if="isLogin">
-          <router-link to="/accounts/profile/">profile</router-link> |
+          <router-link to="#" @click.native="goProfile" >profile</router-link> |
           <router-link @click.native="logout" to='#'>logout</router-link> |
         </span>
         <span v-else>
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="container px-4 mx-auto">
-      <router-view @login="isLogin=true"/>
+      <router-view @login="login"/>
     </div>
     <div id="footer">
       <p>footer</p>
@@ -27,28 +27,38 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 
 export default ({
   name: 'App',
   data: function () {
     return {
-      isLogin: false,
+      username: localStorage.getItem('username')
     }
   },
   methods: {
     logout: function () {
-      this.isLogin = false
       localStorage.removeItem('jwt')
       this.$router.push({ name: 'Login' })
+      this.$store.dispatch('userLogin', '')
     },
+    login: function () {
+      const token = localStorage.getItem('jwt')
+      this.$store.dispatch('userLogin', token)
+    },
+    goProfile: function() {
+      this.$router.push({ name: 'Profile', params: {username: this.username}})
+    }
     
   },
   created: function () {
-    const token = localStorage.getItem('jwt')
-    if (token) {
-      this.isLogin = true
-    }
-  }
+    this.login()
+  },
+  computed: {
+    ...mapState([
+      'isLogin',
+    ]),
+  },
 })
 </script>
 

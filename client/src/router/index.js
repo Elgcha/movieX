@@ -8,6 +8,7 @@ import Profile from '@/views/accounts/Profile.vue'
 
 import MovieList from '@/views/movies/MovieList.vue'
 import MovieDetail from '@/views/movies/MovieDetail.vue'
+import PeopleDetail from '@/views/movies/PeopleDetail.vue'
 
 import Forum from '@/views/community/Forum.vue'
 import ArticleCreate from '@/views/community/ArticleCreate.vue'
@@ -25,7 +26,7 @@ const routes = [
     name: 'Home',
     component: Home
   },
-  // 영화목록 페이지
+  // 영화 관련
   {
     path: '/movies/',
     name: 'MovieList',
@@ -35,6 +36,11 @@ const routes = [
     path: '/movies/:moviePk/',
     name: 'MovieDetail',
     component: MovieDetail
+  },
+  {
+    path: '/movies/people/:peoplePk/',
+    name: 'PeopleDetail',
+    component: PeopleDetail
   },
   // 게시판 관련
   {

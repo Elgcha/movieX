@@ -18,6 +18,8 @@
 <script>
 import axios from 'axios'
 import ForumComment from '@/components/community/ForumComment.vue'
+import {mapState} from 'vuex'
+
 export default {
   components: { ForumComment },
   name: 'ArticleDetail',
@@ -61,6 +63,11 @@ export default {
   },
   created: function () {
     this.getArticle()
+  },
+  computed: {
+    ...mapState([
+      'isLogin'
+    ]),
   }
 }
 </script>
