@@ -27,7 +27,7 @@
       </div>
     </div>
   </div>
-  <div>
+  <div v-if="comments">
     <h3>댓글 목록</h3>
     <div v-for="comment in comments" :key="comment.id">
       {{comment.content}}
@@ -116,7 +116,7 @@ export default {
   },
   created: function () {
     this.getComments()
-  }
+  },
 }
 </script>
 

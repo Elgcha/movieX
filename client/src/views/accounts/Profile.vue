@@ -82,12 +82,7 @@
           <!-- insta freatures -->
           <ul class="flex items-center justify-around space-x-12 text-xs font-semibold tracking-widest text-gray-600 uppercase border-t md:justify-center">
             <!-- posts tab is active -->
-            <li class="md:border-t md:border-gray-700 md:-mt-px md:text-gray-700">
-              <a class="inline-block p-3" href="#">
-                <i class="text-xl fas fa-th-large md:text-xs"></i>
-                <span class="hidden md:inline">article</span>
-              </a>
-            </li>
+
             <li>
               <a class="inline-block p-3" href="#">
                 <i class="text-xl far fa-square md:text-xs"></i>
@@ -97,9 +92,29 @@
             
           </ul>
           <!-- flexbox grid -->
-          <div class="flex flex-wrap -mx-px md:-mx-3">
-
+          <div class="-mx-px  md:-mx-3">
             <!-- column -->
+            <div v-swiper:mySwiper="swiperOption" class="my-2 swiper-container">
+              <div class="bg-dark swiper-wrapper">
+                <div
+                v-for="movie in wantMovies"
+                :key="movie.id"
+                :movie="movie"
+                class="justify-center h-auto swiper-slide"
+                >
+                  <div class='w-full h-auto cursor-pointer popular' @click="moveToDetail(movie.id)">
+                    <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" alt="" class="object-cover w-full h-full">
+                    <div class="overlay" @click="moveToDetail(movie.id)">
+                    <h3 class="description" @click="moveToDetail(movie.id)">{{ movie.title }}</h3>
+                  </div>
+                </div>
+                </div>
+              </div>
+              <div class="swiper-button-prev" slot="button-prev"></div> 
+              <div class="swiper-button-next" slot="button-next"></div>
+
+
+            </div>
 
           </div>
         </div>
@@ -112,15 +127,30 @@
 
 <script>
 import axios from 'axios'
+import {mapActions} from 'vuex'
+
 export default {
   name: 'Profile',
   data: function () {
     return {
       me: {},
       isFollowed: false,
+      wantMovies: [],
+      swiperOption: {
+        slidesPerView: 6,
+        spaceBetween: 10,
+        loop: false,
+        navigation: {
+          nextEl: '.swiper-button-next', 
+          prevEl: '.swiper-button-prev' 
+        },
+      },
     }
   },
   methods: {
+    ...mapActions([
+      'moveToDetail',
+    ]),
     setToken: function () {
       const token = localStorage.getItem('jwt')
       const config = {
@@ -138,6 +168,7 @@ export default {
       })
         .then(res => {
           this.me = res.data
+          this.wantMovies = res.data.user_wants
         })
         .catch(err => {
           console.log(err)
@@ -154,7 +185,8 @@ export default {
         .then(res => {
           this.isFollowed = res.data.isFollowed
         })
-    }
+    },
+    
   },
   created: function () {
     this.getProfile()
