@@ -27,9 +27,10 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## 11/18
 
-* 게시판 기능 추가
+* 게시판 기능 추가 - 글쓰기, 댓글 생성
 * 메인페이지 인기 영화 목록 swiper 추가
-* 
+* fuse.js를 통한 검색 기능 추가
+* JWT 토큰을 통한 인증 추가
 
 ## 11/17
 
