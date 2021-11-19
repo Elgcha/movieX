@@ -12,6 +12,7 @@
     "autoprefixer": "^9",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
+    "fuse.js": "^6.4.6",
     "lodash": "^4.17.21",
     "postcss": "^7",
     "swiper": "^5.2.0",

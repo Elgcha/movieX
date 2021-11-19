@@ -2,7 +2,9 @@
   <div class="home">
     <face :movies="playingMovie"></face>
     <h2>인기 있는 영화</h2>
-    <popular :movies="popularMovie"></popular>
+    <div>
+      <popular :movies="popularMovie"></popular>
+    </div>
   </div>
 </template>
 
@@ -60,7 +62,7 @@ export default {
         }
       })
         .then(res => {
-          this.popularMovie = res.data.results.slice(0, 6)
+          this.popularMovie = res.data.results
         })
     }
   },

@@ -25,6 +25,13 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 # 패치노트
 
+## 11/18
+
+* 게시판 기능 추가 - 글쓰기, 댓글 생성
+* 메인페이지 인기 영화 목록 swiper 추가
+* fuse.js를 통한 검색 기능 추가
+* JWT 토큰을 통한 인증 추가
+
 ## 11/17
 
 * 로그인, 회원가입 기능 추가
@@ -67,5 +74,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
   
 
-* 
+* 영화 목록 이미지 크기 똑같이 맞추기
+
+  carousel을 추가하니 이미지 크기가 다시 달라져 버렸던 문제.. swiper 쪽에서 너비와 높이쪽을 건드려서 그런 듯.  object-fit: cover 가 작동을 안해서 한참 해멨는데, 찾아보니 이 설정은 너비와 높이 설정이 필요하다고 한다. 높이와 너비 100% 값을 줘서 해결.
 

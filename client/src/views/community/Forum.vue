@@ -1,20 +1,20 @@
 <template>
   <div>
     <button @click="ArticleCreate">글 작성</button>
-    <table class="border border-collapse table-auto">
+    <table class="text-white bg-gray-700 border border-collapse table-fixed">
       <thead>
         <tr>
-          <th class="border">Title</th>
-          <th class="border">Author</th>
-          <!-- <th>Time</th> -->
+          <th class="w-1/2 border">Title</th>
+          <th class="w-1/4 border">Author</th>
+          <th class="w-1/4 border">Time</th>
           <!-- <th>Views</th> -->
         </tr>
       </thead>
       <tbody>
-        <tr v-for="article in articles" :key="article.id" @click="ArticleDetail(article)">
-          <td class="border">{{ article.title }}</td>
-          <td class="border">{{ article.user }}</td>
-          <!-- <td>{{ article.created_at }}</td> -->
+        <tr v-for="article in articles" :key="article.id" @click="ArticleDetail(article)" class="cursor-pointer hover:bg-gray-600">
+          <td class="">{{ article.title }}</td>
+          <td class="">{{ article.username }}</td>
+          <td>{{ article.created_at }}</td>
           <!-- <td>{{ article }}</td> -->
         </tr>
       </tbody>

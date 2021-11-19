@@ -35,6 +35,9 @@ export default {
         .then(res => {
           console.log(res)
           this.movies = res.data
+          this.movies = this.movies.filter(movie => {
+            return !movie.adult
+          })
         })
     }
   },

@@ -11,16 +11,21 @@
       <button>코멘트 작성</button>
       <button>보고싶어요</button>
     </div>
-    <div>
-      <h3>비슷한 영화</h3>
-      <div class="flex flex-wrap">
+    <h3>비슷한 영화</h3>
+    <div v-swiper:mySwiper="swiperOption" class="my-2 bg-gray-600 swiper-container">
+      <div class="swiper-wrapper">
         <similar-movie 
         v-for="similarMovie in similarMovies"
         :key="similarMovie.id"
         :movie="similarMovie"
-        class=""
+        class="justify-center h-auto swiper-slide"
         ></similar-movie>
       </div>
+      <div class="swiper-button-prev" slot="button-prev"></div> 
+      <div class="swiper-button-next" slot="button-next"></div>
+    </div>
+    <div>
+      <comment :movie="movie"></comment>
     </div>
   </div>
 </template>
@@ -28,15 +33,32 @@
 <script>
 import axios from 'axios'
 import SimilarMovie from '@/components/movies/SimilarMovie.vue'
+import Comment from '@/components/movies/Comment.vue'
+import 'swiper/css/swiper.css'
 
 export default {
-  components: { SimilarMovie },
+  components: { 
+    SimilarMovie, 
+    Comment 
+  },
   name: 'MovieDetail',
   data: function () {
     return {
       moviePk: this.$route.params.moviePk,
       movie: {},
       similarMovies: [],
+      swiperOption: {
+        slidesPerView: 6,
+        spaceBetween: 10,
+        loop: true,
+        // autoplay: {
+        //   delay:5000,
+        // },
+        navigation: {
+          nextEl: '.swiper-button-next', 
+          prevEl: '.swiper-button-prev' 
+        },
+      },
     }
   },
   computed: {
