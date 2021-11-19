@@ -58,6 +58,7 @@ def movie_date(request):
     serializer = MovieSerializer(movies, many=True)
     return Response(serializer.data)
 
+
 ### for people
 
 @api_view(['GET'])
@@ -104,7 +105,7 @@ def comment_create(request, movie_pk):
     movie = get_object_or_404(Movie, pk= movie_pk)
     serializer = MovieCommentSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
-        serializer.save(movie=movie)
+        serializer.save(movie=movie, user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -170,23 +171,25 @@ def want_check(request, movie_pk):
     }
     return Response(data)
 
-@api_view(['GET']) #비슷한 영화 찾기
-def likes_movie(request, movie_pk):
-    '''
-    영화 
-    '''
-    movies = Movie.objects.all() #
-    serializer = MovieSerializer(movies, many=True)
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    movie_code = movie.tmdb_id
-    #임시
-    url =f'https://api.themoviedb.org/3/movie/{movie_code}/similar?api_key=953a5848d0ceb3adab0a2109622b61b6&region=KR&language=ko'
-    data = requests.get(url).json()
-    movies.filter(tmdb_id='movie')
-    for choice in data.get('results'):
-        choice.get('id') in movies.
 
-    return Response(data)
+
+# @api_view(['GET']) #비슷한 영화 찾기
+# def likes_movie(request, movie_pk):
+#     '''
+#     영화 
+#     '''
+#     movies = Movie.objects.all() #
+#     serializer = MovieSerializer(movies, many=True)
+#     movie = get_object_or_404(Movie, pk=movie_pk)
+#     movie_code = movie.tmdb_id
+#     #임시
+#     url =f'https://api.themoviedb.org/3/movie/{movie_code}/similar?api_key=953a5848d0ceb3adab0a2109622b61b6&region=KR&language=ko'
+#     data = requests.get(url).json()
+#     movies.filter(tmdb_id='movie')
+#     for choice in data.get('results'):
+#         choice.get('id') in movies.
+
+#     return Response(data)
 
 
 
