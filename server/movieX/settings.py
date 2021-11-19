@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework',
     # django cors
     'corsheaders',
+    'imagekit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -127,7 +128,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/" # 앱안에 있는 경로
+#STATIC_ROOT = BASE_DIR / 'static' #정적파일 수집 필요없는 듯
+STATICFILES_DIRS = [ #서버 베이스 경로 지정
+    BASE_DIR / 'static',
+]
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -135,6 +141,7 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
+
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

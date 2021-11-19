@@ -2,10 +2,11 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import UserSerializer
-from django.contrib.auth import get_user_model
-from rest_framework.permissions import AllowAny, IsAuthenticated
 
+from .models import Profile
+from .serializers import ProfileSerializer, UserSerializer
+from django.contrib.auth import get_user, get_user_model
+from rest_framework.permissions import AllowAny
 # Create your views here.
 
 @api_view(['POST'])
@@ -35,38 +36,46 @@ def signup(request):
 
 #프로필 페이지 구성할거 가져오기
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def profile(request):
     user = get_object_or_404(get_user_model(), pk=request.user.pk)
     serializer = UserSerializer(user)
     return Response(serializer.data)
 
-# @api_view(['POST'])
-# def profile2(request, user_pk):
-#     user = get_object_or_404(get_user_model(), pk=user_pk)
-#     serializer = UserSerializer(user)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def other_profile(request, username):
+     user = get_object_or_404(get_user_model(), username=username)
+     serializer = UserSerializer(user)
 
-#     return Response(serializer.data)
+     return Response(serializer.data)
 
-def follow(request, user_pk):
+@api_view(['POST'])
+def follow(request, username):
     #팔로우할 대상
-    person = get_object_or_404(get_user_model(), pk= user_pk)
+    # person = get_object_or_404(get_user_model(), pk= user_pk)
+    person = get_object_or_404(get_user_model(), username=username)
+     
     #나
     user = request.user
     if person != user:
-        if user.followers.filter(pk=person.pk).exist():
+        if user.followers.filter(pk=person.pk).exists():
             person.followers.remove(user)
             isFollowed = False
         else:
             person.follwers.add(user)
             isFollowed = True
-        context = {
+        data = {
             'isFollowed': isFollowed,
             'followers_count': person.followers.count(),
             'followings_count': person.followings.count(),
         }
-        #JsonResponse로 리턴해야하는지?
-        # return JsonResponse(context)
-        return Response(context)
+        return Response(data)
+    else:
+        data = {
+            'message': '자기 자신을 팔로우 할 수 없습니다.',
+        }
+        return Response(data)#, status=status.)
 
 def login(request):
     pass
@@ -81,4 +90,33 @@ def password_change(request):
     pass
 
 
+#temp
 
+@api_view(["PUT",'GET'])
+def temp(request, user_pk):
+
+    user= get_object_or_404(get_user_model(), pk=user_pk)
+
+    if request.method == "GET":
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+        
+    if request.method == "PUT":
+        # user = get_object_or_404(get_user_model(),  pk=request.user.pk)
+        serializer = UserSerializer(user, data= request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+@api_view(["PUT",'GET'])
+def temp2(request, profile_pk):
+    profile= get_object_or_404(Profile, pk=profile_pk)
+
+    if request.method == "GET":
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+        
+    if request.method == "PUT":
+        serializer = ProfileSerializer(profile, data= request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
