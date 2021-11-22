@@ -7,9 +7,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from .models import Movie, People, Genre, MovieComment
-from .serializers import MovieSerializer, PeopleSerializer, MovieCommentSerializer
+from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer
 from rest_framework.permissions import AllowAny
-
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 @api_view(['GET'])
@@ -17,8 +17,13 @@ from rest_framework.permissions import AllowAny
 def index(request): #전체 영화 목록 조회
     if request.method =='GET': #api view로 get을 받는데 if를 안해도 됌? 해야 함?
         movies = Movie.objects.all()
+        #
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        result_page = paginator.paginate_queryset(movies, request)
+        #
         serializer = MovieSerializer(movies, many=True)
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET','PUT','DELETE'])
 @permission_classes([AllowAny])
@@ -95,6 +100,12 @@ def people_detail(request, people_pk):
         }
         return Response(data, status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['GET'])
+def people_movie_list(request, people_pk):
+    people = get_object_or_404(People, pk=people_pk)
+    serializer = PeopleMovieListSerializer(people)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+       
 def people_update(request):
     pass
 
@@ -169,24 +180,8 @@ def want_check(request, movie_pk):
     }
     return Response(data)
 
-@api_view(['GET']) #비슷한 영화 찾기
-def likes_movie(request, movie_pk):
-    '''
-    영화 
-    '''
-    movies = Movie.objects.all() #
-    serializer = MovieSerializer(movies, many=True)
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    movie_code = movie.tmdb_id
-    #임시
-    url =f'https://api.themoviedb.org/3/movie/{movie_code}/similar?api_key=953a5848d0ceb3adab0a2109622b61b6&region=KR&language=ko'
-    data = requests.get(url).json()
-    movies.filter(tmdb_id='movie')
-    for choice in data.get('results'):
-        choice.get('id') in movies.
-
-
 ## movie connect people
+# 빈리스트 가져와서 비교하는 방식으로바꿔보자 #
 ## 가져온 영화값에 인물이 연결되어있지 않다.
 ## 인물 크레딧에 영화정보가 있고 그걸 연결한다
 def people_to_movie(request): #get_objects_404로바꿀수잇으면 바꾸자
@@ -215,9 +210,9 @@ def people_to_movie(request): #get_objects_404로바꿀수잇으면 바꾸자
     return Response(status=status.HTTP_200_OK)
                   
 
-#     return Response(data)
 
-#@api_view(['GET']) #비슷한 영화 찾기
+
+# @api_view(['GET']) #비슷한 영화 찾기
 # def likes_movie(request, movie_pk):
 #     '''
 #     영화 
@@ -226,14 +221,26 @@ def people_to_movie(request): #get_objects_404로바꿀수잇으면 바꾸자
 #     serializer = MovieSerializer(movies, many=True)
 #     movie = get_object_or_404(Movie, pk=movie_pk)
 #     movie_code = movie.tmdb_id
-#     #임시
-#     url =f'https://api.themoviedb.org/3/movie/{movie_code}/similar?api_key=953a5848d0ceb3adab0a2109622b61b6&region=KR&language=ko'
-#     data = requests.get(url).json()
-#     movies.filter(tmdb_id='movie')
-#     for choice in data.get('results'):
-#         choice.get('id') in movies.
+#     movie_genres = movie.genres.all()
+#     movie_list = []
 
-#     return Response(data)
+#     for a in movie.genres.
+#         movie_list.append(a.id)  
+#     recommends = []
+
+
+
+            
+
+
+    #임시
+    # url =f'https://api.themoviedb.org/3/movie/{movie_code}/similar?api_key=953a5848d0ceb3adab0a2109622b61b6&region=KR&language=ko'
+    # data = requests.get(url).json()
+    # movies.filter(tmdb_id='movie')
+    # for choice in data.get('results'):
+    #     choice.get('id') in movies
+
+    return Response(data)
 
 
 

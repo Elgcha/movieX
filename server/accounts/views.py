@@ -3,12 +3,16 @@ from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .models import Profile
-from .serializers import ProfileSerializer, UserSerializer
+from movies.models import MovieComment
+from movies.serializers import MovieCommentSerializer
+
+from .models import Profile, User
+from .serializers import MovieCommentListSerialzer, ProfileSerializer, UserSerializer
 from django.contrib.auth import get_user, get_user_model
 from rest_framework.permissions import AllowAny
 # Create your views here.
 
+#### user #####################################
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup(request):
@@ -34,7 +38,8 @@ def signup(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-#프로필 페이지 구성할거 가져오기
+#####################프로필 페이지 구성할거 가져오기 
+########마이 프로필이랑 다른사람의 프로필하려고 구별했는데 합쳐도 될듯
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def profile(request, username):
@@ -49,6 +54,7 @@ def other_profile(request, username):
      serializer = UserSerializer(user)
 
      return Response(serializer.data)
+#############################################
 
 @api_view(['POST'])
 def follow(request, username):
@@ -63,7 +69,7 @@ def follow(request, username):
             person.followers.remove(user)
             isFollowed = False
         else:
-            person.follwers.add(user)
+            person.followers.add(user)
             isFollowed = True
         data = {
             'isFollowed': isFollowed,
@@ -77,6 +83,34 @@ def follow(request, username):
         }
         return Response(data)#, status=status.)
 
+#유저의 영화평가 리스트 
+# 영화이름, 평점, 코멘트 출력함
+@api_view(['GET'])
+def user_comment_set(request, username):
+    comments = get_object_or_404(get_user_model(), username=username)
+    serialzer = MovieCommentListSerialzer(comments)
+    
+    return Response(serialzer.data)
+
+@api_view(['GET'])
+def user_count(request, username):
+    user = get_object_or_404(get_user_model(), username=username)
+    data = {
+        'want_counts': user.user_wants.count(), #찜한영화
+        'like_counts': user.moviecomment_set.count(), #평가한영화
+        'followers_count': user.followers.count(),
+        'followings_count': user.followings.count(),
+    }
+    return Response(data)
+
+
+
+
+
+
+
+
+##################################################################
 def login(request):
     pass
 

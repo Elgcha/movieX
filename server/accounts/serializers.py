@@ -3,8 +3,9 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from movies.models import Movie
+from movies.models import MovieComment
 
-from .models import Profile
+from .models import Profile, User
 from movies.serializers import MovieSerializer, MovieCommentSerializer
 
 class UserSerializer(serializers.ModelSerializer):
@@ -14,15 +15,54 @@ class UserSerializer(serializers.ModelSerializer):
     #     fields = ('genres', 'title', '')
     password = serializers.CharField(write_only=True)
     user_wants = MovieSerializer(many=True, read_only=True) #객체로 가져오게해줌
-    rated_movie= MovieCommentSerializer(many=True, read_only=True)
+    
 
+   
+    #필드에 없으니 필수로입력하지않아도되네(signup)
     class Meta:
         model = get_user_model()
-        fields = ('username', 'password', 'email', 'followings', 'followers', 'article_set', 'comment_set', 'image_path', 'user_wants', 'rated_movie',)
+        #fields = ('__all__')
+        fields = ('username', 'password', 'email', 'followings', 'followers', 'article_set', 'comment_set', 'image_path', 'user_wants',)
 
         # 유저등록시 작성할 필요가 없도록 read_only_fields
         read_only_fields = ('followings', 'followers', 'article_set', 'comment_set',) #want_movie, 프로필사진받아오기
 
+class MovieCommentListSerialzer(serializers.ModelSerializer):
+    # moviecomment_set_name = serializers.SerializerMethodField()
+
+    # def get_moviecomment_set_name(self, obj):
+    #     mv = User.objects.get(id=obj.id)
+    #     return mv.moviecomment_set.content
+    class MovieCommentSerializer(serializers.ModelSerializer):
+        username = serializers.SerializerMethodField()
+        title = serializers.SerializerMethodField()
+        # pk말고 이름을 명시할 수 있도록
+        def get_username(self, obj):
+            return obj.user.username
+        def get_title(self, obj):
+            return obj.movie.title
+        class Meta:
+            model = MovieComment
+            fields = ('id', 'username','title', 'content', 'rate','created_at', 'updated_at', )
+
+    moviecomment_set_name = MovieCommentSerializer(source='moviecomment_set', many=True,)
+
+    class Meta:
+        model = get_user_model()
+        fields = ('moviecomment_set', 'moviecomment_set_name')
+
+
+
+
+
+
+
+
+
+
+
+
+#### temp
 class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
