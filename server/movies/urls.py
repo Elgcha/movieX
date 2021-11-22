@@ -4,15 +4,16 @@ from . import views
 urlpatterns = [
     ### movie
     path('', views.index),
-    path('<int:movie_pk>/', views.movie_detail),
+    path('<int:movie_pk>/', views.movie_detail), #조회,수정, 삭제
     path('create/', views.movie_create),
-    path('get/date/', views.movie_date),
+    path('get/date/', views.movie_date), #최신 영화 보여주기
    # path('<int:movie_pk>/update/', views.movie_update),
 
     ### people
     path('people/', views.index_people),
     path('people/create/', views.people_create),
-    path('people/<int:people_pk>/', views.people_detail),
+    path('people/<int:people_pk>/', views.people_detail), #조회,수정,삭제
+    path('people/<int:people_pk>/movielist/', views.people_movie_list),
    # path('people/<int_peoele_pk/update/', views.people_update),
 
    ### comment
@@ -25,6 +26,8 @@ urlpatterns = [
    path('<int:movie_pk>/want/', views.want_movie), #이 영화를 좋아하는 사람들을 출력?
    path('<int:movie_pk>/want/check/', views.want_check),
 
+
+    #인물과 영화 연결시키는 함수
 
    path('connect/', views.people_to_movie),
 

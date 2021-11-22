@@ -12,7 +12,7 @@ from imagekit.processors import Thumbnail
 
 # Create your models here.
 class User(AbstractUser):
-    email = models.EmailField()
+    email = models.EmailField() #blank=True
     #image_path = models.ImageField(blank=True, upload_to=users_image_path)
     image_path = ProcessedImageField(
         upload_to= './',

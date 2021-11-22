@@ -6,8 +6,11 @@ urlpatterns = [
     path('signup/', views.signup),
     path('profile/<username>/', views.profile),
     path('profile/<username>/', views.other_profile),
+    path('profile/<username>/commentlist/', views.user_comment_set), #한 사람이 영화를 평가한 모든 한줄평
     path('api-token-auth/', obtain_jwt_token),
     path('<username>/follow/', views.follow),
+    path('profile/<username>/count', views.user_count), #팔로우,팔로잉, 평가한영화,찜한영화 총횟수
+
 
     # temp
     path('profiles/<int:user_pk>/', views.temp),
