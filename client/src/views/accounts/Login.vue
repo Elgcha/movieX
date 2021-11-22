@@ -14,8 +14,8 @@
       <button class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="button" @click="login">
         Login
       </button>
-      <a class="inline-block text-sm font-bold text-blue-500 align-baseline hover:text-blue-800" href="#">
-        Forgot Password?
+      <a class="inline-block text-sm font-bold text-blue-500 align-baseline hover:text-blue-800" @click.prevent="moveToSignup" href="#">
+        signup
       </a>
     </div>
   </div>
@@ -51,7 +51,11 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    moveToSignup: function () {
+      this.$router.push({name:'Signup'})
     }
+
   }
 }
 </script>

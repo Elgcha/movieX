@@ -1,36 +1,35 @@
 <template>
   <div>
   <div v-if="isLogin" class="w-1/2 p-2 pt-4 rounded ">
-    <div class="w-full p-3 mt-3">
-      <textarea rows="3" class="w-full p-2 border rounded" @input="inputChange" placeholder="" id="Moviecontent"></textarea>
-    </div>
-    <div class="flex justify-between mx-3">
-        <div class="mx-auto space-x-4 star-rating">
-          <input type="radio" id="5-stars" name="rating" value="10" v-model="ratings"/>
-          <label for="5-stars" class="pr-4 star">★</label>
-          <input type="radio" id="4-stars" name="rating" value="8" v-model="ratings"/>
-          <label for="4-stars" class="star">★</label>
-          <input type="radio" id="3-stars" name="rating" value="6" v-model="ratings"/>
-          <label for="3-stars" class="star">★</label>
-          <input type="radio" id="2-stars" name="rating" value="4" v-model="ratings"/>
-          <label for="2-stars" class="star">★</label>
-          <input type="radio" id="1-star" name="rating" value="2" v-model="ratings" />
-          <label for="1-star" class="star">★</label>
-        </div>
+    <p class="text-left">댓글 작성</p>
+    <div class="flex w-full p-3 mt-3">
+      <input type="text" rows="3" class="w-full p-2 text-black border rounded" @input="inputChange" placeholder="" id="Moviecontent">
       <div><button 
       @click="createComment"
-      class="px-4 py-1 font-light text-white bg-gray-800 rounded hover:bg-gray-700"
+      class="h-full px-4 py-2 font-light text-white bg-gray-400 rounded hover:bg-gray-200"
       >
       Submit
       </button></div>
+    </div>
+    <div class="flex justify-between mx-3" >
+        <star-rating v-model="ratings"></star-rating>
       <div>
       </div>
     </div>
   </div>
-  <div v-if="comments">
-    <h3>댓글 목록</h3>
-    <div v-for="comment in comments" :key="comment.id">
-      {{comment.content}}
+  <h3 class="mb-5 text-left">댓글 목록</h3>
+  <div v-if="comments" class="divide-y">
+    <div v-for="comment in comments" :key="comment.id" class="px-3 py-1 text-left">
+      <div>
+        <div class="flex">
+          <p>{{comment.username}}</p>
+
+          <div v-for="i in 5" :class="{ 'mr-1': i < 5 }" :key="i" class="d-inline">
+            <svg class="block w-8 h-8" :class="[ comment.rate / 2 >= i - 1 ? 'text-yellow-500': 'text-grey-500']" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+          </div>
+        </div>
+        <p>{{comment.content}}</p>
+      </div>
     </div>
   </div>
 </div>
@@ -39,14 +38,16 @@
 <script>
 import axios from 'axios'
 import {mapState} from 'vuex'
+import starRating from '../ratings/starRating.vue'
 
 export default {
+  components: { starRating },
   name: 'Comment',
   data: function () {
     return {
       content: null,
       comments: null,
-      ratings: null,
+      ratings: 3,
     }
   },
   computed: {
@@ -77,7 +78,6 @@ export default {
         headers: key,
       })
         .then(res => {
-          console.log(res)
           this.comments = res.data
         })
         .catch(err => {
@@ -115,8 +115,24 @@ export default {
     }
   },
   created: function () {
-    this.getComments()
   },
+  watch: {
+    movie: function () {
+      const url = process.env.VUE_APP_URL + `movies/${this.movieId}/commentlist/`
+      const key = this.setToken()
+      axios({
+        method: 'get',
+        url: url,
+        headers: key,
+      })
+        .then(res => {
+          this.comments = res.data
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+  }
 }
 </script>
 

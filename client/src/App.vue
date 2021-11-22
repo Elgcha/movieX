@@ -52,11 +52,12 @@ export default ({
     logout: function () {
       localStorage.removeItem('jwt')
       this.$router.push({ name: 'Login' })
-      this.$store.dispatch('userLogin', '')
+      this.$store.dispatch('userLogin', '', '')
     },
     login: function () {
       const token = localStorage.getItem('jwt')
-      this.$store.dispatch('userLogin', token)
+      const username = localStorage.getItem('username')
+      this.$store.dispatch('userLogin', token, username)
     },
     goProfile: function() {
       this.$router.push({ name: 'Profile', params: {username: this.username}})

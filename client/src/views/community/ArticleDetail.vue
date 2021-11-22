@@ -1,13 +1,18 @@
 <template>
   <div>
-    <div v-if="article" class="text-white">
-      <h3>제목: {{ article.title }}</h3>
-      <p>내용 : {{ article.content }}</p>
-      <p>작성일 : {{ article.created_at }}</p>
-      <p>수정일 : {{ article.updated_at }}</p>
+    <div v-if="article" class="mt-3 text-white">
+      <div class="flex justify-between p-3 text-left bg-gray-600 border-t border-b">
+        <h3 class="text-xl">{{ article.title }}</h3>
+        <div class="my-auto text-sm">{{ article.created_at.slice(0,10) + ' ' + article.created_at.slice(11, 16) }}</div>
+      </div>
+      <div class="p-3 text-left border-b">{{ article.username }}</div>
+      <div class="p-3 mb-3 text-left border-b" style="min-height:30vh;">
+        <p>{{ article.content }}</p>
+      </div>
+      <p v-if="article.created_at !== article.updated_at">{{ article.updated_at.slice(0,10) + ' ' + article.updated_at.slice(11, 16) }}에 수정됨</p>
+      <button class="mx-1 border btn btn-blue btn-blue:hover" @click="back">목록</button>
       <button class="mx-1 border btn btn-blue btn-blue:hover" @click="updateArticle">수정</button>
       <button class="mx-1 border btn btn-blue btn-blue:hover" @click="deleteArticle">삭제</button>
-      <button class="mx-1 border btn btn-blue btn-blue:hover" @click="back">back</button>
     </div>
     <div>
       <forum-comment :article="article"></forum-comment>
@@ -27,6 +32,7 @@ export default {
     return {
       articlePk: this.$route.params.articlePk,
       article: {},
+      username: localStorage.getItem('username'),
     }
   },
   methods: {

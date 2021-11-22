@@ -7,13 +7,16 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     isLogin: false,
+    username: null,
   },
   mutations: {
-    USER_LOGIN: function (state) {
+    USER_LOGIN: function (state, username) {
       state.isLogin = true
+      state.username = username
     },
     USER_LOGOUT: function(state) {
       state.isLogin = false
+      state.username = null
     }
   },
   actions: {
@@ -27,9 +30,9 @@ export default new Vuex.Store({
       }
       return config
     },
-    userLogin: function ({commit}, token) {
+    userLogin: function ({commit}, token, username) {
       if (token) {
-        commit('USER_LOGIN')
+        commit('USER_LOGIN', username)
       } else {
         commit('USER_LOGOUT')
       }
