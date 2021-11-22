@@ -1,14 +1,18 @@
 <template>
-  <div>
+  <div class="dark:text-white">
     <div v-if="movie.title">
-      <img :src="imgSrc" alt="">
-      <p>{{ movie.title }}</p>
-      <p>{{ movie.overview }}</p>
-      <p>{{ movie.release_date }}</p>
+      <div class="flex w-full">
+        <img :src="imgSrc" alt="" class="p-3">
+        <div class="w-full">
+          <iframe class="w-full" :src="movieVideo" title="YouTube video player" frameborder="0" allowfullscreen id="my-iframe"></iframe>
+          <h2 class="p-2 text-left">{{ movie.title }} {{ movie.release_date }}</h2>
+          <p class="text-left">{{ movie.overview }}</p>
+        </div>
+      </div>
     </div>
-    <div>
-      <button v-show="!wanted" @click='iWantThisMovie'>보고싶어요</button>
-      <button v-show="wanted" @click='iWantThisMovie'>안보고싶어요</button>
+    <div class="m-3">
+      <button v-show="!wanted" @click='iWantThisMovie'>보고싶은 영화에 추가</button>
+      <button v-show="wanted" @click='iWantThisMovie'>보고싶은 영화에서 제거</button>
     </div>
     <h3>비슷한 영화</h3>
     <div v-swiper:mySwiper="swiperOption" class="my-2 bg-gray-600 swiper-container">
@@ -30,6 +34,7 @@
 </template>
 
 <script>
+import Fuse from 'fuse.js'
 import axios from 'axios'
 import SimilarMovie from '@/components/movies/SimilarMovie.vue'
 import Comment from '@/components/movies/Comment.vue'
@@ -46,6 +51,7 @@ export default {
       moviePk: this.$route.params.moviePk,
       movie: {},
       similarMovies: [],
+      movieVideo: null,
       swiperOption: {
         slidesPerView: 6,
         spaceBetween: 10,
@@ -64,6 +70,36 @@ export default {
   computed: {
     imgSrc: function () {
       return 'https://image.tmdb.org/t/p/w500/' + this.movie.poster_path
+    },
+  },
+  watch: {
+    movie: function () {
+      const key = process.env.VUE_APP_TMDB
+      const url = `https://api.themoviedb.org/3/movie/${this.movie.tmdb_id}/videos`
+
+      axios({
+        method: 'get',
+        url: url,
+        params: {
+          api_key: key,
+          language: 'ko-KR',
+        }
+      })
+        .then(res => {
+          return res.data.results
+        })
+        .then(data => {
+          const option = {
+            includeScore: true,
+          // Search in `author` and in `tags` array
+            keys: ['name']
+          }
+          const fuse = new Fuse(data, option)
+          const result = fuse.search('메인 예고편')
+          this.movieVideo = "https://www.youtube.com/embed/" + result[0].item.key
+          
+        })
+    
     }
   },
   methods: {
@@ -132,7 +168,13 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    heigthSize: function () {
+      let iframe = document.querySelector("#iframe")
+      iframe.style.height = iframe.contentDocument.body.scrollHeight + 'px'
+      // iframe.style.width = iframe.contentDocument.body.scrollWidth + 'px'
     }
+    
   },
   created: function () {
     this.getMovieDetail()
@@ -140,8 +182,17 @@ export default {
   },
 
 }
+
+
 </script>
 
 <style>
-
+#my-iframe { 
+  display:block;
+  border:none;
+  height:50vh;
+  width:50vw;
+  padding: 2rem;
+  
+  }
 </style>

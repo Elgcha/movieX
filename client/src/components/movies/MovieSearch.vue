@@ -19,34 +19,20 @@
 
   <!-- 영화 결과 출력부 -->
   <div v-if="isSearched" class="text-white">영화 검색 결과: {{ searchedMovie.length }}개</div>
-  <div v-if="searchedMovie[0]" class="flex flex-wrap">
-      <div v-for="movie in searchedMovie" :key="movie.id" class='grid grid-cols-2 gap-2 p-2 border flex-3 popular' @click="moveToDetail(movie.item.id)">
-        <img :src="'https://image.tmdb.org/t/p/w500/' + movie.item.poster_path" alt="poster" class="object-cover h-full">
-        <div class="text-white">
-          <p>{{ movie.item.title }}</p>
-          <p>{{ movie.item.release_date }}</p>
-        </div>
-      </div>
+  <div v-if="searchedMovie[0]" class="">  
+    <movie-page :movies="searchedMovie"></movie-page>
     </div>
 
     <!-- 배우 결과 출력 -->
-  <div v-if="isSearched" class="mt-3 text-white">배우 검색 결과: {{ searchedPeople.length }}개</div>
-  <div v-if="searchedMovie[0]" class="flex flex-wrap">
-      <div v-for="people in searchedPeople" :key="people.id" class='grid grid-cols-2 gap-2 p-2 border flex-3 popular'>
-        <img :src="'https://image.tmdb.org/t/p/w500/' + people.item.profile_path" alt="profile" class="object-cover h-full">
-        <div class="text-white">
-          <p>{{ people.item.name }}</p>
-        </div>
-      </div>
-    </div>
+  <div v-if="isSearched" class="mt-3 text-white">배우 검색 결과: {{ searchedPeople.length }}명</div>
+  <div v-if="searchedPeople[0]">
+    <people-page :peoples="searchedPeople"></people-page>
+  </div>
+
     <!-- 게시물 결과 출력 -->
   <div v-if="isSearched" class="mt-3 text-white">게시물 검색 결과: {{ searchedArticle.length }}개</div>
-  <div v-if="searchedMovie[0]" class="flex flex-wrap gap-2">
-      <div v-for="article in searchedArticle" :key="article.id" class='grid w-full grid-cols-2 gap-2 p-2 text-left border  popular'>
-        <div class="text-white">
-          <p>{{ article.item.title }}</p>
-        </div>
-      </div>
+  <div v-if="searchedArticle[0]">
+      <article-page :articles="searchedArticle"></article-page>
     </div>
 </div>
 </template>
@@ -55,9 +41,18 @@
 import Fuse from 'fuse.js'
 import axios from 'axios'
 import {mapActions} from 'vuex'
+import MoviePage from '../paginations/moviePage.vue'
+import PeoplePage from '../paginations/peoplePage.vue'
+import ArticlePage from '../paginations/articlePage.vue'
 
 export default {
   name: 'MovieSearch',
+  components: {
+    MoviePage,
+    PeoplePage,
+    ArticlePage
+
+  },
   data: function () {
     return {
       search: null,
@@ -129,12 +124,12 @@ export default {
       const options_movie = {
         includeScore: true,
         // Search in `author` and in `tags` array
-        keys: ['title', 'original_title']
+        keys: ['title', 'original_title', 'genres.name']
       }
       const options_people = {
         includeScore: true,
         // Search in `author` and in `tags` array
-        keys: ['name', 'also_known_as']
+        keys: ['name', 'also_known_as', 'movie_title.title']
       }
       const options_article = {
         includeScore: true,

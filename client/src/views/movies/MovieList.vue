@@ -50,7 +50,6 @@ export default {
     },
   },
   created: function () {
-    this.getMovies()
   }
 }
 </script>

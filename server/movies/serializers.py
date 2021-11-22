@@ -11,6 +11,13 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PeopleSerializer(serializers.ModelSerializer):
+    class MovieSerializer(serializers.ModelSerializer):
+        genres = GenreSerializer( many=True, read_only=True)
+        class Meta:
+            model = Movie
+            fields = ('title')
+
+    movie_title = MovieSerializer(source='people_movies', many=True)
 
     class Meta:
         model = People

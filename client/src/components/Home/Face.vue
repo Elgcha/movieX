@@ -16,6 +16,8 @@ export default {
   data: function () {
     return {
       swiperOption: {
+        preventClicks: false,
+        preventClicksPropagation: false,
         loop: true,
         autoplay: {
           delay:5000,

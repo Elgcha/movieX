@@ -15,15 +15,10 @@ from rest_framework.pagination import PageNumberPagination
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def index(request): #전체 영화 목록 조회
-    if request.method =='GET': #api view로 get을 받는데 if를 안해도 됌? 해야 함?
+    if request.method =='GET': 
         movies = Movie.objects.all()
-        #
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        result_page = paginator.paginate_queryset(movies, request)
-        #
         serializer = MovieSerializer(movies, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
 @api_view(['GET','PUT','DELETE'])
 @permission_classes([AllowAny])
