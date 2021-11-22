@@ -11,6 +11,7 @@ urlpatterns = [
     path('<username>/follow/', views.follow),
     path('profile/<username>/count', views.user_count), #팔로우,팔로잉, 평가한영화,찜한영화 총횟수
 
+    path('profile/<username>/recommend/', views.user_recommend),
 
     # temp
     path('profiles/<int:user_pk>/', views.temp),

@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.utils.encoding import uri_to_iri
 
 urlpatterns = [
     ### movie
@@ -25,6 +26,10 @@ urlpatterns = [
    ### 찜 기능
    path('<int:movie_pk>/want/', views.want_movie), #이 영화를 좋아하는 사람들을 출력?
    path('<int:movie_pk>/want/check/', views.want_check),
+
+   # 장르별 영화리스트 보여주기
+   path('<moviename>/', views.list_movie),
+
 
 
     #인물과 영화 연결시키는 함수
