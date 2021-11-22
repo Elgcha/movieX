@@ -1,9 +1,9 @@
 <template>
   <div>
-    <button @click="ArticleCreate">글 작성</button>
+    <button class="btn btn-blue" @click="ArticleCreate">글 작성</button>
     <!-- 게시판 부분 -->
     
-    <table class="text-white table-fixed bg-gradient-to-r from-gray-900 to-gray-800">
+    <table class="w-full text-white table-fixed bg-gradient-to-r from-gray-900 to-gray-800">
       <thead>
         <tr>
           <th class="w-1/2">Title</th>
@@ -15,9 +15,9 @@
       
       <tbody>
         <tr v-for="article in articles" :key="article.id"  class="cursor-pointer hover:bg-gray-600">
-          <td class="" @click="ArticleDetail(article)">{{ article.title }}</td>
-          <td class="">{{ article.username }}</td>
-          <td>{{ article.created_at }}</td>
+          <td class="p-2 px-4 text-left" @click="ArticleDetail(article)">{{ article.title }}</td>
+          <td class="p-2">{{ article.username }}</td>
+          <td class="p-2">{{ calDate(article.created_at) }}</td>
           <!-- <td>{{ article }}</td> -->
           <hr>
         </tr>
@@ -37,6 +37,16 @@ export default {
     }
   },
   methods: {
+    calDate: function (date) {
+      const Day = new Date()
+      if (date.slice(0,10) == Day.getFullYear() + '-' + (Day.getMonth()+1) + '-' + Day.getDate()){
+        return date.slice(11,16)
+      } else {
+        return date.slice(5, 10)
+      }
+      
+      
+    },
     ArticleCreate: function () {
       this.$router.push({name: 'ArticleCreate'})
     },
