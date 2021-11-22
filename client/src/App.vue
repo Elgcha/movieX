@@ -1,81 +1,12 @@
-<template >
-  <div id="app" @click="offMenu">
-    <div id="nav" class="flex justify-between bg-gray-400">
-      <p class="my-0 text-white">moiveX</p>
-      <div>
-        <router-link to="/">Home</router-link> |
-        <router-link to="/community/forum/">Forum</router-link> |
-        <router-link to="/movies/">Search</router-link> |
-        <span v-if="isLogin">
-          <router-link to="#" @click.native="goProfile" >profile</router-link> |
-          <router-link @click.native="logout" to='#'>logout</router-link> |
-        </span>
-        <span v-else>
-          <router-link to="/accounts/login/">Login</router-link> |
-          <router-link to="/accounts/signup/">signup</router-link> |
-        </span>
-        <a href="http://127.0.0.1:8000/admin">Admin</a> |
-        <accounts-dropdown :menu="menu" @toggle="toggleMenu" class="mydropdown"></accounts-dropdown>
-      </div>
+<template>
+  <div id="app">
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
     </div>
-    <div class="container px-4 mx-auto">
-      <router-view @login="login"/>
-    </div>
-    <!-- <div id="footer">
-      <p>footer</p>
-    </div> -->
+    <router-view/>
   </div>
 </template>
-
-<script>
-import {mapState} from 'vuex'
-import accountsDropdown from '@/components/Home/accountsDropdown.vue'
-
-export default ({
-  name: 'App',
-  components: {
-    accountsDropdown,
-  },
-  data: function () {
-    return {
-      username: localStorage.getItem('username'),
-      menu: false,
-    }
-  },
-  methods: {
-    offMenu: function (event) {
-      if (!event.target.classList.contains('mydropdown')){
-        this.menu = false
-      }
-
-    },
-    toggleMenu: function() {
-      this.menu = !this.menu
-    },
-    logout: function () {
-      localStorage.removeItem('jwt')
-      this.$router.push({ name: 'Login' })
-      this.$store.dispatch('userLogin', '')
-    },
-    login: function () {
-      const token = localStorage.getItem('jwt')
-      this.$store.dispatch('userLogin', token)
-    },
-    goProfile: function() {
-      this.$router.push({ name: 'Profile', params: {username: this.username}})
-    }
-    
-  },
-  created: function () {
-    this.login()
-  },
-  computed: {
-    ...mapState([
-      'isLogin',
-    ]),
-  },
-})
-</script>
 
 <style>
 #app {
@@ -87,7 +18,7 @@ export default ({
 }
 
 #nav {
-  padding: 10px;
+  padding: 30px;
 }
 
 #nav a {
@@ -96,24 +27,6 @@ export default ({
 }
 
 #nav a.router-link-exact-active {
-  color: #84b9a2;
-}
-
-
-
-#footer {
-  background-color: black;
-  color: white;
-  padding: 10px;
-}
-
-.btn {
-  @apply font-bold py-2 px-4 rounded;
-}
-.btn-blue {
-  @apply bg-blue-500 text-white;
-}
-.btn-blue:hover {
-  @apply bg-blue-700;
+  color: #42b983;
 }
 </style>
