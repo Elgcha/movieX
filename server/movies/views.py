@@ -63,6 +63,7 @@ def movie_date(request):
     serializer = MovieSerializer(movies, many=True)
     return Response(serializer.data)
 
+
 ### for people
 
 @api_view(['GET'])
@@ -115,7 +116,7 @@ def comment_create(request, movie_pk):
     movie = get_object_or_404(Movie, pk= movie_pk)
     serializer = MovieCommentSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
-        serializer.save(movie=movie)
+        serializer.save(movie=movie, user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -180,6 +181,7 @@ def want_check(request, movie_pk):
     }
     return Response(data)
 
+
 ## movie connect people
 # 빈리스트 가져와서 비교하는 방식으로바꿔보자 #
 ## 가져온 영화값에 인물이 연결되어있지 않다.
@@ -212,7 +214,9 @@ def people_to_movie(request): #get_objects_404로바꿀수잇으면 바꾸자
 
 
 
+
 # @api_view(['GET']) #비슷한 영화 찾기
+
 # def likes_movie(request, movie_pk):
 #     '''
 #     영화 

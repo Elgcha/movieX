@@ -1,11 +1,11 @@
-<template>
-  <div id="app">
+<template >
+  <div id="app" @click="offMenu">
     <div id="nav" class="flex justify-between bg-gray-400">
       <p class="my-0 text-white">moiveX</p>
       <div>
         <router-link to="/">Home</router-link> |
         <router-link to="/community/forum/">Forum</router-link> |
-        <router-link to="/movies/">Movies</router-link> |
+        <router-link to="/movies/">Search</router-link> |
         <span v-if="isLogin">
           <router-link to="#" @click.native="goProfile" >profile</router-link> |
           <router-link @click.native="logout" to='#'>logout</router-link> |
@@ -15,28 +15,43 @@
           <router-link to="/accounts/signup/">signup</router-link> |
         </span>
         <a href="http://127.0.0.1:8000/admin">Admin</a> |
+        <accounts-dropdown :menu="menu" @toggle="toggleMenu" class="mydropdown"></accounts-dropdown>
       </div>
     </div>
     <div class="container px-4 mx-auto">
       <router-view @login="login"/>
     </div>
-    <div id="footer">
+    <!-- <div id="footer">
       <p>footer</p>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import {mapState} from 'vuex'
+import accountsDropdown from '@/components/Home/accountsDropdown.vue'
 
 export default ({
   name: 'App',
+  components: {
+    accountsDropdown,
+  },
   data: function () {
     return {
-      username: localStorage.getItem('username')
+      username: localStorage.getItem('username'),
+      menu: false,
     }
   },
   methods: {
+    offMenu: function (event) {
+      if (!event.target.classList.contains('mydropdown')){
+        this.menu = false
+      }
+
+    },
+    toggleMenu: function() {
+      this.menu = !this.menu
+    },
     logout: function () {
       localStorage.removeItem('jwt')
       this.$router.push({ name: 'Login' })
@@ -84,9 +99,7 @@ export default ({
   color: #84b9a2;
 }
 
-body {
-  background-color: rgba(61, 26, 26, 0.568);
-}
+
 
 #footer {
   background-color: black;

@@ -26,7 +26,9 @@ urlpatterns = [
    path('<int:movie_pk>/want/', views.want_movie), #이 영화를 좋아하는 사람들을 출력?
    path('<int:movie_pk>/want/check/', views.want_check),
 
+
     #인물과 영화 연결시키는 함수
+
    path('connect/', views.people_to_movie),
 
 #    path('<int:movie_pk>/likes/', views.likes_movie),
