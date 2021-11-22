@@ -6,16 +6,13 @@
         <router-link to="/">Home</router-link> |
         <router-link to="/community/forum/">Forum</router-link> |
         <router-link to="/movies/">Search</router-link> |
-        <span v-if="isLogin">
-          <router-link to="#" @click.native="goProfile" >profile</router-link> |
-          <router-link @click.native="logout" to='#'>logout</router-link> |
-        </span>
+        <a href="http://127.0.0.1:8000/admin">Admin</a>
+      </div>
+      <div>
+        <accounts-dropdown :menu="menu" @toggle="toggleMenu" class="mydropdown" v-if="isLogin"></accounts-dropdown>
         <span v-else>
-          <router-link to="/accounts/login/">Login</router-link> |
-          <router-link to="/accounts/signup/">signup</router-link> |
+          <router-link to="/accounts/login/">Login</router-link>
         </span>
-        <a href="http://127.0.0.1:8000/admin">Admin</a> |
-        <accounts-dropdown :menu="menu" @toggle="toggleMenu" class="mydropdown"></accounts-dropdown>
       </div>
     </div>
     <div class="container px-4 mx-auto">
@@ -63,7 +60,7 @@ export default ({
     },
     goProfile: function() {
       this.$router.push({ name: 'Profile', params: {username: this.username}})
-    }
+    },
     
   },
   created: function () {

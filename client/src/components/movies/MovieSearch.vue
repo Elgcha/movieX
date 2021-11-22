@@ -8,10 +8,9 @@
     </div>
     <!-- 자동완성 -->
 
-    <div class="absolute z-10 w-full text-left bg-white rounded-md" v-show="autosearch" tabindex="-1">
-      <div v-for="autoMovie in autoCompleted" :key=autoMovie.score class="hover:bg-gray-300" @click="autoCompleteSearch(autoMovie.item.title)">
+    <div class="absolute z-10 w-full text-left bg-white divide-y rounded-md" v-show="autosearch" tabindex="-1">
+      <div v-for="autoMovie in autoCompleted" :key=autoMovie.score class="p-1 hover:bg-gray-300" @click="autoCompleteSearch(autoMovie.item.title)">
         {{ autoMovie.item.title }}
-        <hr>
       </div>
     </div>
   </div>
@@ -43,7 +42,7 @@
     <!-- 게시물 결과 출력 -->
   <div v-if="isSearched" class="mt-3 text-white">게시물 검색 결과: {{ searchedArticle.length }}개</div>
   <div v-if="searchedMovie[0]" class="flex flex-wrap gap-2">
-      <div v-for="article in searchedArticle" :key="article.id" class='grid grid-cols-2 gap-2 p-2 border flex-3 popular'>
+      <div v-for="article in searchedArticle" :key="article.id" class='grid w-full grid-cols-2 gap-2 p-2 text-left border  popular'>
         <div class="text-white">
           <p>{{ article.item.title }}</p>
         </div>
