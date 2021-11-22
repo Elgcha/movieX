@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from .models import Article, Comment
 from .serializers import ArticleSerializer, CommentSerializer
 from rest_framework.permissions import AllowAny
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 
@@ -14,9 +15,14 @@ from rest_framework.permissions import AllowAny
 @permission_classes([AllowAny])
 def community(request):
     if request.method == 'GET':
-        articles = Article.objects.all()
+        articles = Article.objects.order_by('-pk')
+        #
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        result_page = paginator.paginate_queryset(articles, request)
+        #
         serializer = ArticleSerializer(articles, many=True)
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
 @api_view(['POST'])
 def create(request):
@@ -63,10 +69,15 @@ def comment_create(request, article_pk):
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user, article=article)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
+    if request.method == 'GET':
         comments = Comment.objects.filter(article=article)
+        #
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        result_page = paginator.paginate_queryset(comments, request)
+        #
         serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
 def comment_detail(request):
     pass

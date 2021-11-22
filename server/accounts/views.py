@@ -7,7 +7,7 @@ from movies.models import MovieComment
 from movies.serializers import MovieCommentSerializer
 
 from .models import Profile, User
-from .serializers import MovieCommentListSerialzer, ProfileSerializer, UserSerializer
+from .serializers import MovieCommentListSerializer, ProfileSerializer, RecommendSerializer, UserSerializer
 from django.contrib.auth import get_user, get_user_model
 from rest_framework.permissions import AllowAny
 # Create your views here.
@@ -88,7 +88,7 @@ def follow(request, username):
 @api_view(['GET'])
 def user_comment_set(request, username):
     comments = get_object_or_404(get_user_model(), username=username)
-    serialzer = MovieCommentListSerialzer(comments)
+    serialzer = MovieCommentListSerializer(comments)
     
     return Response(serialzer.data)
 
@@ -103,7 +103,15 @@ def user_count(request, username):
     }
     return Response(data)
 
-
+#####
+## 유저 평점 기반 추천 알고리즘
+@api_view(['GET'])
+def user_recommend(request,username):
+    user = get_object_or_404(get_user_model(), username=username)
+    #rated_movie = user.user_wants.all()
+    serializer = RecommendSerializer(user)
+    
+    return Response(serializer.data)
 
 
 

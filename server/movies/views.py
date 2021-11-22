@@ -10,6 +10,7 @@ from .models import Movie, People, Genre, MovieComment
 from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.pagination import PageNumberPagination
+from django.utils.encoding import uri_to_iri
 
 # Create your views here.
 @api_view(['GET'])
@@ -211,6 +212,33 @@ def people_to_movie(request): #get_objects_404로바꿀수잇으면 바꾸자
     #                 # update.save()
     return Response(status=status.HTTP_200_OK)
                   
+@api_view(['GET'])
+def list_movie(request, moviename):
+    if uri_to_iri(moviename) == '대문':
+        movies = Movie.objects.order_by('-popularity', '-vote_average')[:5]
+        serializer = MovieSerializer(movies, many=True)
+
+        return Response(serializer.data)
+
+    if uri_to_iri(moviename) == '평점순':
+        movies = Movie.objects.order_by('-vote_average')[:20]
+        serializer = MovieSerializer(movies, many=True)
+
+        return Response(serializer.data)
+
+    if uri_to_iri(moviename) == '인기':
+        movies = Movie.objects.order_by('-popularity')[:20]
+        serializer = MovieSerializer(movies, many=True)
+
+        return Response(serializer.data)
+
+    else: #장르 검색 결과
+        genre = Genre.objects.get(name=uri_to_iri(moviename))
+        movies = Movie.objects.filter(genres=genre).order_by('-popularity')[:20]
+        serializer = MovieSerializer(movies, many=True)
+
+        return Response(serializer.data)
+
 
 
 
