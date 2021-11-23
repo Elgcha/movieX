@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from movies.models import MovieComment
 from movies.serializers import MovieCommentSerializer
 
-from .models import Profile, User
-from .serializers import MovieCommentListSerializer, ProfileSerializer, RecommendSerializer, UserSerializer
+from .models import User
+from .serializers import MovieCommentListSerializer, RecommendSerializer, UserSerializer
 from django.contrib.auth import get_user, get_user_model
 from rest_framework.permissions import AllowAny
 # Create your views here.
@@ -46,14 +46,6 @@ def profile(request, username):
     user = get_object_or_404(get_user_model(), username=username)
     serializer = UserSerializer(user)
     return Response(serializer.data)
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def other_profile(request, username):
-     user = get_object_or_404(get_user_model(), username=username)
-     serializer = UserSerializer(user)
-
-     return Response(serializer.data)
 #############################################
 
 @api_view(['POST'])
@@ -119,19 +111,6 @@ def user_recommend(request,username):
 
 
 ##################################################################
-def login(request):
-    pass
-
-def update(request):
-    pass
-
-def delete(request):
-    pass
-
-def password_change(request):
-    pass
-
-
 #temp
 
 @api_view(["PUT",'GET'])
@@ -146,19 +125,6 @@ def temp(request, user_pk):
     if request.method == "PUT":
         # user = get_object_or_404(get_user_model(),  pk=request.user.pk)
         serializer = UserSerializer(user, data= request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-@api_view(["PUT",'GET'])
-def temp2(request, profile_pk):
-    profile= get_object_or_404(Profile, pk=profile_pk)
-
-    if request.method == "GET":
-        serializer = ProfileSerializer(profile)
-        return Response(serializer.data)
-        
-    if request.method == "PUT":
-        serializer = ProfileSerializer(profile, data= request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
