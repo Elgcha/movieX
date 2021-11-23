@@ -15,14 +15,15 @@ class PeopleSerializer(serializers.ModelSerializer):
         genres = GenreSerializer(many=True, read_only=True)
         class Meta:
             model = Movie
-            fields = ('title','genres',)
+            fields = ('title', 'genres','id','poster_path')
 
     movie_title = MovieSerializer(source='people_movies', many=True)
 
     class Meta:
         model = People
         fields = '__all__'
-        read_only_fields = ('',)
+        # read_only_fields = ('',)
+
 #영화 코멘트 모델만들기
 class MovieCommentSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
@@ -48,7 +49,7 @@ class MovieSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        fields = ('__all__') #영화 한줄평, 영화 좋아요, 
+        fields = '__all__' #영화 한줄평, 영화 좋아요, 
         read_only_fields = ('vote_count', 'vote_average', 'people', 'want','genres',)
 
 

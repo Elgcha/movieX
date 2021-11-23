@@ -1,6 +1,6 @@
+from django.http.response import Http404, JsonResponse
 from re import search
 from django.http import response
-from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, render
 import requests
 from requests.sessions import Request
@@ -16,7 +16,9 @@ from .models import Movie, People, Genre, MovieComment
 from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer
 from rest_framework.permissions import AllowAny
 from django.utils.encoding import uri_to_iri
+import random
 from django.db.models import Avg
+
 
 # Create your views here.
 @api_view(['GET'])
@@ -170,13 +172,17 @@ def comment_list(request, movie_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET','PUT','DELETE'])
-def comment_update(request, movie_pk, moviecomment_pk):
+def comment_update(request, movie_pk, username):
+    User = get_user_model()
+    person = get_object_or_404(User, username=username)
+    if person != request.user:
+        return Response(status.HTTP_401_UNAUTHORIZED)
     movie = get_object_or_404(Movie, pk=movie_pk)
-    comment = movie.moviecomment_set.get(pk= moviecomment_pk)
+    comment = movie.moviecomment_set.get(user=person)
 
-    if request.method == 'GET':  # 조회
-        serializer = MovieCommentSerializer(comment)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # if request.method == 'GET':  # 조회
+    #     serializer = MovieCommentSerializer(comment)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT': # 수정
         serializer= MovieCommentSerializer(comment, data=request.data) 
@@ -279,6 +285,7 @@ def movie_update(request):
 
                   
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def list_movie(request, moviename):
     if uri_to_iri(moviename) == '대문':
         movies = Movie.objects.order_by('-popularity', '-vote_average')[:5]
@@ -304,6 +311,22 @@ def list_movie(request, moviename):
         serializer = MovieSerializer(movies, many=True)
 
         return Response(serializer.data)
+from django.db.models import Q
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def random_movie(request):
+    movies = Movie.objects.all()
+    moviecomments = MovieComment.objects.filter(user=request.user)
+    # for movie in movies:
+    for moviecomment in moviecomments:
+        movies = movies.filter(~Q(pk=moviecomment.movie_id))
+    if not movies:
+        return Http404
+    movie = random.choice(movies)
+    serializer = MovieSerializer(movie)
+    return Response(serializer.data)
+
+
 
 
 # 장르의 유사도를 구해서

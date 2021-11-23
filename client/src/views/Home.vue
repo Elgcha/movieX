@@ -1,7 +1,7 @@
 <template>
-  <div class="home">
+  <div class="dark:text-white home">
     <face :movies="playingMovie"></face>
-    <h2>인기 있는 영화</h2>
+    <h2>인기 영화</h2>
     <div>
       <popular :movies="newMovie"></popular>
     </div>
@@ -37,21 +37,16 @@ export default {
       }
       return config
     },
-    // 메인 이미지 영화 가져오기 - 상영 중인 것 중 인기작
+    // 메인 이미지 영화 가져오기 
     getBestPlayingMovie: function () {
-      const key = this.key
-      const url = 'https://api.themoviedb.org/3/movie/now_playing'
+      const url = process.env.VUE_APP_URL + 'movies/대문/'
 
       axios({
         method: 'get',
         url: url,
-        params: {
-          api_key: key,
-          language: 'ko-KR',
-        }
       })
         .then(res => {
-          this.playingMovie = res.data.results
+          this.playingMovie = res.data
         })
         .catch(err => {
           console.log(err)

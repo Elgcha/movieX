@@ -13,9 +13,10 @@ urlpatterns = [
     path('profile/<username>/followlist/', views.follow_list), 
 
     path('profile/<username>/recommend/', views.user_recommend),
+    path('profile/image/', views.image),
 
     # temp
-    path('profiles/<int:user_pk>/', views.temp),
+    path('profiles/<username>/', views.temp),
     path('image/<int:profile_pk>/', views.temp2),
 
 

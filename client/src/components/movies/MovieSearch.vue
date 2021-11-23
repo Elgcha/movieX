@@ -3,7 +3,7 @@
   <!-- 검색창 -->
   <div class="relative w-1/3 mx-auto mt-3">
     <div class="flex w-full">
-      <input type="text" @input="inputChange" class="w-full py-2 text-gray-700 border rounded shadow appearance-none place-self-auto focus:outline-none focus:shadow-outline">
+      <input type="text" @input="inputChange" class="w-full py-2 text-gray-700 border rounded shadow appearance-none place-self-auto focus:outline-none focus:shadow-outline" id="search_input">
       <button @click="searchMovie" class="place-self-auto btn btn-blue btn-blue:hover"><img src="https://raw.githubusercontent.com/filippo-quacquarelli/tag-search/master/search.png" alt="search"></button>
     </div>
     <!-- 자동완성 -->
@@ -105,10 +105,16 @@ export default {
         })
     },
     inputChange: function(event) {
-      this.search = event.target.value
+      this.search = event.target.value.trim()
       if (this.search) {
+        let num = 1
+        if (this.search.length > 1) {
+          num += 1
+        }
         const options_movie = {
           includeScore: true,
+          includeMatches: true,
+          minMatchCharLength: num,
           // Search in `author` and in `tags` array
           keys: ['title', 'original_title']
         }
@@ -121,18 +127,29 @@ export default {
     },
     searchMovie: function () {
       this.autoCompleted = []
+      // 한글자 검색시 생각
+      let num = 1
+      if (this.search.length > 1) {
+        num += 1
+      }
       const options_movie = {
         includeScore: true,
+        includeMatches: true,
+        minMatchCharLength: num,
         // Search in `author` and in `tags` array
         keys: ['title', 'original_title', 'genres.name']
       }
       const options_people = {
         includeScore: true,
+        includeMatches: true,
+        minMatchCharLength: num,
         // Search in `author` and in `tags` array
         keys: ['name', 'also_known_as', 'movie_title.title']
       }
       const options_article = {
         includeScore: true,
+        includeMatches: true,
+        minMatchCharLength: num,
         keys: ['title', 'content']
       }
       const fuseMovie = new Fuse(this.movies, options_movie)
@@ -145,6 +162,8 @@ export default {
       this.searchedPeople = result1
       this.searchedArticle = result2
       this.isSearched = true
+      const searchInput = document.querySelector('#search_input')
+      searchInput.value = this.search
 
     },
     autoCompleteSearch: function (title) {

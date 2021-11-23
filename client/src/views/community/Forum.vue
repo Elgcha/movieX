@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button class="btn btn-blue" @click="ArticleCreate">글 작성</button>
+    
     <!-- 게시판 부분 -->
     
     <table class="w-full text-white table-fixed bg-gradient-to-r from-gray-900 to-gray-800">
@@ -13,9 +13,9 @@
         </tr>
       </thead>
       
-      <tbody>
-        <tr v-for="article in articles" :key="article.id"  class="cursor-pointer hover:bg-gray-600">
-          <td class="p-2 px-4 text-left" @click="ArticleDetail(article)">{{ article.title }}</td>
+      <tbody class="divide-y divide-gray-500">
+        <tr v-for="article in pagenatedArticles" :key="article.id"  class="cursor-pointer hover:bg-gray-600"  @click="ArticleDetail(article)">
+          <td class="p-2 px-4 text-left">{{ article.title }}</td>
           <td class="p-2">{{ article.username }}</td>
           <td class="p-2">{{ calDate(article.created_at) }}</td>
           <!-- <td>{{ article }}</td> -->
@@ -23,6 +23,21 @@
         </tr>
       </tbody>
     </table>
+    <button class="m-1 btn btn-blue" @click="ArticleCreate">글 작성</button>
+    <div class="container flex justify-center mx-auto my-2">
+        <ul class="flex">
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600 hover:bg-gray-100" :disabled="pageNum === 0" @click="prevPage">Prev</button></li>
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum > 1" @click="pageNum=0">1</button></li>
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum > 2" >...</button></li>
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum" @click="prevPage">{{ pageNum }}</button></li>
+            <li><button class="h-10 px-5 text-white bg-gray-600 border border-r-0 border-gray-600 ">{{ pageNum + 1 }}</button></li>
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600 hover:bg-gray-100" v-if="pageNum < pageCount - 1" @click="nextPage">{{ pageNum + 2 }}</button></li>
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum < pageCount - 3" >...</button></li>
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum < pageCount - 2" @click="pageNum=pageCount-1">{{ pageCount }}</button></li>
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-gray-600 hover:bg-gray-100" :disabled="pageNum >= pageCount - 1" @click="nextPage">Next</button></li>
+        </ul>
+    </div>
+    
   </div>
 </template>
 
@@ -34,6 +49,27 @@ export default {
   data: function () {
     return {
       articles: [],
+      pageNum: 0,
+    }
+  },
+  props: {
+    pageSize: {
+      type: Number,
+      required: false,
+      default: 20
+    },
+  },
+  computed: {
+    pageCount: function() {
+      let articleNum = this.articles.length
+      let articleSize = this.pageSize
+      let page = Math.floor((articleNum-1) / articleSize) + 1
+      return page
+    },
+    pagenatedArticles: function () {
+      const start = this.pageNum * this.pageSize
+      const end = start + this.pageSize
+      return this.articles.slice(start, end)
     }
   },
   methods: {
@@ -44,8 +80,12 @@ export default {
       } else {
         return date.slice(5, 10)
       }
-      
-      
+    },
+    nextPage: function () {
+      this.pageNum += 1;
+    },
+    prevPage: function () {
+      this.pageNum -= 1;
     },
     ArticleCreate: function () {
       this.$router.push({name: 'ArticleCreate'})

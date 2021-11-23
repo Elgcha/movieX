@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-wrap">
-    <div v-for="article in pagenatedArticles" :key="article.id" class='grid w-full grid-cols-2 gap-2 p-2 text-left border hover:bg-gray-600 popular' @click="moveToArticleDetail(article.item.id)">
+    <div v-for="article in pagenatedArticles" :key="article.id" class='grid w-full grid-cols-2 gap-2 p-2 text-left bg-gray-700 border hover:bg-gray-600 popular' @click="moveToArticleDetail(article.item.id)">
         <div class="text-white">
           <p>{{ article.item.title }}</p>
         </div>

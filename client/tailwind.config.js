@@ -18,6 +18,7 @@ module.exports = {
       flex: ['hover', 'focus'],
       borderCollapse: ['hover', 'focus'],
       tableLayout: ['hover', 'focus'],
+      animation: ['motion-safe'],
     },
   },
   plugins: [],

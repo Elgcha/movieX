@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-wrap">
-    <div v-for="people in pagenatedPeoples" :key="people.id" class='grid grid-cols-2 gap-2 p-2 border flex-3 popular' @click="moveToPeopleDetail(people.item.id)">
-        <img :src="'https://image.tmdb.org/t/p/w500/' + people.item.profile_path" alt="profile" class="object-cover h-full">
+    <div v-for="people in pagenatedPeoples" :key="people.id" class='grid grid-cols-2 gap-2 p-2 bg-gray-700 border cursor-pointer hover:bg-gray-600 flex-3 popular' @click="moveToPeopleDetail(people.item.id)">
+        <img :src="'https://image.tmdb.org/t/p/w500/' + people.item.profile_path" alt="profile" class="object-cover h-full p-3 transform cursor-pointer hover:scale-105">
         <div class="text-white">
           <p>{{ people.item.name }}</p>
         </div>
