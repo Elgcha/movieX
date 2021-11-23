@@ -66,6 +66,7 @@ for i in range(len(movie_list.get('results'))):
         'fields': {
             'title': movies.get('title'),
             'release_date': movies.get('release_date'),
+            'backdrop_path': movies.get('backdrop_path'),
             'poster_path': movies.get('poster_path'),
             'vote_count': movies.get('vote_count'),
             'vote_average': movies.get('vote_average'),
