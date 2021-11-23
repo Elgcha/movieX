@@ -33,6 +33,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 * 영화 평가 기능 추가 -> 랜덤 영화를 보여주면 평점을 매기는 방식. 추천 영화 계산에 사용
 * 게시판 조회수 추가
 * 회원가입, 로그인 실패 시 에러메세지 추가
+* 영화 추가 페이지 추가 - tmdb api 검색
+* 유저 프로필 이미지 업로드 기능 추가
 
 ## 11/22
 
@@ -43,13 +45,11 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 * 자동완성기능 구현
 * 다크모드 구현 시작
-* 
 
 ## 11/19
 
 * 외부 api 사용 중이던 것들 내부 api 사용으로 바꿈
 * 검색 기능 구현. 자동완성 구현 시작
-* 
 
 ## 11/18
 
