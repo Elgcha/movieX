@@ -1,21 +1,22 @@
-from django.http.response import Http404, JsonResponse
-from django.http import response
-from django.shortcuts import get_object_or_404, render
-import requests
-from requests.sessions import Request
-from community.serializers import CommentSerializer
-from rest_framework import serializers, status
+from django.http.response import Http404
+from django.shortcuts import get_object_or_404
+from django.utils.encoding import uri_to_iri
+from django.db.models import Avg
+from django.contrib.auth import get_user_model
+from requests import api
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from django.contrib.auth import get_user_model
-from accounts.models import User
-from accounts.serializers import RecommendSerializer
-from .models import Movie, People, Genre, MovieComment
-from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer
 from rest_framework.permissions import AllowAny
-from django.utils.encoding import uri_to_iri
+from rest_framework.serializers import Serializer
+from accounts.models import User
+from .models import Movie, People, Genre, MovieComment
+from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer, Movie2Serializer
+
 import random
-from django.db.models import Avg
+import requests
+
+from movies import serializers
 
 
 # Create your views here.
@@ -28,6 +29,7 @@ def get_request_url(method='movie/popular', **kwargs):
     for k, v in kwargs.items():
         request_url += f'&{k}={v}'
     return request_url
+### 이 두 함수는 데이터베이스의 값을 갱신하는 함수이다
 ## movie connect people
 # 빈리스트 가져와서 비교하는 방식으로바꿔보자 #
 ## 가져온 영화값에 인물이 연결되어있지 않다.
@@ -67,13 +69,45 @@ def movie_update(request):
         movie.popularity = data.get('popularity')
         movie.vote_average = data.get('vote_average')
         movie.vote_count = data.get('vote_count')
+        movie.runtime = data.get('runtime')
         movie.save()
     return Response(status=status.HTTP_200_OK)
+###
 
 # 영화검색 시리얼라이저로 보여줌
-def movie_create_api(request, keyword):
-    url = get_request_url(method='search/movie',region='KR', language='ko', query=f'{uri_to_iri('keyword'))
+# @api_view(['GET'])
+# def test(request, keyword):#movie_create_api(request, keyword):
+#     #url을 영화만 보여줄건지 search/multi로 인물도 같이 보여줄건지
+#     url = get_request_url(method='search/movie',region='KR', language='ko', query=f'{uri_to_iri(keyword)}' )
+#     data = requests.get(url).json()
+#     tmdb_id = data['results'][0]["id"]
+#     print(tmdb_id)
+#     return tmdb_id
 
+def tests(keyword):#movie_create_api(request, keyword):
+    #url을 영화만 보여줄건지 search/multi로 인물도 같이 보여줄건지
+    url = get_request_url(method='search/movie',region='KR', language='ko', query=f'{keyword}')#f'{uri_to_iri(keyword)}' )
+    data = requests.get(url).json()
+    tmdb_id = data['results'][0]["id"]
+    url2 = get_request_url(method=f'movie/{tmdb_id}')
+    data2= requests.get(url2).json()
+    return Response(data2)
+
+@api_view(['GET'])
+def test(request, keyword):#movie_save(request,keyword):
+    data = tests(f'{uri_to_iri(keyword)}')
+    serializer = Movie2Serializer(data.data)
+    return Response(serializer.data)
+
+## 검색해서 영화json 까지는 가져옴, 이 json을 어떻게 저장시킬꺼냐가 필요하다
+
+## 영화검색한거 받아서 저장하기
+@api_view(['POST'])
+def test2(request):
+    serialzer = MovieSerializer(data = request.data)
+
+
+##
 
 ##
 @api_view(['GET'])
@@ -111,9 +145,6 @@ def movie_create(request):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-def movie_update(request, movie_pk):
-    pass
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

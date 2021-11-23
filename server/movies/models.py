@@ -12,13 +12,15 @@ class Genre(models.Model):
 
 class People(models.Model):
     name = models.CharField(max_length=100)
-    birthdat = models.BirthdayField()
+    birthday = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     popularity = models.FloatField(validators=[MinValueValidator(0)])
     profile_path = models.TextField()
     adult = models.BooleanField()
     gender = models.IntegerField()
     tmdb_id = models.IntegerField()
     also_known_as = models.JSONField(null=True)
+    known_for_department = models.CharField(max_length=100)
+
 
     def __str__(self):
         return self.name
@@ -26,6 +28,7 @@ class People(models.Model):
 
 class Movie(models.Model):
     title = models.CharField(max_length=100)
+    runtime = models.IntegerField(blank=True, null=True)
     release_date = models.DateField()
     backdrop_path = models.TextField()
     popularity = models.FloatField(validators=[MinValueValidator(0)])
