@@ -12,16 +12,16 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class PeopleSerializer(serializers.ModelSerializer):
     class MovieSerializer(serializers.ModelSerializer):
-        genres = GenreSerializer( many=True, read_only=True)
+        genres = GenreSerializer(many=True, read_only=True)
         class Meta:
             model = Movie
-            fields = ('title')
+            fields = ('title','genres',)
 
     movie_title = MovieSerializer(source='people_movies', many=True)
 
     class Meta:
         model = People
-        fields = ('__all__')
+        fields = '__all__'
         read_only_fields = ('',)
 #영화 코멘트 모델만들기
 class MovieCommentSerializer(serializers.ModelSerializer):

@@ -34,29 +34,29 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ('followings', 'followers', 'article_set', 'comment_set',) #want_movie, 프로필사진받아오기
 
 
-class MovieCommentListSerializer(serializers.ModelSerializer):
-    # moviecomment_set_name = serializers.SerializerMethodField()
+class ProfileCommentSerializer(serializers.ModelSerializer):
+    title = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
+    #pk말고 이름을 명시할 수 있도록
+    def get_username(self, obj):
+        return obj.user.username
+    def get_title(self, obj):
+        return obj.movie.title
 
-    # def get_moviecomment_set_name(self, obj):
-    #     mv = User.objects.get(id=obj.id)
-    #     return mv.moviecomment_set.content
-    class MovieCommentSerializer(serializers.ModelSerializer):
-        username = serializers.SerializerMethodField()
-        title = serializers.SerializerMethodField()
-        # pk말고 이름을 명시할 수 있도록
-        def get_username(self, obj):
-            return obj.user.username
-        def get_title(self, obj):
-            return obj.movie.title
-        class Meta:
-            model = MovieComment
-            fields = ('id', 'username','title', 'content', 'rate','created_at', 'updated_at', )
+    class Meta:
+        model = MovieComment
+        fields = ('id', 'username','title', 'content', 'rate','created_at', 'updated_at', )
 
-    moviecomment_set_name = MovieCommentSerializer(source='moviecomment_set', many=True,)
+#프로필페이지에서 평점순으로 영화 목록 불러오기
+class MovieCommentListSerializer(serializers.ModelSerializer): 
+    moviecomment_set = serializers.SerializerMethodField()
+    def get_moviecomment_set(self, obj):
+        objects = obj.moviecomment_set.order_by('-rate')
+        return ProfileCommentSerializer(objects, many=True).data
 
     class Meta:
         model = get_user_model()
-        fields = ('moviecomment_set', 'moviecomment_set_name')
+        fields = ('moviecomment_set',)
 
 
 class RecommendSerializer(serializers.ModelSerializer):
@@ -81,16 +81,6 @@ class RecommendSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ('moviecomment_set_name',)
-
-
-
-
-
-
-
-
-
-
 
 
 #### temp

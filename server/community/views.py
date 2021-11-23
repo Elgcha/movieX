@@ -16,13 +16,8 @@ from rest_framework.pagination import PageNumberPagination
 def community(request):
     if request.method == 'GET':
         articles = Article.objects.order_by('-pk')
-        #
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        result_page = paginator.paginate_queryset(articles, request)
-        #
         serializer = ArticleSerializer(articles, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
 @api_view(['POST'])
 def create(request):
