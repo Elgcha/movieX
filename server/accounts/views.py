@@ -1,4 +1,3 @@
-from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
@@ -7,8 +6,8 @@ from rest_framework.response import Response
 from movies.models import MovieComment
 from movies.serializers import MovieCommentSerializer
 
-from .models import Profile, User
-from .serializers import MovieCommentListSerializer, ProfileSerializer, RecommendSerializer, UserSerializer
+from .models import User
+from .serializers import MovieCommentListSerializer, RecommendSerializer, UserSerializer
 from django.contrib.auth import get_user, get_user_model
 from rest_framework.permissions import AllowAny
 # Create your views here.
@@ -47,14 +46,6 @@ def profile(request, username):
     user = get_object_or_404(get_user_model(), username=username)
     serializer = UserSerializer(user)
     return Response(serializer.data)
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def other_profile(request, username):
-     user = get_object_or_404(get_user_model(), username=username)
-     serializer = UserSerializer(user)
-
-     return Response(serializer.data)
 #############################################
 
 @api_view(['POST'])
@@ -83,17 +74,15 @@ def follow(request, username):
         }
         return Response(data)#, status=status.)
 
-# 유저의 영화평가 리스트 
-# 프로필에서 평점 순으로 영화 정보 가져 옴
+#유저의 영화평가 리스트 
 # 영화이름, 평점, 코멘트 출력함
 @api_view(['GET'])
 def user_comment_set(request, username):
     comments = get_object_or_404(get_user_model(), username=username)
     serialzer = MovieCommentListSerializer(comments)
-
+    
     return Response(serialzer.data)
 
-#### 프로필에서 개인의 찜한영화, 평가한영화, 팔로우, 팔로잉 가져옴
 @api_view(['GET'])
 def user_count(request, username):
     user = get_object_or_404(get_user_model(), username=username)
@@ -104,7 +93,7 @@ def user_count(request, username):
         'followings_count': user.followings.count(),
     }
     return Response(data)
-#### 팔로우 리스트, 팔로잉 리스트 목록
+    #### 팔로우 리스트, 팔로잉 리스트 목록
 @api_view(['GET'])
 def follow_list(request, username):
     user = get_object_or_404(get_user_model(), username=username)
@@ -122,9 +111,9 @@ def follow_list(request, username):
         'followers': er_list,
     }
     return Response(data)
-    
+
 #####
-## 유저 평점 기반 추천 알고리즘
+## 유저가 평가한 영화목록을 보여주는데
 @api_view(['GET'])
 def user_recommend(request,username):
     user = get_object_or_404(get_user_model(), username=username)
@@ -139,50 +128,27 @@ def user_recommend(request,username):
 
 
 ##################################################################
-def login(request):
-    pass
-
-def update(request):
-    pass
-
-def delete(request):
-    pass
-
-def password_change(request):
-    pass
-
-
 #temp
 
 @api_view(["PUT",'GET'])
-# @permission_classes([AllowAny])
-def temp(request, username):
+def temp(request, user_pk):
 
-    user= get_object_or_404(get_user_model(), username=username)
+    user= get_object_or_404(get_user_model(), pk=user_pk)
 
     if request.method == "GET":
-        data = user.image_path
-        return Response(data)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
         
     if request.method == "PUT":
+        # user = get_object_or_404(get_user_model(),  pk=request.user.pk)
+        serializer = UserSerializer(user, data= request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         src = request.data['image']
         user.image_path = src
         user.save()
         return Response(status=status.HTTP_200_OK)
-
-def temp2(request, profile_pk):
-    profile= get_object_or_404(Profile, pk=profile_pk)
-
-    if request.method == "GET":
-        serializer = ProfileSerializer(profile)
-        return Response(serializer.data)
-        
-    if request.method == "PUT":
-        serializer = ProfileSerializer(profile, data= request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 @api_view(["POST", "PUT"])
 @permission_classes([AllowAny])

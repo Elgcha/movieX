@@ -41,7 +41,7 @@ class MovieSerializer(serializers.ModelSerializer):
     class PeopleSerializer(serializers.ModelSerializer):
         class Meta:
             model = People
-            fields = ('id', 'name', 'profile_path', 'also_known_as',)
+            fields = ('id', 'name', 'birthday', 'profile_path', 'also_known_as', 'known_for_department',)
             read_only_fields = ('',)
 
     genres = GenreSerializer(many=True, read_only=True)
@@ -62,7 +62,7 @@ class PeopleMovieListSerializer(serializers.ModelSerializer):
         genres = GenreSerializer( many=True, read_only=True)
         class Meta:
             model = Movie
-            fields = ('id', 'genres', 'title', 'release_date', 'vote_average',)
+            fields = ('id', 'genres', 'title', 'runtime', 'poster_path', 'release_date', 'vote_average',)
 
     movie_title = MovieSerializer(source='people_movies', many=True)
 
@@ -70,3 +70,12 @@ class PeopleMovieListSerializer(serializers.ModelSerializer):
         model = People
         fields = ('name', 'movie_title',)
 
+
+
+
+class Movie2Serializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Movie
+        exclude = ('tmdb_id','id')
+    

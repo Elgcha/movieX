@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinLengthValidator, MinValueValidator
+from birthday import BirthdayField
 
 # Create your models here.
 class Genre(models.Model): 
@@ -11,12 +12,15 @@ class Genre(models.Model):
 
 class People(models.Model):
     name = models.CharField(max_length=100)
+    birthday = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     popularity = models.FloatField(validators=[MinValueValidator(0)])
     profile_path = models.TextField()
     adult = models.BooleanField()
     gender = models.IntegerField()
     tmdb_id = models.IntegerField()
     also_known_as = models.JSONField(null=True)
+    known_for_department = models.CharField(max_length=100)
+
 
     def __str__(self):
         return self.name
@@ -24,6 +28,7 @@ class People(models.Model):
 
 class Movie(models.Model):
     title = models.CharField(max_length=100)
+    runtime = models.IntegerField(blank=True, null=True)
     release_date = models.DateField()
     backdrop_path = models.TextField()
     popularity = models.FloatField(validators=[MinValueValidator(0)])
@@ -54,4 +59,3 @@ class MovieComment(models.Model): # 유저하나가 영화 하나만 평가할�
 
     def __str__(self):
         return self.movie.title
-
