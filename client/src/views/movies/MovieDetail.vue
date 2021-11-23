@@ -5,10 +5,32 @@
         <img :src="imgSrc" alt="" class="p-3">
         <div class="w-full">
           <iframe class="w-full" :src="movieVideo" title="YouTube video player" frameborder="0" allowfullscreen id="my-iframe"></iframe>
-          <h2 class="p-2 text-left">{{ movie.title }} {{ movie.release_date }}</h2>
-          <p class="text-left">{{ movie.overview }}</p>
+          <div class="p-2 text-2xl text-left">평점 : {{ movie.vote_average }}</div>
+          <div class="flex justify-between bg-gray-600 border-b">
+            <h2 class="p-2 text-left ">{{ movie.title }} {{ movie.release_date }}</h2>
+            <div class="p-2">
+              <span v-for="genre in movie.genres" :key="genre" class="p-3 text-right">{{ genre.name }} </span>
+            </div>
+          </div>
+          <p class="p-3 text-left bg-gray-700">{{ movie.overview }}</p>
         </div>
       </div>
+    </div>
+    <h3>출연</h3>
+    <div v-swiper:mySwiper="swiperOption1" class="my-2 bg-gray-600 swiper-container">
+      <div class="swiper-wrapper">
+        <div
+        v-for="people in movie.people"
+        :key="people.id"
+        class="justify-center h-auto swiper-slide"
+        @click="moveToPeopleDetail(people.id)"
+        >
+        <img :src="'https://image.tmdb.org/t/p/w500/' + people.profile_path" alt="" class="p-3 transform cursor-pointer hover:scale-105">
+        {{ people.name }}
+        </div>
+      </div>
+      <div class="swiper-button-prev1" slot="button-prev"></div> 
+      <div class="swiper-button-next1" slot="button-next"></div>
     </div>
     <div class="m-3">
       <button v-show="!wanted" @click='iWantThisMovie'>보고싶은 영화에 추가</button>
@@ -55,13 +77,25 @@ export default {
       swiperOption: {
         slidesPerView: 6,
         spaceBetween: 10,
-        loop: true,
+        loop: false,
         // autoplay: {
         //   delay:5000,
         // },
         navigation: {
           nextEl: '.swiper-button-next', 
           prevEl: '.swiper-button-prev' 
+        },
+      },
+      swiperOption1: {
+        slidesPerView: 6,
+        spaceBetween: 10,
+        loop: false,
+        // autoplay: {
+        //   delay:5000,
+        // },
+        navigation: {
+          nextEl: '.swiper-button-next1', 
+          prevEl: '.swiper-button-prev1' 
         },
       },
       wanted: false,
@@ -173,6 +207,9 @@ export default {
       let iframe = document.querySelector("#iframe")
       iframe.style.height = iframe.contentDocument.body.scrollHeight + 'px'
       // iframe.style.width = iframe.contentDocument.body.scrollWidth + 'px'
+    },
+    moveToPeopleDetail: function(peoplePk) {
+      this.$router.push({name:'PeopleDetail', params: {peoplePk: peoplePk}})
     }
     
   },

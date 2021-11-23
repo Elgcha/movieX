@@ -135,21 +135,21 @@ def password_change(request):
 #temp
 
 @api_view(["PUT",'GET'])
-def temp(request, user_pk):
+# @permission_classes([AllowAny])
+def temp(request, username):
 
-    user= get_object_or_404(get_user_model(), pk=user_pk)
+    user= get_object_or_404(get_user_model(), username=username)
 
     if request.method == "GET":
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+        data = user.image_path
+        return Response(data)
         
     if request.method == "PUT":
-        # user = get_object_or_404(get_user_model(),  pk=request.user.pk)
-        serializer = UserSerializer(user, data= request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-@api_view(["PUT",'GET'])
+        src = request.data['image']
+        user.image_path = src
+        user.save()
+        return Response(status=status.HTTP_200_OK)
+
 def temp2(request, profile_pk):
     profile= get_object_or_404(Profile, pk=profile_pk)
 
@@ -162,3 +162,14 @@ def temp2(request, profile_pk):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST", "PUT"])
+@permission_classes([AllowAny])
+def image(request):
+    src = request.FILES['files']
+
+    request.user.image_path = src
+    request.user.save()
+
+    return Response(status=status.HTTP_200_OK)

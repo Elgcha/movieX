@@ -5,7 +5,7 @@
         <h3 class="text-xl">{{ article.title }}</h3>
         <div class="my-auto text-sm">{{ article.created_at.slice(0,10) + ' ' + article.created_at.slice(11, 16) }}</div>
       </div>
-      <div class="p-3 text-left border-b">{{ article.username }}</div>
+      <div class="p-3 text-left border-b "><span class="cursor-pointer" @click="moveToProfile(article.username)">{{ article.username }}</span></div>
       <div class="p-3 mb-3 text-left border-b" style="min-height:30vh;">
         <p>{{ article.content }}</p>
       </div>
@@ -36,10 +36,18 @@ export default {
     }
   },
   methods: {
+    setToken: function () {
+      const token = localStorage.getItem('jwt')
+      const config = {
+        Authorization: `JWT ${token}`
+      }
+      return config
+    },
     getArticle: function () {
+      const url = process.env.VUE_APP_URL + `community/${this.articlePk}`
       axios({
         method: 'get',
-        url: `http://127.0.0.1:8000/community/${this.articlePk}/`
+        url: url
       })
         .then(res => {
           this.article = res.data
@@ -52,12 +60,14 @@ export default {
       this.$router.push({name: 'ArticleUpdate', params: {articlePk: this.articlePk}})
     },
     deleteArticle: function () {
+      const url = process.env.VUE_APP_URL + `community/${this.articlePk}/`
       axios({
         method: 'delete',
-        url: `http://127.0.0.1:8000/community/${this.articlePk}/`
+        url: url,
+        headers: this.setToken(),
       })
         .then(()=> {
-
+          this.$router.push({name:'Forum'})
         })
         .catch(err => {
           console.log(err)
@@ -66,6 +76,9 @@ export default {
     back: function () {
       this.$router.push({name:'Forum'})
     },
+    moveToProfile: function (username) {
+      this.$router.push({name:'Profile', params: {username:username}})
+    }
   },
   created: function () {
     this.getArticle()

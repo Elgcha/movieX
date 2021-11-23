@@ -12,9 +12,10 @@ urlpatterns = [
     path('profile/<username>/count', views.user_count), #팔로우,팔로잉, 평가한영화,찜한영화 총횟수
 
     path('profile/<username>/recommend/', views.user_recommend),
+    path('profile/image/', views.image),
 
     # temp
-    path('profiles/<int:user_pk>/', views.temp),
+    path('profiles/<username>/', views.temp),
     path('image/<int:profile_pk>/', views.temp2),
 
 

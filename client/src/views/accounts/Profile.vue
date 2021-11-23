@@ -1,12 +1,17 @@
 <template>
-  <div>
-    <main class="mt-3 bg-gray-100 bg-opacity-25">
+  <div class="text-white" >
+    <main class="mt-3 bg-gray-100 bg-opacity-25" style="min-height:80vh;">
       <div class="mb-8 lg:w-8/12 lg:mx-auto">
         <header class="flex flex-wrap items-center p-4 md:py-8">
           <div class="md:w-3/12 md:ml-16">
             <!-- profile image -->
-            <img class="object-cover w-20 h-20 p-1 border-2 border-pink-600 rounded-full md:w-40 md:h-40" :src="me.image_path" alt="profile">
+            <img class="object-cover w-20 h-20 p-1 border-2 border-pink-600 rounded-full md:w-40 md:h-40" :src="profileImage" alt="profile">
           </div>
+          <!-- 프로필 수정 -->
+          <!-- <div v-if="sameperson">
+            <input type="file" name="" id="" @change="imageUpload" ref="profileImage">
+          </div> -->
+
 
           <!-- profile meta -->
           <div class="w-8/12 ml-4 md:w-7/12">
@@ -21,7 +26,7 @@
               </span>
 
               <!-- follow button -->
-              <div @click="follow" class="block px-2 py-1 text-sm font-semibold text-center text-white bg-blue-500 rounded sm:inline-block">Follow</div>
+              <div v-if="!sameperson" @click="follow" class="block px-2 py-1 text-sm font-semibold text-center text-white bg-blue-500 rounded sm:inline-block">Follow</div>
             </div>
 
             <!-- post, following, followers list for medium screens -->
@@ -42,11 +47,7 @@
             </ul>
 
             <!-- user meta form medium screens -->
-            <div class="hidden md:block">
-              <h1 class="font-semibold">Mr Travlerrr...</h1>
-              <span>Travel, Nature and Music</span>
-              <p>Lorem ipsum dolor sit amet consectetur</p>
-            </div>
+            
 
           </div>
 
@@ -80,7 +81,7 @@
           </ul>
 
           <!-- insta freatures -->
-          <ul class="flex items-center justify-around space-x-12 text-xs font-semibold tracking-widest text-gray-600 uppercase border-t md:justify-center">
+          <ul class="flex items-center justify-around space-x-12 text-xs font-semibold tracking-widest text-white border-t md:justify-center">
             <!-- posts tab is active -->
 
             <li>
@@ -92,7 +93,7 @@
             
           </ul>
           <!-- flexbox grid -->
-          <div class="-mx-px  md:-mx-3">
+          <div class="-mx-px md:-mx-3">
             <!-- column -->
             <div v-swiper:mySwiper="swiperOption" class="my-2 swiper-container">
               <div class="bg-dark swiper-wrapper">
@@ -133,6 +134,7 @@ export default {
   name: 'Profile',
   data: function () {
     return {
+      file: null,
       me: {},
       isFollowed: false,
       wantMovies: [],
@@ -186,7 +188,41 @@ export default {
           this.isFollowed = res.data.isFollowed
         })
     },
+    imageUpload: function (event) {
+      const username = this.$route.params.username
+      const token = localStorage.getItem('jwt')
+      this.file = event.target.files[0]
+      let data = new FormData()
+      data.append('image', this.file)
+      const url = process.env.VUE_APP_URL + `accounts/profiles/${username}/`
+      axios({
+        method: 'put',
+        url: url,
+        data: data,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `JWT ${token}`
+        },
+      })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
     
+  },
+  computed: {
+    sameperson: function () {
+      const username = this.$route.params.username
+      const me = localStorage.getItem('username')
+      return username === me? true : false
+    },
+    profileImage: function () {
+      const img = process.env.VUE_APP_URL.slice(0, -1) + this.me.image_path
+      return img
+    }
   },
   created: function () {
     this.getProfile()

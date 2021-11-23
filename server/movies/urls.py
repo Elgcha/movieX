@@ -8,6 +8,7 @@ urlpatterns = [
     path('<int:movie_pk>/', views.movie_detail), #조회,수정, 삭제
     path('create/', views.movie_create),
     path('get/date/', views.movie_date), #최신 영화 보여주기
+    path('get/random/', views.random_movie),
    # path('<int:movie_pk>/update/', views.movie_update),
 
     ### people
@@ -17,15 +18,15 @@ urlpatterns = [
     path('people/<int:people_pk>/movielist/', views.people_movie_list),
    # path('people/<int_peoele_pk/update/', views.people_update),
 
-   ### comment
-   path('<int:movie_pk>/comment/', views.comment_create),
-   path('<int:movie_pk>/<int:moviecomment_pk>/', views.comment_update),
-   path('<int:movie_pk>/commentlist/', views.comment_list), #comment에 평점도
-   #path('<int:movie_pk>/rate/', views.rate_movie),
-
    ### 찜 기능
    path('<int:movie_pk>/want/', views.want_movie), #이 영화를 좋아하는 사람들을 출력?
    path('<int:movie_pk>/want/check/', views.want_check),
+   ### comment
+   path('<int:movie_pk>/comment/', views.comment_create),
+   path('<int:movie_pk>/<username>/', views.comment_update),
+   path('<int:movie_pk>/comment/list/', views.comment_list), #comment에 평점도
+   #path('<int:movie_pk>/rate/', views.rate_movie),
+
 
    # 장르별 영화리스트 보여주기
    path('<moviename>/', views.list_movie),

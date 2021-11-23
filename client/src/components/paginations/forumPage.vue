@@ -1,10 +1,8 @@
 <template>
   <div class="flex flex-wrap">
-    <div v-for="movie in pagenatedMovies" :key="movie.id" class='grid grid-cols-2 gap-2 p-2 bg-gray-700 border cursor-pointer hover:bg-gray-600 flex-3 popular' @click="moveToDetail(movie.item.id)">
-        <img :src="'https://image.tmdb.org/t/p/w500/' + movie.item.poster_path" alt="poster" class="object-cover h-full transform cursor-pointer hover:scale-105">
+    <div v-for="article in pagenatedArticles" :key="article.id" class='grid w-full grid-cols-2 gap-2 p-2 text-left border hover:bg-gray-600 popular' @click="moveToArticleDetail(article.item.id)">
         <div class="text-white">
-          <p>{{ movie.item.title }}</p>
-          <p>{{ movie.item.release_date }}</p>
+          <p>{{ article.item.title }}</p>
         </div>
       </div>
       <!-- 페이지네이션 -->
@@ -12,11 +10,11 @@
         <ul class="flex">
             <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600 hover:bg-gray-100" :disabled="pageNum === 0" @click="prevPage">Prev</button></li>
             <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum > 1" @click="pageNum=0">1</button></li>
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum > 1" >...</button></li>
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum > 2" >...</button></li>
             <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum" @click="prevPage">{{ pageNum }}</button></li>
             <li><button class="h-10 px-5 text-white bg-gray-600 border border-r-0 border-gray-600 ">{{ pageNum + 1 }}</button></li>
             <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600 hover:bg-gray-100" v-if="pageNum < pageCount - 1" @click="nextPage">{{ pageNum + 2 }}</button></li>
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum < pageCount - 2" >...</button></li>
+            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum < pageCount - 3" >...</button></li>
             <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum < pageCount - 2" @click="pageNum=pageCount-1">{{ pageCount }}</button></li>
             <li><button class="h-10 px-5 text-gray-600 bg-white border border-gray-600 hover:bg-gray-100" :disabled="pageNum >= pageCount - 1" @click="nextPage">Next</button></li>
         </ul>
@@ -25,46 +23,53 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex'
 export default {
-  name: 'MoviePage',
+  name: 'ForumPage',
   data: function () {
     return {
       pageNum: 0
     }
   },
   props: {
-    movies: {
+    articles: {
       type: Array,
     },
     pageSize: {
       type: Number,
       required: false,
-      default: 12
+      default: 10
     },
   },
   methods: {
-    ...mapActions([
-      'moveToDetail'
-    ]),
+    calDate: function (date) {
+      const Day = new Date()
+      if (date.slice(0,10) == Day.getFullYear() + '-' + (Day.getMonth()+1) + '-' + Day.getDate()){
+        return date.slice(11,16)
+      } else {
+        return date.slice(5, 10)
+      } 
+    },
     nextPage: function () {
       this.pageNum += 1;
     },
     prevPage: function () {
       this.pageNum -= 1;
     },
+    moveToArticleDetail: function (articlePk) {
+      this.$router.push({name: 'ArticleDetail', params: {articlePk: articlePk}})
+    },
   },
   computed: {
     pageCount: function() {
-      let movieNum = this.movies.length
-      let movieSize = this.pageSize
-      let page = Math.floor((movieNum-1) / movieSize) + 1
+      let articleNum = this.articles.length
+      let articleSize = this.pageSize
+      let page = Math.floor((articleNum-1) / articleSize) + 1
       return page
     },
-    pagenatedMovies: function () {
+    pagenatedArticles: function () {
       const start = this.pageNum * this.pageSize
       const end = start + this.pageSize
-      return this.movies.slice(start, end)
+      return this.articles.slice(start, end)
     }
   },
 }
