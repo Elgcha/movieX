@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
@@ -59,7 +60,6 @@ def other_profile(request, username):
 @api_view(['POST'])
 def follow(request, username):
     #팔로우할 대상
-    # person = get_object_or_404(get_user_model(), pk= user_pk)
     person = get_object_or_404(get_user_model(), username=username)
      
     #나
@@ -83,15 +83,17 @@ def follow(request, username):
         }
         return Response(data)#, status=status.)
 
-#유저의 영화평가 리스트 
+# 유저의 영화평가 리스트 
+# 프로필에서 평점 순으로 영화 정보 가져 옴
 # 영화이름, 평점, 코멘트 출력함
 @api_view(['GET'])
 def user_comment_set(request, username):
     comments = get_object_or_404(get_user_model(), username=username)
     serialzer = MovieCommentListSerializer(comments)
-    
+
     return Response(serialzer.data)
 
+#### 프로필에서 개인의 찜한영화, 평가한영화, 팔로우, 팔로잉 가져옴
 @api_view(['GET'])
 def user_count(request, username):
     user = get_object_or_404(get_user_model(), username=username)
@@ -102,7 +104,25 @@ def user_count(request, username):
         'followings_count': user.followings.count(),
     }
     return Response(data)
-
+#### 팔로우 리스트, 팔로잉 리스트 목록
+@api_view(['GET'])
+def follow_list(request, username):
+    user = get_object_or_404(get_user_model(), username=username)
+    followings = user.followings.all()
+    followers = user.followers.all()
+    wings_list = []
+    er_list = []
+    for a in followings:
+        wings_list.append(a.username)
+    for b in followers:
+        er_list.append(b.username)
+        
+    data = {
+        'followings': wings_list,
+        'followers': er_list,
+    }
+    return Response(data)
+    
 #####
 ## 유저 평점 기반 추천 알고리즘
 @api_view(['GET'])
