@@ -49,7 +49,8 @@ class MovieComment(models.Model): # 유저하나가 영화 하나만 평가할�
     content = models.CharField(max_length=200, validators=[MinLengthValidator(0)], blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    rate = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(10)])
+    rate = models.IntegerField(validators=[MinValueValidator(1),MaxValueValidator(10)])
 
     def __str__(self):
-        return self.content
+        return self.movie.title
+
