@@ -6,10 +6,10 @@
     <table class="w-full text-white table-fixed bg-gradient-to-r from-gray-900 to-gray-800">
       <thead>
         <tr>
-          <th class="w-1/2">Title</th>
-          <th class="w-1/4">Author</th>
-          <th class="w-1/4">Time</th>
-          <!-- <th>Views</th> -->
+          <th class="w-6/12">Title</th>
+          <th class="w-4/12">Author</th>
+          <th class="w-1/12">Time</th>
+          <th class="w-1/12">Views</th>
         </tr>
       </thead>
       
@@ -18,7 +18,7 @@
           <td class="p-2 px-4 text-left">{{ article.title }}</td>
           <td class="p-2">{{ article.username }}</td>
           <td class="p-2">{{ calDate(article.created_at) }}</td>
-          <!-- <td>{{ article }}</td> -->
+          <td class="p-2">{{ article.views_num }}</td>
           <hr>
         </tr>
       </tbody>

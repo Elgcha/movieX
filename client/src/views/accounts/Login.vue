@@ -9,6 +9,7 @@
       <label for="password" class="block mb-2 text-sm font-bold text-gray-700">Password </label>
       <input class = "w-full px-3 py-2 mb-3 leading-tight text-gray-700 border border-red-500 rounded appearance-none hadow focus:outline-none focus:shadow-outline" type="password" id="password" v-model="credentials.password" >
     </div>
+    <li v-show="errOccur" class="mb-3 text-sm">아이디와 비밀번호를 확인해주세요.</li>
 
     <div class="flex items-center justify-between">
       <button class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="button" @click="login">
@@ -31,7 +32,8 @@ export default {
       credentials: {
         username: null,
         password: null,
-      }
+      },
+      errOccur: false,
     }
   },
   methods: {
@@ -48,8 +50,9 @@ export default {
           this.$emit('login')
           this.$router.push({ name:'Home'})
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err)
+          this.errOccur = true
         })
     },
     moveToSignup: function () {

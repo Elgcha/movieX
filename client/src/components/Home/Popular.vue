@@ -1,6 +1,6 @@
 <template>
 <div v-swiper:mySwiper="swiperOption" class="my-2 swiper-container">
-  <div class="bg-dark swiper-wrapper">
+  <div class="swiper-wrapper">
     <popular-movies
     v-for="movie in movies"
     :key="movie.id"
@@ -9,8 +9,8 @@
     >
     </popular-movies>
   </div>
-  <div class="swiper-button-prev" slot="button-prev"></div> 
-  <div class="swiper-button-next" slot="button-next"></div>
+  <div class="swiper-button-prev" slot="button-prev2"></div> 
+  <div class="swiper-button-next" slot="button-next2"></div>
 
 
 </div>

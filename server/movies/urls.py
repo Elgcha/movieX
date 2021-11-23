@@ -6,7 +6,7 @@ urlpatterns = [
     ### movie
     path('', views.index),
     path('<int:movie_pk>/', views.movie_detail), #조회,수정, 삭제
-    path('create/', views.movie_create),
+    path('create/<int:tmdb_id>/', views.movie_create),
     path('get/date/', views.movie_date), #최신 영화 보여주기
     path('get/random/', views.random_movie),
     path('<int:movie_pk>/update/', views.movie_update),
@@ -45,7 +45,7 @@ urlpatterns = [
 #영화코멘트관련
 #보고싶은영화
 
-    path('<int:user_pk>/test/', views.recommend_for),
+    path('<username>/test/recommend/', views.recommend_for),
     # path('test/test/', views.extract_all),
 # ### search
 # path(<'search/<str:keyword>/', views.search),

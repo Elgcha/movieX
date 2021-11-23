@@ -5,7 +5,10 @@
         <h3 class="text-xl">{{ article.title }}</h3>
         <div class="my-auto text-sm">{{ article.created_at.slice(0,10) + ' ' + article.created_at.slice(11, 16) }}</div>
       </div>
-      <div class="p-3 text-left border-b "><span class="cursor-pointer" @click="moveToProfile(article.username)">{{ article.username }}</span></div>
+      <div class="flex justify-between p-3 text-left border-b">
+        <span class="cursor-pointer" @click="moveToProfile(article.username)">{{ article.username }}</span>
+        <span class="my-auto">조회수: {{ article.views_num }}</span>
+      </div>
       <div class="p-3 mb-3 text-left border-b" style="min-height:30vh;">
         <p>{{ article.content }}</p>
       </div>
@@ -42,6 +45,19 @@ export default {
         Authorization: `JWT ${token}`
       }
       return config
+    },
+    viewCount: function () {
+      const url = process.env.VUE_APP_URL + `community/${this.articlePk}/views/`
+      axios({
+        method: 'get',
+        url: url
+      })
+        .then(() => {
+          
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     getArticle: function () {
       const url = process.env.VUE_APP_URL + `community/${this.articlePk}`
@@ -82,6 +98,7 @@ export default {
   },
   created: function () {
     this.getArticle()
+    this.viewCount()
   },
   computed: {
     ...mapState([

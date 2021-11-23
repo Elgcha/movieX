@@ -20,13 +20,19 @@ def signup(request):
     # Client에서 데이터 받아오기
     password = request.data.get('password')
     passwordConfirmation = request.data.get('passwordConfirmation')
-
+    username = request.data.get('username')
+    email = request.data.get('email')
     # 일치여부 확인
     if password != passwordConfirmation:
-        return Response({ ' error': '비밀번호가 일치하지 않습니다.'})
-
+        return Response({ 'error': '비밀번호가 일치하지 않습니다.'})
+    UserModel = get_user_model()
+    person = UserModel.objects.filter(username=username)
+    if person:
+       return Response({ 'error': '이미 존재하는 닉네임입니다.'})
 	#UserSerializer를 통해 데이터 직렬화
-
+    print(email[-4:], email)
+    if '@' not in email or not (email[-4:] == '.com'):
+         return Response({ 'error': '잘못된 이메일 형식입니다.'})
     serializer = UserSerializer(data=request.data)
     
         #validation 작업 진행 -> password도 같이 직렬화 진행

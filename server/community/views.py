@@ -95,3 +95,12 @@ def comment_update(request, article_pk, comment_pk):
 
 def comment_delete(request):
     pass
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def view_count(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    if not (request.user == article.user):
+        article.views_num += 1
+        article.save()
+    return Response(status=status.HTTP_200_OK)

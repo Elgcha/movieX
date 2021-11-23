@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.utils import field_mapping
 from .models import Article, Comment
+from accounts.serializers import UserSerializer
 
 class ArticleSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
@@ -10,8 +11,9 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('id', 'username', 'user', 'title', 'content', 'created_at', 'updated_at',)
+        fields = ('id', 'username', 'user', 'title', 'content', 'created_at', 'updated_at','views_num',)
         read_only_fields = ('user',)
+
 
 class CommentSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
