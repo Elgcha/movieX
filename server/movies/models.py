@@ -25,6 +25,7 @@ class People(models.Model):
 class Movie(models.Model):
     title = models.CharField(max_length=100)
     release_date = models.DateField()
+    backdrop_path = models.TextField()
     popularity = models.FloatField(validators=[MinValueValidator(0)])
     poster_path = models.TextField()
     vote_count = models.IntegerField(validators=[MinValueValidator(0)])

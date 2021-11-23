@@ -9,7 +9,7 @@ urlpatterns = [
     path('create/', views.movie_create),
     path('get/date/', views.movie_date), #최신 영화 보여주기
     path('<int:movie_pk>/same/', views.movie_same), # 비슷한 영화 보여주기 ###추가###
-   # path('<int:movie_pk>/update/', views.movie_update),
+    path('<int:movie_pk>/update/', views.movie_update),
 
     ### people
     path('people/', views.index_people),
@@ -35,15 +35,15 @@ urlpatterns = [
 
     #인물과 영화 연결시키는 함수
 
-   path('connect/', views.people_to_movie),
+   path('connect/mtop/', views.people_to_movie),
 
 #    path('<int:movie_pk>/likes/', views.likes_movie),
 
 #영화코멘트관련
 #보고싶은영화
 
-    path('<int:user_pk>/test/', views.extract),
-    path('test/test/', views.extract_all),
+    path('<int:user_pk>/test/', views.recommend_for),
+    # path('test/test/', views.extract_all),
 # ### search
 # path(<'search/<str:keyword>/', views.search),
 ]
