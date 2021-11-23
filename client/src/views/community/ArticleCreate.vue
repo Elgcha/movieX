@@ -1,15 +1,14 @@
 <template>
-  <div class="w-full text-white">
-    <h1>글 작성</h1>
+  <div class="w-full text-white" style="min-height:50vh;">
     <div class="w-full">
-      <label class="block mb-2 text-sm font-bold text-white" for="title">제목 </label>
-      <input class="w-4/5 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" @input="inputTitle" id='title'>
+      <label class="block m-2 text-lg font-bold text-left text-white" for="title">제목 </label>
+      <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:border-green-800" type="text" @input="inputTitle" id='title'>
     </div>
     <div class="w-full">
-      <label class="block mb-2 text-sm font-bold text-white" for="content">내용 </label>
-      <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" @input="inputContent" id='content'>
+      <label class="block m-2 text-lg font-bold text-left text-white" for="content">내용 </label>
+      <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:border-green-800" @input="inputContent" id='content' style="min-height:20vh"></textarea>
     </div>
-    <button @click="ArticleCreate">제출</button>
+    <button @click="ArticleCreate" class="m-3 btn btn-blue">작성</button>
   </div>
 </template>
 

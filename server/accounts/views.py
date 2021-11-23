@@ -51,7 +51,6 @@ def profile(request, username):
 @api_view(['POST'])
 def follow(request, username):
     #팔로우할 대상
-    # person = get_object_or_404(get_user_model(), pk= user_pk)
     person = get_object_or_404(get_user_model(), username=username)
      
     #나
@@ -94,9 +93,27 @@ def user_count(request, username):
         'followings_count': user.followings.count(),
     }
     return Response(data)
+    #### 팔로우 리스트, 팔로잉 리스트 목록
+@api_view(['GET'])
+def follow_list(request, username):
+    user = get_object_or_404(get_user_model(), username=username)
+    followings = user.followings.all()
+    followers = user.followers.all()
+    wings_list = []
+    er_list = []
+    for a in followings:
+        wings_list.append(a.username)
+    for b in followers:
+        er_list.append(b.username)
+        
+    data = {
+        'followings': wings_list,
+        'followers': er_list,
+    }
+    return Response(data)
 
 #####
-## 유저 평점 기반 추천 알고리즘
+## 유저가 평가한 영화목록을 보여주는데
 @api_view(['GET'])
 def user_recommend(request,username):
     user = get_object_or_404(get_user_model(), username=username)
@@ -128,3 +145,17 @@ def temp(request, user_pk):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        src = request.data['image']
+        user.image_path = src
+        user.save()
+        return Response(status=status.HTTP_200_OK)
+
+@api_view(["POST", "PUT"])
+@permission_classes([AllowAny])
+def image(request):
+    src = request.FILES['files']
+
+    request.user.image_path = src
+    request.user.save()
+
+    return Response(status=status.HTTP_200_OK)

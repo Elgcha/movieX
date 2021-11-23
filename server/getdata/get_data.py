@@ -87,7 +87,7 @@ with open('movies.json', 'w', encoding='UTF-8') as file:
 
 ###########################
 
-# 인기영화 아이디 값만 추출 하기
+# 인기영화 아이디 값만 추출 하기 #영화속 인물 몇개출력할 건지 
 movie_list_id = []
 for movie_id_num in range(0,20):
     movie_list_id.append(movie_list.get('results')[movie_id_num].get('id'))
@@ -159,7 +159,7 @@ for i in range(len(person_database)):
 
 
 ##########
-# 인물 상세페이지로 가기 '또다른이름' 추개헛 한글이름도 추가해준거임
+# 인물 상세페이지로 가기 '또다른이름' 추가 한글이름도 추가해준거임
 profile_count = 0
 for i in person_database_id:
     person_api = get_request_url(method=f"/person/{i}") #바이오그라피가 한글로 나올라면 한글설정추가

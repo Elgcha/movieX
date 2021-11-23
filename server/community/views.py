@@ -16,13 +16,8 @@ from rest_framework.pagination import PageNumberPagination
 def community(request):
     if request.method == 'GET':
         articles = Article.objects.order_by('-pk')
-        #
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        result_page = paginator.paginate_queryset(articles, request)
-        #
         serializer = ArticleSerializer(articles, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
 @api_view(['POST'])
 def create(request):
@@ -71,13 +66,8 @@ def comment_create(request, article_pk):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
     if request.method == 'GET':
         comments = Comment.objects.filter(article=article)
-        #
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        result_page = paginator.paginate_queryset(comments, request)
-        #
         serializer = CommentSerializer(comments, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
 def comment_detail(request):
     pass

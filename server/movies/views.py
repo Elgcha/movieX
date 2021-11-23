@@ -1,16 +1,24 @@
-from django.http.response import JsonResponse
+from django.http.response import Http404, JsonResponse
+from re import search
+from django.http import response
 from django.shortcuts import get_object_or_404, render
 import requests
+from requests.sessions import Request
 from community.serializers import CommentSerializer
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from accounts.models import User
+
+from accounts.serializers import RecommendSerializer
 from .models import Movie, People, Genre, MovieComment
 from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer
 from rest_framework.permissions import AllowAny
-from rest_framework.pagination import PageNumberPagination
 from django.utils.encoding import uri_to_iri
+import random
+from django.db.models import Avg
+
 
 # Create your views here.
 @api_view(['GET'])
@@ -57,6 +65,22 @@ def movie_update(request, movie_pk):
 def movie_date(request):
     movies = Movie.objects.order_by('-release_date')[:20]
     serializer = MovieSerializer(movies, many=True)
+    return Response(serializer.data)
+
+### 비슷한 영화 보여주기
+# 장르로 필터
+@api_view(['GET'])
+def movie_same(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    movie_list = []
+    movie_set=[]
+    for i in movie.genres.all():
+        id = i.id
+        movie_list.append(id)
+    for j in movie_list:
+        movie = Movie.objects.filter(genres=j).exclude(pk=movie_pk)
+        movie_set.append(movie)
+    serializer = MovieSerializer(movie, many=True)
     return Response(serializer.data)
 
 
@@ -115,6 +139,29 @@ def comment_create(request, movie_pk):
         serializer.save(movie=movie, user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+#영화별 자체 알고리즘을 통한 영화지수 보여주기
+@api_view(['GET'])
+def rate_movie(request, movie_pk):
+    
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    if movie.moviecomment_set.count():
+        rate_ratio = movie.moviecomment_set.aggregate(Avg('rate')).get('rate__avg') * 0.6
+    else:
+        rate_ratio = 3
+
+    vote_ratio = movie.vote_average * 0.4 
+    pop_ratio = movie.popularity * 0.1 / movie.vote_count
+    score = round(rate_ratio + vote_ratio+ pop_ratio,1)
+    data = {
+        "score": score, #영화지수
+        'rate':rate_ratio, #평점가중치
+        'vote':vote_ratio, #api평점 가중치
+        'pop':pop_ratio, #api 인기도 가중치
+    }
+    # api업데이트기능을 추가해서 실시간 업데이트 가능
+    return Response(data)
+
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -125,13 +172,17 @@ def comment_list(request, movie_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET','PUT','DELETE'])
-def comment_update(request, movie_pk, moviecomment_pk):
+def comment_update(request, movie_pk, username):
+    User = get_user_model()
+    person = get_object_or_404(User, username=username)
+    if person != request.user:
+        return Response(status.HTTP_401_UNAUTHORIZED)
     movie = get_object_or_404(Movie, pk=movie_pk)
-    comment = movie.moviecomment_set.get(pk= moviecomment_pk)
+    comment = movie.moviecomment_set.get(user=person)
 
-    if request.method == 'GET':  # 조회
-        serializer = MovieCommentSerializer(comment)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # if request.method == 'GET':  # 조회
+    #     serializer = MovieCommentSerializer(comment)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT': # 수정
         serializer= MovieCommentSerializer(comment, data=request.data) 
@@ -178,36 +229,63 @@ def want_check(request, movie_pk):
     return Response(data)
 
 
+api_key = '953a5848d0ceb3adab0a2109622b61b6'
+def get_request_url(method='movie/popular', **kwargs):
+    base_url = 'https://api.themoviedb.org/3/'
+    request_url = base_url + method
+    request_url += f'?api_key={api_key}'
+    for k, v in kwargs.items():
+        request_url += f'&{k}={v}'
+    return request_url
+
 ## movie connect people
 # 빈리스트 가져와서 비교하는 방식으로바꿔보자 #
 ## 가져온 영화값에 인물이 연결되어있지 않다.
 ## 인물 크레딧에 영화정보가 있고 그걸 연결한다
-def people_to_movie(request): #get_objects_404로바꿀수잇으면 바꾸자
+@api_view(['GET'])
+def people_to_movie(request): 
     movies = Movie.objects.all()
     people = People.objects.all()
+    movieset = []
+    for movie_code in movies:
+        movieset.append(movie_code.tmdb_id)
     # 사람의 id값을 조회해서 영화목록을 가져오자
     for person_code in people:
-        url =f'https://api.themoviedb.org/3/person/{person_code.tmdb_id}/movie_credits?api_key=953a5848d0ceb3adab0a2109622b61b6&region=KR&language=ko'
-        data = requests.get(url).json()
-        dataset = data.get('cast')
-
         person = People.objects.get(tmdb_id=person_code.tmdb_id)
-        movieset = []
+        url = get_request_url(method=f'person/{person_code.tmdb_id}/movie_credits')
+        data = requests.get(url).json()
+        dataset = []
+        update_set =[]
       # 출연한영화 목록을 리스트로 만들어준다.  
-        for i in range(len(dataset)):
-            movieset.append(data.get('cast')[i].get('id'))
-        #만들어진 리스트에서 db에 맞는 영화가 있는지 찾는다.
-            for j in movieset:
-                if movies.filter(tmdb_id=j):
-                    movie = Movie.objects.get(tmdb_id=j)
-                    movie.people.add(person)
-                    # print(movies)
-    #                 # update = movies.objects.get(tmdb_id=j)
-    #                 # update.people += person_code
-    #                 # update.save()
+        for i in range(len(data.get('cast'))):
+            dataset.append(data.get('cast')[i].get('id'))
+        for j in movieset:
+            if j in dataset:
+                update_set.append(j)
+        for k in update_set:
+            movie = Movie.objects.get(tmdb_id=k)
+            movie.people.add(person)
     return Response(status=status.HTTP_200_OK)
+
+def movie_update(request):
+    movies = Movie.objects.all()
+    for i in movies:
+        url = get_request_url(f'movie/{i.tmdb_id}')
+        data = requests.get(url).json()
+        movie = Movie.objects.get(tmdb_id=i.tmdb_id)
+        movie.popularity = data.get('popularity')
+        movie.vote_average = data.get('vote_average')
+        movie.vote_count = data.get('vote_count')
+        movie.save()
+    return Response(status=status.HTTP_200_OK)
+
+# def movie_create_api(request, keyword):
+#     get_request_url(method='search/movie',region='KR', language='ko', query=f'{uri_to_iri('keyword'))
+
+
                   
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def list_movie(request, moviename):
     if uri_to_iri(moviename) == '대문':
         movies = Movie.objects.order_by('-popularity', '-vote_average')[:5]
@@ -233,58 +311,123 @@ def list_movie(request, moviename):
         serializer = MovieSerializer(movies, many=True)
 
         return Response(serializer.data)
+from django.db.models import Q
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def random_movie(request):
+    movies = Movie.objects.all()
+    moviecomments = MovieComment.objects.filter(user=request.user)
+    # for movie in movies:
+    for moviecomment in moviecomments:
+        movies = movies.filter(~Q(pk=moviecomment.movie_id))
+    if not movies:
+        return Http404
+    movie = random.choice(movies)
+    serializer = MovieSerializer(movie)
+    return Response(serializer.data)
 
 
 
 
+# 장르의 유사도를 구해서
+# 인기도와 유저 평점에 결과값을 곱하자
+import operator
+def jaccrdsimilarity(A, B):
+    a = A.genres.all()
+    b = B.genres.all()
+    mom = a.union(b).count()
+    son = a.intersection(b).count()
+    return round(son/mom,2)
 
-# @api_view(['GET']) #비슷한 영화 찾기
+def extract_sim(user_pk): #한 영화의 모든영화의 유사도
+    movie_on = Movie.objects.get(pk=user_pk)
+    A = movie_on
+    movies = Movie.objects.count()
+    sim = {
+        'movie':A.title,
+            'id':A.pk
+        }
+    for m in range(1, movies+1):
+        if m == user_pk:
+            continue
+        movie = Movie.objects.get(pk=m)
+        B = movie
+        sim[f'{movie.pk}'] = {
+            'movie_id': movie.id,
+            'title': movie.title,
+            'poster_path': movie.poster_path,
+            'similarity': jaccrdsimilarity(A,B),
+            }
+    return sim
+### 영화의 유사성으로 추천페이지 구성하기
+##############################
+#내가 평가한 모든 영화의 유사성을 구한다
+def extract(user_pk):
+    user = get_object_or_404(get_user_model(),pk=user_pk)
+    all_rate = user.moviecomment_set.all()
+    all_sims = [] #평가한 영화를 기준으로 모드영화의 유사성을 나타낸 것
+    #평가한 모든영화의 유사성을 담는다
+    for i in all_rate:
+        all_sims.append(extract_sim(i.movie.pk)) 
+    return all_sims
+#####
+## 내가평가하모든 영화의유사성
+###
+def extract_recommend(user_pk):
+    user = get_object_or_404(get_user_model(),pk=user_pk)
+    all_rate = user.moviecomment_set.all()
+    all_sims = extract(user_pk)
+    data =  {} #내가 평가한 영화
+    for value in all_rate:
+        data[f'{value.movie.id}'] = {
+            'movie_id': value.movie.id,
+            'title': value.movie.title,
+            'rate': value.rate,
+            }
+##모든 영화의 유사성에서 추천값 구하기
+    #모든영화의 유사성 값에 내가 평가한 영화의 평점이랑 인기도, 평점을 곱해서 나타낸다.
+    for j in all_sims:
+         for rated in range(1, Movie.objects.all().count()+1): #모든 영화 아이디
+             if f'{rated}' in data and f'{rated}' not in j: #sim에 영화아이디가 없다면 추천받을 영화임
+                for result in j:
+                    if result == 'movie' or result =='id':
+                        continue
+                    j[result]['recommend'] = round((  
+                    j[result]['similarity'] *    #내가 평가한 영화와의 유사도
+                    data[f'{rated}']['rate'] * #내가 평가한 영화의 평점
+                    Movie.objects.get(pk= f'{result}').vote_average # 이 영화의 db 평점
+                    # Movie.objects.get(pk= f'{rated}').popularity #내가 평가한영화의 인기도
+                ),3)
+    return(all_sims) # 모든영화의 유사도를 구하고
+###################################
 
-# def likes_movie(request, movie_pk):
-#     '''
-#     영화 
-#     '''
-#     movies = Movie.objects.all() #
-#     serializer = MovieSerializer(movies, many=True)
-#     movie = get_object_or_404(Movie, pk=movie_pk)
-#     movie_code = movie.tmdb_id
-#     movie_genres = movie.genres.all()
-#     movie_list = []
 
-#     for a in movie.genres.
-#         movie_list.append(a.id)  
-#     recommends = []
+    ##### 높은 순으로 필터 하기
+    ##리커멘드로 정렬
+def recommend_sort(user_pk):
+    all_sims = extract_recommend(user_pk)
+    print(all_sims)
+    temp_sort = []
+    for k in all_sims:
+        for result in k:
+            if result == 'movie' or result =='id':
+                continue
+            temp_sort.append(k[result])
+    result_sort = sorted(temp_sort, key =operator.itemgetter('recommend'),reverse=True)
 
+    recommendation =[]
+    title_temp =[]
+    for p in result_sort[:20]:
+        if p['title'] not in title_temp:
+            recommendation.append(p)
+            title_temp.append(p['title'])
+    return recommendation
 
-
-            
-
-
-    #임시
-    # url =f'https://api.themoviedb.org/3/movie/{movie_code}/similar?api_key=953a5848d0ceb3adab0a2109622b61b6&region=KR&language=ko'
-    # data = requests.get(url).json()
-    # movies.filter(tmdb_id='movie')
-    # for choice in data.get('results'):
-    #     choice.get('id') in movies
-
+# 추천api보낼 함수:
+@api_view(['GET'])
+def recommend_for(request, user_pk):
+    user = get_object_or_404(get_user_model(), pk=user_pk)
+    data = recommend_sort(user_pk)
+    
     return Response(data)
-
-
-
-# #### search
-# def search(request, keyword):
-#     movie = Movie.objects.all()
-#     people = People.objects.all()
-#     genre = Genre.objects.all()
-#     if keyword in  movie:
-#         k = movie.find('keyword')
-#     request_url = get_request_url('/search/movie', query=title, region='KR', language='ko')
-#     data = requests.get(request_url).json()
-#     results = data.get('results')
-#     if results:
-#         movie = results[0]
-#         movie_id = movie['id']
-#         return movie_id
-#     else:
-#         return None
-
+# #무비아이디/ 포스터패스

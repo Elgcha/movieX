@@ -7,8 +7,8 @@ urlpatterns = [
     path('<username>/follow/', views.follow), #팔로우 하기
     path('profile/<username>/', views.profile), #프로필 조회
     path('profile/<username>/commentlist/', views.user_comment_set), #한 사람이 영화를 평가한 모든 한줄평
+    path('profile/<username>/recommend/', views.user_recommend), #한 사람이 평가한 모든영화
     path('profile/<username>/count', views.user_count), #팔로우,팔로잉, 평가한영화,찜한영화 총횟수 조회
-    path('profile/<username>/recommend/', views.user_recommend),
     path('api-token-auth/', obtain_jwt_token),
 
 
