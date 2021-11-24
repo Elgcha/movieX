@@ -36,17 +36,14 @@ urlpatterns = [
    path('create/', views.movie_create), #영화 생성 인물이있으면 연결도하자
     #인물과 영화 연결시키는 함수
    path('connect/mtop/', views.people_to_movie), #DB안에 인물과 영화를 연결시킨다
-
-    #영화 추천 알고리즘
-    path('<int:user_pk>/test/', views.recommend_for),
-   
+ 
    #test
     path('search/<str:keyword>/', views.test), #검색결과 보여줍니다 #영화리스트를 보여준다 #인물리스트를 보여준다
 
-
-
+ #영화 추천 알고리즘
+    path('<int:user_pk>/test/', views.recommend_for),
     path('<username>/test/recommend/', views.recommend_for),
-    # path('test/test/', views.extract_all),
+
 # ### search
 # path(<'search/<str:keyword>/', views.search),
 
