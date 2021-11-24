@@ -1,6 +1,6 @@
 <template>
 <div v-swiper:mySwiper="swiperOption" class="my-2 swiper-container">
-  <div class="h-full swiper-wrapper">
+  <div class="h-full p-2 swiper-wrapper">
     <popular-movies
     v-for="movie in movies"
     :key="movie.id"

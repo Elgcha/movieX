@@ -60,6 +60,8 @@ def people_to_movie(request):
     return Response(status=status.HTTP_200_OK)
 
 #전체영화의 변동정보 업데이트
+@api_view(['GET'])
+@permission_classes([AllowAny])
 def movie_update(request):
     movies = Movie.objects.all()
     for i in movies:
@@ -174,7 +176,7 @@ def db_update(request, keyword):#movie_save(request,keyword):
         data = {
                 'message': '권한이 없습니다.'
             }
-        return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(data)
 
 #슈퍼유저아닐경우 메세지추가
 ##

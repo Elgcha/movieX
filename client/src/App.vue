@@ -17,7 +17,7 @@
         </span>
       </div>
     </div>
-    <div class="container px-4 py-4 mx-auto rounded dark:bg-black">
+    <div class="px-4 py-4 mx-auto rounded dark:bg-black">
       <router-view @login="login"/>
     </div>
     <!-- <div id="footer">

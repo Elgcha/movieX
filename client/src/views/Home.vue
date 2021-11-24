@@ -1,6 +1,8 @@
 <template>
   <div class="dark:text-white home">
     <main-top></main-top>
+    <div class="container">
+
     <h2 class="mt-10 mb-2 text-left">#인기 영화</h2>
     <div class="p-2">
       <popular :movies="newMovie"></popular>
@@ -14,6 +16,7 @@
     <h2 class="mt-3 text-left">#{{ randomGenre }}</h2>
     <div>
       <face :movies="randomMovie"></face>
+    </div>
     </div>
   </div>
 </template>

@@ -15,28 +15,30 @@ def signup(request):
     password = request.data.get('password')
     passwordConfirmation = request.data.get('passwordConfirmation')
     username = request.data.get('username')
-    email = request.dataget('email')
-    print(request.data.email)
+    email = request.data.get('email')
     # 일치여부 확인
-    if password != passwordConfirmation:
-        return Response({ 'error': '비밀번호가 일치하지 않습니다.'})
-    UserModel = get_user_model()
-    person = UserModel.objects.filter(username=username)
-    if person:
-       return Response({ 'error': '이미 존재하는 닉네임입니다.'})
-	#UserSerializer를 통해 데이터 직렬화
-    # if requst.data  or '@' not in email or not (email[-4:] == '.com') :
-    #      return Response({ 'error': '잘못된 이메일 형식입니다.'})
-    serializer = UserSerializer(data=request.data)
+    try:
+        if password != passwordConfirmation:
+            return Response({ 'error': '비밀번호가 일치하지 않습니다.'})
+        UserModel = get_user_model()
+        person = UserModel.objects.filter(username=username)
+        if person:
+            return Response({ 'error': '이미 존재하는 닉네임입니다.'})
+        # UserSerializer를 통해 데이터 직렬화
+        if  email != '@' not in email or not (email[-4:] == '.com') :
+            return Response({ 'error': '잘못된 이메일 형식입니다.'})
+        serializer = UserSerializer(data=request.data)
     
         #validation 작업 진행 -> password도 같이 직렬화 진행
-    if serializer.is_valid(raise_exception=True):
-        user = serializer.save()
-        #비밀번호 해싱 후 
-        user.set_password(request.data.get('password'))
-        user.save()
-        # password는 직렬화 과정에는 포함 되지만 → 표현(response)할 때는 나타나지 않는다.
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.save()
+            #비밀번호 해싱 후 
+            user.set_password(request.data.get('password'))
+            user.save()
+            # password는 직렬화 과정에는 포함 되지만 → 표현(response)할 때는 나타나지 않는다.
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    except TypeError:
+        return Response({ "error": '입력하지 않은 칸이 있습니다.'})
 
 
 #####################프로필 페이지 구성할거 가져오기 

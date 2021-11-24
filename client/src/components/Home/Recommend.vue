@@ -1,6 +1,6 @@
 <template>
 <div v-swiper:mySwiper="swiperOption" class="my-2 swiper-container">
-  <div class="swiper-wrapper">
+  <div class="p-2 swiper-wrapper">
     <recommend-movies
     v-for="movie in movies"
     :key="movie.id"
