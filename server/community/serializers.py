@@ -18,8 +18,9 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('id', 'username', 'user', 'title', 'content', 'created_at', 'updated_at','user_image',)
+        fields = ('id', 'username', 'user', 'title', 'content', 'created_at', 'updated_at','views_num', 'user_image',)
         read_only_fields = ('user',)
+
 
 class CommentSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()

@@ -140,7 +140,7 @@ def movie_detail(request, movie_pk):
         }
         return Response(data, status=status.HTTP_204_NO_CONTENT)
 @api_view(['POST'])
-def movie_create(request):
+def movie_create(request, tmdb_id):
     serializer = MovieSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.save()
@@ -156,6 +156,7 @@ def movie_date(request):
 ### 비슷한 영화 보여주기
 # 장르로 필터
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def movie_same(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     movie_list = []
@@ -388,7 +389,7 @@ def extract_sim(user_pk): #한 영화의 모든영화의 유사도
         movie = Movie.objects.get(pk=m)
         B = movie
         sim[f'{movie.pk}'] = {
-            'movie_id': movie.id,
+            'id': movie.id,
             'title': movie.title,
             'poster_path': movie.poster_path,
             'similarity': jaccrdsimilarity(A,B),
@@ -397,8 +398,8 @@ def extract_sim(user_pk): #한 영화의 모든영화의 유사도
 ### 영화의 유사성으로 추천페이지 구성하기
 ##############################
 #내가 평가한 모든 영화의 유사성을 구한다
-def extract(user_pk):
-    user = get_object_or_404(get_user_model(),pk=user_pk)
+def extract(username):
+    user = get_object_or_404(get_user_model(),username=username)
     all_rate = user.moviecomment_set.all()
     all_sims = [] #평가한 영화를 기준으로 모드영화의 유사성을 나타낸 것
     #평가한 모든영화의 유사성을 담는다
@@ -408,14 +409,14 @@ def extract(user_pk):
 #####
 ## 내가평가하모든 영화의유사성
 ###
-def extract_recommend(user_pk):
-    user = get_object_or_404(get_user_model(),pk=user_pk)
+def extract_recommend(username):
+    user = get_object_or_404(get_user_model(),username=username)
     all_rate = user.moviecomment_set.all()
-    all_sims = extract(user_pk)
+    all_sims = extract(username)
     data =  {} #내가 평가한 영화
     for value in all_rate:
         data[f'{value.movie.id}'] = {
-            'movie_id': value.movie.id,
+            'id': value.movie.id,
             'title': value.movie.title,
             'rate': value.rate,
             }
@@ -439,9 +440,9 @@ def extract_recommend(user_pk):
 
     ##### 높은 순으로 필터 하기
     ##리커멘드로 정렬
-def recommend_sort(user_pk):
-    all_sims = extract_recommend(user_pk)
-    print(all_sims)
+def recommend_sort(username):
+    all_sims = extract_recommend(username)
+    # print(all_sims)
     temp_sort = []
     for k in all_sims:
         for result in k:
@@ -460,9 +461,14 @@ def recommend_sort(user_pk):
 
 # 추천api보낼 함수:
 @api_view(['GET'])
-def recommend_for(request, user_pk):
-    user = get_object_or_404(get_user_model(), pk=user_pk)
-    data = recommend_sort(user_pk)
-    
+@permission_classes([AllowAny])
+def recommend_for(request, username):
+    user = get_object_or_404(get_user_model(), username=username)
+    data = recommend_sort(username)
+    if not data:
+        movie = Movie.objects.order_by('-pk')[:10]
+        serializer = MovieSerializer(movie, many=True)
+        return Response(serializer.data)
+        
     return Response(data)
 # #무비아이디/ 포스터패스

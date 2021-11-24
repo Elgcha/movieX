@@ -2,8 +2,14 @@
   <div class="dark:text-white home">
     <face :movies="playingMovie"></face>
     <h2>인기 영화</h2>
-    <div>
+    <div class="p-2 bg-gray-600">
       <popular :movies="newMovie"></popular>
+    </div>
+    <div>
+    <h2 class="mt-10">추천 영화</h2>
+    </div>
+    <div class="p-2 bg-gray-500">
+      <recommend :movies="recommendMovies"></recommend>
     </div>
   </div>
 </template>
@@ -13,6 +19,7 @@
 import Face from '@/components/Home/Face.vue'
 import axios from 'axios'
 import Popular from '@/components/Home/Popular.vue'
+import Recommend from '../components/Home/Recommend.vue'
 
 
 export default {
@@ -20,12 +27,15 @@ export default {
   components: {
     Face,
     Popular,
+    Recommend,
   },
   data: function () {
     return {
       playingMovie: [], // 상영 중 영화
       newMovie: [], // 인기 영화
       key: process.env.VUE_APP_TMDB,
+      recommendMovies: [],
+      
       
     }
   },
@@ -62,11 +72,24 @@ export default {
         .then(res => {
           this.newMovie = res.data
         })
+    },
+    getRecommendMovie: function () {
+      const username = localStorage.getItem('username')
+      const url = process.env.VUE_APP_URL + `movies/${username}/test/recommend/`
+
+      axios({
+        method: 'get',
+        url: url,
+      })
+        .then(res => {
+          this.recommendMovies = res.data
+        })
     }
   },
   created: function () {
     this.getBestPlayingMovie()
     this.getNewMovies()
+    this.getRecommendMovie()
   }
 }
 </script>

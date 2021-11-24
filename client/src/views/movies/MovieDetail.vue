@@ -17,7 +17,7 @@
       </div>
     </div>
     <h3>출연</h3>
-    <div v-swiper:mySwiper="swiperOption1" class="my-2 bg-gray-600 swiper-container">
+    <div v-swiper:mySwiper="swiperOption" class="my-2 bg-gray-600 swiper-container">
       <div class="swiper-wrapper">
         <div
         v-for="people in movie.people"
@@ -29,15 +29,15 @@
         {{ people.name }}
         </div>
       </div>
-      <div class="swiper-button-prev1" slot="button-prev"></div> 
-      <div class="swiper-button-next1" slot="button-next"></div>
+      <div class="swiper-button-prev" slot="button-prev"></div> 
+      <div class="swiper-button-next" slot="button-next"></div>
     </div>
     <div class="m-3">
       <button v-show="!wanted" @click='iWantThisMovie'>보고싶은 영화에 추가</button>
       <button v-show="wanted" @click='iWantThisMovie'>보고싶은 영화에서 제거</button>
     </div>
     <h3>비슷한 영화</h3>
-    <div v-swiper:mySwiper="swiperOption" class="my-2 bg-gray-600 swiper-container">
+    <div v-swiper:mySwipers="swiperOption" class="my-2 bg-gray-600 swiper-container">
       <div class="swiper-wrapper">
         <similar-movie 
         v-for="similarMovie in similarMovies"
@@ -61,6 +61,7 @@ import axios from 'axios'
 import SimilarMovie from '@/components/movies/SimilarMovie.vue'
 import Comment from '@/components/movies/Comment.vue'
 import 'swiper/css/swiper.css'
+import {mapActions} from 'vuex'
 
 export default {
   components: { 
@@ -68,6 +69,12 @@ export default {
     Comment 
   },
   name: 'MovieDetail',
+  beforeRouteUpdate: function (to, from, next) {
+    next()
+    this.moviePk = this.$route.params.moviePk,
+    this.getMovieDetail()
+    this.getSimilarMovies()
+  },
   data: function () {
     return {
       moviePk: this.$route.params.moviePk,
@@ -84,18 +91,6 @@ export default {
         navigation: {
           nextEl: '.swiper-button-next', 
           prevEl: '.swiper-button-prev' 
-        },
-      },
-      swiperOption1: {
-        slidesPerView: 6,
-        spaceBetween: 10,
-        loop: false,
-        // autoplay: {
-        //   delay:5000,
-        // },
-        navigation: {
-          nextEl: '.swiper-button-next1', 
-          prevEl: '.swiper-button-prev1' 
         },
       },
       wanted: false,
@@ -137,6 +132,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'moveToDetail',
+    ]),
     setToken: function () {
       const token = localStorage.getItem('jwt')
       const config = {
@@ -157,22 +155,14 @@ export default {
 
     },
     getSimilarMovies: function () {
-      const key = process.env.VUE_APP_TMDB
-      const url = `https://api.themoviedb.org/3/movie/${this.moviePk}/similar`
+      const url = process.env.VUE_APP_URL + `movies/${this.moviePk}/same/`
 
       axios({
         method: 'get',
         url: url,
-        params: {
-          api_key: key,
-          language: 'ko-KR',
-        }
       })
         .then(res => {
-          this.similarMovies = res.data.results
-          this.similarMovies = this.similarMovies.filter(movie => {
-            return !movie.adult
-          })
+          this.similarMovies = res.data
         })
     },
     iWantThisMovie: function () {

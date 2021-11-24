@@ -6,6 +6,7 @@ urlpatterns = [
     ### movie
     path('', views.index),
     path('<int:movie_pk>/', views.movie_detail), #조회,수정, 삭제
+    path('create/<int:tmdb_id>/', views.movie_create),
     path('get/date/', views.movie_date), #최신 영화 보여주기
     path('get/random/', views.random_movie),
     path('<int:movie_pk>/same/', views.movie_same), # 비슷한 영화 보여주기 ###추가###
@@ -42,6 +43,12 @@ urlpatterns = [
    #test
     path('search/<str:keyword>/', views.test), #검색결과 보여줍니다 #영화리스트를 보여준다 #인물리스트를 보여준다
 
+
+
+    path('<username>/test/recommend/', views.recommend_for),
+    # path('test/test/', views.extract_all),
+# ### search
+# path(<'search/<str:keyword>/', views.search),
 
 ]
 

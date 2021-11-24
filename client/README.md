@@ -25,6 +25,17 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 # 패치노트
 
+## 11/23
+
+* 댓글 수정, 삭제 기능 추가 -> 따로 페이지 이동할 필요 없이
+* 비슷한 영화 추가
+* 메인페이지 추천 영화 추가
+* 영화 평가 기능 추가 -> 랜덤 영화를 보여주면 평점을 매기는 방식. 추천 영화 계산에 사용
+* 게시판 조회수 추가
+* 회원가입, 로그인 실패 시 에러메세지 추가
+* 영화 추가 페이지 추가 - tmdb api 검색
+* 유저 프로필 이미지 업로드 기능 추가
+
 ## 11/22
 
 * 검색 키 추가
@@ -34,13 +45,11 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 * 자동완성기능 구현
 * 다크모드 구현 시작
-* 
 
 ## 11/19
 
 * 외부 api 사용 중이던 것들 내부 api 사용으로 바꿈
 * 검색 기능 구현. 자동완성 구현 시작
-* 
 
 ## 11/18
 
@@ -89,9 +98,18 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
   bootstrap, tailwind, bootstrap-vue 중 고민 중
 
+  tailwind css -> 익숙한 bootstrap과 방법이 유사하면서 vs code에서 편의성이 매우 뛰어남. 생각한대로 커스터마이징이 자유로움.
+
   
 
 * 영화 목록 이미지 크기 똑같이 맞추기
 
   carousel을 추가하니 이미지 크기가 다시 달라져 버렸던 문제.. swiper 쪽에서 너비와 높이쪽을 건드려서 그런 듯.  object-fit: cover 가 작동을 안해서 한참 해멨는데, 찾아보니 이 설정은 너비와 높이 설정이 필요하다고 한다. 높이와 너비 100% 값을 줘서 해결.
 
+* 뷰 라우터에서 같은 컴포넌트간 이동
+
+  영화 디테일 페이지 -> 영화 디테일 페이지 인 경우 같은 컴포넌트를 사용하는데 라이프 사이클 훅이 달라서 데이터가 잘 불러와지지 않는 문제. 컴포넌트 재사용 시 생기는 `beforeRouteUpdate` 훅을 이용하였다. 
+
+* 유저 프로필 이미지 업로드
+
+  `FormData` 인스턴스 생성 후 자료를 append 해주고, axios 요청 시 헤더에` 'Content-Type': 'multipart/form-data'` 를 넣어줘서 해결.

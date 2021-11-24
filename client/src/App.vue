@@ -6,6 +6,7 @@
         <router-link to="/">Main</router-link> |
         <router-link to="/community/forum/">Forum</router-link> |
         <router-link to="/movies/">Search</router-link> |
+        <router-link to="/movies/add/search/">Add</router-link> |
         <a href="http://127.0.0.1:8000/admin">Admin</a>
       </div>
       <div class="flex">

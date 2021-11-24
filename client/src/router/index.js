@@ -10,6 +10,7 @@ import Admin from '@/views/accounts/Admin.vue'
 import MovieList from '@/views/movies/MovieList.vue'
 import MovieDetail from '@/views/movies/MovieDetail.vue'
 import PeopleDetail from '@/views/movies/PeopleDetail.vue'
+import MovieAdd from '@/views/movies/MovieAdd.vue'
 
 import Forum from '@/views/community/Forum.vue'
 import ArticleCreate from '@/views/community/ArticleCreate.vue'
@@ -42,6 +43,11 @@ const routes = [
     path: '/movies/people/:peoplePk/',
     name: 'PeopleDetail',
     component: PeopleDetail
+  },
+  {
+    path: '/movies/add/search/',
+    name: 'MovieAdd',
+    component: MovieAdd
   },
   // 게시판 관련
   {

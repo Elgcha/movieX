@@ -23,6 +23,7 @@
       class = "w-full px-3 py-2 mb-3 leading-tight text-gray-700 border border-red-500 rounded appearance-none hadow focus:outline-none focus:shadow-outline"
       >
     </div>
+    <div v-if="errorMessage" class="mb-3 text-red-600">{{ errorMessage }}</div>
     <button @click="signup" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline">회원가입</button>
   </div>
 </div>
@@ -40,22 +41,30 @@ export default {
         email: null,
         password: null,
         passwordConfirmation: null,
-      }
+      },
+      errorMessage: null,
     }
   },
   methods: {
     signup: function () {
+      // if (this.credentials.password !== this.credentials.passwordConfirmation) {
+      //   this.passwordError = true
+      // }
       axios({
         method: 'post',
         url: 'http://127.0.0.1:8000/accounts/signup/',
         data: this.credentials
       })
         .then(res => {
-          console.log(res)
-          this.$router.push({ name: 'Login'})
+          console.log(res.data.error)
+          if (res.data.error) {
+            this.errorMessage = res.data.error
+          } else {
+            this.$router.push({ name: 'Login'})
+          }
         })
         .catch(err => {
-          console.log(err)
+          console.log(err.data)
         })
     }
   }
