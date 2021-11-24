@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.encoding import uri_to_iri
 from django.db.models import Avg
 from django.contrib.auth import get_user_model
-from requests import api
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -13,10 +12,10 @@ from accounts.models import User
 from .models import Movie, MovieSite, People, Genre, MovieComment
 from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer, MovieSiteSerializer
 
+
 import random
 import requests
-
-from movies import serializers
+from itertools import chain
 
 
 # Create your views here.
@@ -75,16 +74,7 @@ def movie_update(request):
     return Response(status=status.HTTP_200_OK)
 ###
 
-# 영화검색 시리얼라이저로 보여줌
-# @api_view(['GET'])
-# def test(request, keyword):#movie_create_api(request, keyword):
-#     #url을 영화만 보여줄건지 search/multi로 인물도 같이 보여줄건지
-#     url = get_request_url(method='search/movie',region='KR', language='ko', query=f'{uri_to_iri(keyword)}' )
-#     data = requests.get(url).json()
-#     tmdb_id = data['results'][0]["id"]
-#     print(tmdb_id)
-#     return tmdb_id
-def tests(tmdb_id):#movie_create_api(request, keyword):
+def get_search_movie_detail(tmdb_id):#movie_create_api(request, keyword):
     #url을 영화만 보여줄건지 search/multi로 인물도 같이 보여줄건지
     # url = get_request_url(method='search/movie',region='KR', language='ko', query=f'{tmdb_id}')#f'{uri_to_iri(keyword)}' )
     # data = requests.get(url).json()
@@ -110,7 +100,7 @@ def people_movie_credits(tmdb_id): #인물 상세정보추가를 위한 인물�
     return Response(data)
 
 @api_view(['GET',"POST"]) #불러와서저장하는 함수 #영화를 불러오면 인물도 같이 가져와서저장해주자
-def test(request, keyword):#movie_save(request,keyword):
+def db_update(request, keyword):#movie_save(request,keyword):
 
     if request.user.is_superuser:      
         if Movie.objects.filter(tmdb_id=keyword):
@@ -119,14 +109,14 @@ def test(request, keyword):#movie_save(request,keyword):
             }
             return Response(data, status=status.HTTP_208_ALREADY_REPORTED)
         else:
-            data = tests(keyword) #영화라면
-            pk = Movie.objects.count() +1
+            data = get_search_movie_detail(keyword) #영화라면
+            mpk = Movie.objects.count() +1
             genre = []
             for i in data.data.get('genres'):
                 genre.append(i.get('id'))
 
             created = Movie.objects.create(
-                    id = pk,   
+                    id = mpk,   
                     adult = data.data.get('adult'),
                     backdrop_path = data.data.get('backdrop_path'),
                     tmdb_id= data.data.get('id'),
@@ -149,7 +139,8 @@ def test(request, keyword):#movie_save(request,keyword):
                 data = credits.data.get('cast')[i]
 
                 if People.objects.filter(tmdb_id=data.get('id')): #에러임 없다는걸알아야됌v필터;;
-                    continue
+                    created_people = People.objects.get(tmdb_id=data.get('id'))
+                    pk = created_people
                 else:
                     pk = People.objects.count()+1
                     created_people = People.objects.create(
@@ -164,39 +155,28 @@ def test(request, keyword):#movie_save(request,keyword):
                         also_known_as = data.get('also_known_as'),
                         known_for_department = data.get('known_for_department')
                         )
-                    created_people.save() 
+                    created_people.save()
+                created_one = Movie.objects.get(pk=mpk)
+                created_one.people.add(created_people)
+                created_one.save()
 
-                person_id.append(data.get('id'))
-
+                person_id.append(data.get('id')) #영화에 추가된 인물
 
             for j in person_id:
-                ## 영화와 인물연결
-                db_movie_list = set() # 디비의영화리스트
-                people_db = People.objects.get(tmdb_id= j).people_movies.all()
-                for k in people_db:
-                    db_movie_list.add(k.tmdb_id)
-                person_credits  = people_movie_credits(j).data
-                person_movie_list = set() #api영화 출연목록
-                #db에 영화가 있으면 추가하자
-                #db영화목록 불러와서 
-                for person_movies in person_credits.get('cast'): #출연영화개수만큼가져오기
-                    # person_movie_list.add(person_credits.get('cast')[person_movies].get('id'))
-                    person_movie_list.add(person_movies.get('id'))
-                result = set.intersection(db_movie_list, person_movie_list)
-                person = People.objects.get(tmdb_id=j)
-                person.people_movies.set(result)
-                # person.save()
             ## 인물 추가정보 저장
+                person = People.objects.get(tmdb_id=j)
                 people_add = people_credits(j).data
                 person.also_known_as = people_add.get('also_known_as')
                 person.birthday = people_add.get('birthday')
                 person.save()
+        return Response(status=status.HTTP_201_CREATED)     
+    else:
+        data = {
+                'message': '권한이 없습니다.'
+            }
+        return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
-
-    return Response(status=status.HTTP_201_CREATED)    
-
-##
-
+#슈퍼유저아닐경우 메세지추가
 ##
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -227,12 +207,6 @@ def movie_detail(request, movie_pk):
             'message': '영화가 삭제 되었습니다',
         }
         return Response(data, status=status.HTTP_204_NO_CONTENT)
-@api_view(['POST'])
-def movie_create(request, tmdb_id):
-    serializer = MovieSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -248,16 +222,17 @@ def movie_date(request):
 def movie_same(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     movie_list = []
-    movie_set=[]
+    movie_set= set()
     for i in movie.genres.all():
         id = i.id
         movie_list.append(id)
     for j in movie_list:
         movie = Movie.objects.filter(genres=j).exclude(pk=movie_pk)
-        movie_set.append(movie)
-    serializer = MovieSerializer(movie, many=True)
+        movie_set.add(movie)
+    result = list(chain.from_iterable(movie_set))
+    print(result)
+    serializer = MovieSerializer(result, many=True)
     return Response(serializer.data)
-
 
 ### for people
 
@@ -269,12 +244,6 @@ def index_people(request): #전체 인물 목록 조회
         serializer = PeopleSerializer(people, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-@api_view(['POST'])
-def people_create(request):
-    serializer = MovieSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 @api_view(['GET','PUT','DELETE'])
 def people_detail(request, people_pk):
     people = get_object_or_404(People, pk=people_pk)
@@ -283,34 +252,33 @@ def people_detail(request, people_pk):
         serializer = PeopleSerializer(people)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    if request.method == "PUT":
-        serializer = MovieSerializer(people, data = request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(people=people)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+    # if request.method == "PUT":
+    #     serializer = MovieSerializer(people, data = request.data)
+    #     if serializer.is_valid(raise_exception=True):
+    #         serializer.save(people=people)
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    if request.method == "DELETE":
-        people.delete()
-        data = {
-            'message': '영화가 삭제 되었습니다',
-        }
-        return Response(data, status=status.HTTP_204_NO_CONTENT)
+    # if request.method == "DELETE":
+    #     people.delete()
+    #     data = {
+    #         'message': '영화가 삭제 되었습니다',
+    #     }
+    #     return Response(data, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET'])
 def people_movie_list(request, people_pk):
     people = get_object_or_404(People, pk=people_pk)
     serializer = PeopleMovieListSerializer(people)
     return Response(serializer.data, status=status.HTTP_200_OK)
-       
-def people_update(request):
-    pass
 
 ### comment
 @api_view(['POST'])
 def comment_create(request, movie_pk):
     movie = get_object_or_404(Movie, pk= movie_pk)
+
     if movie.moviecomment_set.filter(user=request.user):
         return Response(status=status.HTTP_200_OK)
+
     serializer = MovieCommentSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.save(movie=movie, user=request.user)
@@ -339,8 +307,6 @@ def rate_movie(request, movie_pk):
     # api업데이트기능을 추가해서 실시간 업데이트 가능
     return Response(data)
 
-
-
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def comment_list(request, movie_pk):
@@ -357,10 +323,6 @@ def comment_update(request, movie_pk, username):
         return Response(status.HTTP_401_UNAUTHORIZED)
     movie = get_object_or_404(Movie, pk=movie_pk)
     comment = movie.moviecomment_set.get(user=person)
-
-    # if request.method == 'GET':  # 조회
-    #     serializer = MovieCommentSerializer(comment)
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT': # 수정
         serializer= MovieCommentSerializer(comment, data=request.data) 
@@ -405,12 +367,7 @@ def want_check(request, movie_pk):
         'count' : movie.want.count(), #영화 찜한 사람수
     }
     return Response(data)
-
-
-
-
-
-                  
+         
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def list_movie(request, moviename):
@@ -438,7 +395,9 @@ def list_movie(request, moviename):
         serializer = MovieSerializer(movies, many=True)
 
         return Response(serializer.data)
+
 from django.db.models import Q
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def random_movie(request):
@@ -452,9 +411,6 @@ def random_movie(request):
     movie = random.choice(movies)
     serializer = MovieSerializer(movie)
     return Response(serializer.data)
-
-
-
 
 # 장르의 유사도를 구해서
 # 인기도와 유저 평점에 결과값을 곱하자
@@ -497,9 +453,8 @@ def extract(username):
     for i in all_rate:
         all_sims.append(extract_sim(i.movie.pk)) 
     return all_sims
-#####
+
 ## 내가평가하모든 영화의유사성
-###
 def extract_recommend(username):
     user = get_object_or_404(get_user_model(),username=username)
     all_rate = user.moviecomment_set.all()
@@ -521,13 +476,12 @@ def extract_recommend(username):
                         continue
                     j[result]['recommend'] = round((  
                     j[result]['similarity'] *    #내가 평가한 영화와의 유사도
-                    data[f'{rated}']['rate'] * #내가 평가한 영화의 평점
+                    data[f'{rated}']['rate'] + #내가 평가한 영화의 평점
                     Movie.objects.get(pk= f'{result}').vote_average # 이 영화의 db 평점
                     # Movie.objects.get(pk= f'{rated}').popularity #내가 평가한영화의 인기도
                 ),3)
     return(all_sims) # 모든영화의 유사도를 구하고
 ###################################
-
 
     ##### 높은 순으로 필터 하기
     ##리커멘드로 정렬
@@ -562,7 +516,6 @@ def recommend_for(request, username):
         return Response(serializer.data)
         
     return Response(data)
-# #무비아이디/ 포스터패스
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -585,3 +538,4 @@ def site_delete(request, movie_pk, site_id):
     moviesite = get_object_or_404(MovieSite, pk=site_id)
     moviesite.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+

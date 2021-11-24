@@ -1,11 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.utils import field_mapping
 
 from .models import Movie, People, Genre, MovieComment, MovieSite
 
 class GenreSerializer(serializers.ModelSerializer):
-   # name = Genre.objects.filter()
 
     class Meta:
         model = Genre
@@ -46,7 +44,9 @@ class MovieCommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('movie', 'user',)
 
 class MovieSerializer(serializers.ModelSerializer):
+    
     class PeopleSerializer(serializers.ModelSerializer):
+        
         class Meta:
             model = People
             fields = ('id', 'name', 'birthday', 'profile_path', 'also_known_as', 'known_for_department',)
@@ -60,14 +60,13 @@ class MovieSerializer(serializers.ModelSerializer):
         fields = '__all__' #영화 한줄평, 영화 좋아요, 
         read_only_fields = ('vote_count', 'vote_average', 'people', 'want','genres',)
 
-
-
-
-
 ### 인물의 출연영화
 class PeopleMovieListSerializer(serializers.ModelSerializer):
+    
     class MovieSerializer(serializers.ModelSerializer):
+        
         genres = GenreSerializer( many=True, read_only=True)
+        
         class Meta:
             model = Movie
             fields = ('id', 'genres', 'title', 'runtime', 'poster_path', 'release_date', 'vote_average',)

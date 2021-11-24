@@ -84,7 +84,7 @@ export default {
     // db에 추가
     addMovie: function (tmdbId) {
       const url = process.env.VUE_APP_URL + `movies/search/${tmdbId}/`
-      const url2 = process.env.VUE_APP_URL + 'movies/connect/mtop/'
+      // const url2 = process.env.VUE_APP_URL + 'movies/connect/mtop/'
       axios({
         method: 'post',
         url: url,
@@ -99,10 +99,10 @@ export default {
             this.errMessage = '추가되었습니다.'
             let alert = document.getElementById("myAlert2")
             alert.style.display = "block"
-            axios({
-              method: 'get',
-              url: url2,
-            })
+            // axios({
+            //   method: 'get',
+            //   url: url2,
+            // })
           }
         })
         .catch(err => {
