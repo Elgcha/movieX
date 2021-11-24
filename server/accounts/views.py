@@ -29,7 +29,6 @@ def signup(request):
     if person:
        return Response({ 'error': '이미 존재하는 닉네임입니다.'})
 	#UserSerializer를 통해 데이터 직렬화
-    print(email[-4:], email)
     if '@' not in email or not (email[-4:] == '.com'):
          return Response({ 'error': '잘못된 이메일 형식입니다.'})
     serializer = UserSerializer(data=request.data)
@@ -137,9 +136,9 @@ def user_recommend(request,username):
 #temp
 
 @api_view(["PUT",'GET'])
-def temp(request, user_pk):
+def temp(request, username):
 
-    user= get_object_or_404(get_user_model(), pk=user_pk)
+    user= get_object_or_404(get_user_model(), pk=username)
 
     if request.method == "GET":
         serializer = UserSerializer(user)
@@ -156,12 +155,30 @@ def temp(request, user_pk):
         user.save()
         return Response(status=status.HTTP_200_OK)
 
-@api_view(["POST", "PUT"])
-@permission_classes([AllowAny])
-def image(request):
-    src = request.FILES['files']
 
-    request.user.image_path = src
-    request.user.save()
+@api_view(["PUT",'GET'])
+# @permission_classes([AllowAny])
+def image(request, username):
 
+    user= get_object_or_404(get_user_model(), username=username)
+
+    if request.method == "GET":
+        data = user.image_path
+        return Response(data)
+        
+    if request.method == "PUT":
+        src = request.data['image']
+        user.image_path = src
+        user.save()
+        return Response(status=status.HTTP_200_OK)
+
+@api_view(["PUT"])
+def email_change(request, username):
+    users = get_user_model()
+    person = get_object_or_404(users, username=username)
+    email = request.data.get('email')
+    if '@' not in email or not (email[-4:] == '.com'):
+         return Response({ 'error': '잘못된 이메일 형식입니다.'})
+    person.email = email
+    person.save()
     return Response(status=status.HTTP_200_OK)

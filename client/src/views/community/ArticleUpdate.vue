@@ -63,7 +63,7 @@ export default {
     },
     // 게시글 수정
     ArticleUpdate: function() {
-      const url = process.env.VUE_APP_URL + `community/${this.articlePk}`
+      const url = process.env.VUE_APP_URL + `community/${this.articlePk}/`
       axios({
         method: 'put',
         url: url,

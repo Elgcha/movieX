@@ -1,13 +1,17 @@
 <template>
-<div>
-  <div class="relative hidden py-3 pl-4 pr-10 leading-normal text-red-700 bg-red-100 rounded-lg" role="alert" id="myAlert">
-  <p>모든 영화를 평가하셨습니다.</p>
-  <span class="absolute inset-y-0 right-0 flex items-center mr-4" @click="alertClose">
-    <svg class="w-4 h-4 fill-current" role="button" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
-  </span>
-</div>
+<div class="">
+  <div class="fixed inset-0 z-10 hidden w-full h-full overflow-y-auto bg-gray-600 bg-opacity-50"  role="alert" id="myAlert">
+    <div class="relative p-5 mx-auto text-white bg-gray-600 border rounded-md shadow-lg top-20 w-96">
+    <div>모든 영화를 평가하셨습니다.</div>
+    <span class="absolute inset-y-0 right-0 flex items-center mr-4" @click="alertClose">
+      <svg class="w-4 h-4 transform fill-current hover:scale-110" role="button" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+    </span>
+    </div>
+  </div>
 
-  <button class="px-2 mx-3 my-auto text-white border" type="button" data-modal-toggle="movieEval" @click="toggle" id="movieModal">
+
+
+  <button class="px-2 mx-3 my-auto text-white" type="button" data-modal-toggle="movieEval" @click="toggle" id="movieModal">
     영화 평가
   </button>
 
@@ -25,7 +29,8 @@
     id="my-modal"
   >
   <div
-    class="relative p-5 mx-auto bg-white border rounded-md shadow-lg top-20 w-96"
+    v-if="movie"
+    class="relative p-5 mx-auto text-white bg-gray-600 border rounded-md shadow-lg top-20 w-96"
   >
     <div class="grid mt-3 text-center">
       <div>
@@ -33,12 +38,12 @@
           <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" alt="poster" class="p-1">
         </div>
         <div>
-          <h3 class="mt-2 text-lg font-medium leading-6 text-gray-900">{{movie.title}}</h3>
+          <h3 class="mt-2 text-lg font-medium leading-6">{{movie.title}}</h3>
           <div class="flex justify-center">
             <div v-for="(genre, index) in movie.genres" :key="index" class="mx-2"> {{ genre.name }} </div>
           </div>
           <div class="py-3 mt-2 px-7">
-            <p class="p-1 text-sm text-left text-gray-500">
+            <p class="p-1 text-sm text-left">
               {{movie.overview}}
             </p>
           </div>
@@ -139,7 +144,7 @@ export default {
     },
   },
   created: function () {
-    this.getMovie()
+    
   }
 }
 </script>

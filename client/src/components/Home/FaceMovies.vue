@@ -1,10 +1,10 @@
 <template>
   <div id="face" @click="moveToDetail(movie.id)">
-    <img :src="imgSrc" alt="" v-if="movie" class='w-full opacity-50'  >
+    <img :src="imgSrc" alt="" v-if="movie" class='w-full rounded'  >
     <span v-if='movie' class="title">
       <p>{{ movie.title }}</p>
 
-      {{ movie.overview }}
+      {{ movie.overview|truncate(150) }}
       </span>
     <span>
       <face-movies-similar :movie="movie"></face-movies-similar>
@@ -22,6 +22,13 @@ export default {
   props: {
     movie: {
       type: Object,
+    }
+  },
+  filters: {
+    truncate: function(data, num){
+        const reqdString = 
+          data.slice(0, num)
+        return reqdString +'...';
     }
   },
   methods: {

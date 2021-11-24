@@ -1,14 +1,14 @@
 <template>
 <div>
   <!-- 검색창 -->
-  <div class="relative w-1/3 mx-auto mt-3">
+  <div class="relative w-full mx-auto my-3 md:w-1/3">
     <div class="flex w-full">
-      <input type="text" @input="inputChange" class="w-full py-2 text-gray-700 border rounded shadow appearance-none place-self-auto focus:outline-none focus:shadow-outline" id="search_input">
+      <input type="text" @input="inputChange" @keyup.enter="searchMovie" class="w-full py-2 text-gray-700 border rounded shadow appearance-none place-self-auto focus:outline-none focus:shadow-outline" id="search_input">
       <button @click="searchMovie" class="place-self-auto btn btn-blue btn-blue:hover"><img src="https://raw.githubusercontent.com/filippo-quacquarelli/tag-search/master/search.png" alt="search"></button>
     </div>
     <!-- 자동완성 -->
 
-    <div class="absolute z-10 w-full text-left bg-white divide-y rounded-md" v-show="autosearch" tabindex="-1">
+    <div class="absolute z-10 w-full text-left text-black bg-white divide-y rounded-md" v-show="autosearch" tabindex="-1">
       <div v-for="autoMovie in autoCompleted" :key=autoMovie.score class="p-1 hover:bg-gray-300" @click="autoCompleteSearch(autoMovie.item.title)">
         {{ autoMovie.item.title }}
       </div>

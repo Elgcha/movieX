@@ -10,8 +10,9 @@ urlpatterns = [
     path('profile/<username>/recommend/', views.user_recommend), #한 사람이 평가한 모든영화
     path('profile/<username>/count', views.user_count), #팔로우,팔로잉, 평가한영화,찜한영화 총횟수 조회
     path('api-token-auth/', obtain_jwt_token),
-
+    path('profiles/<username>/', views.image),
+    path('<username>/update/', views.email_change),
 
     # temp
-    path('profiles/<int:user_pk>/', views.temp), # 이름바꾸기
+    path('profiles/<int:user_pk>/name/', views.temp), # 이름바꾸기
 ]

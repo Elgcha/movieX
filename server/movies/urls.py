@@ -23,9 +23,9 @@ urlpatterns = [
 
    ### comment 영화평가 관련
    path('<int:movie_pk>/comment/', views.comment_create),
+   path('<int:movie_pk>/rate/moviex/', views.rate_movie), #DB자체 영화지수 보여주기
    path('<int:movie_pk>/<username>/', views.comment_update),
    path('<int:movie_pk>/comment/list/', views.comment_list), #comment에 평점도 보인다
-   path('<int:movie_pk>/rate/', views.rate_movie), #DB자체 영화지수 보여주기
 
    # 장르별 영화리스트 보여주기
    path('<moviename>/', views.list_movie),

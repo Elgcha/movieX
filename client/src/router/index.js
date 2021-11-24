@@ -6,6 +6,7 @@ import Login from '@/views/accounts/Login.vue'
 import Signup from '@/views/accounts/Signup.vue'
 import Profile from '@/views/accounts/Profile.vue'
 import Admin from '@/views/accounts/Admin.vue'
+import userUpdate from '@/views/accounts/userUpdate.vue'
 
 import MovieList from '@/views/movies/MovieList.vue'
 import MovieDetail from '@/views/movies/MovieDetail.vue'
@@ -85,6 +86,11 @@ const routes = [
     path: '/accounts/:username/',
     name: 'Profile',
     component: Profile,
+  },
+  {
+    path: '/accounts/update/:username/',
+    name: 'UserUpdate',
+    component: userUpdate,
   },
   {
     path: '/accounts/admin/',

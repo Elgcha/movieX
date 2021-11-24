@@ -1,8 +1,8 @@
 <template >
-  <div id="app" @click="offMenu">
-    <div id="nav" class="flex justify-between bg-gray-400">
-      <p class="my-auto text-2xl text-white ">moiveX</p>
-      <div v-if="isLogin" class="my-auto">
+  <div id="app" @click="offMenu" class="dark:text-gray-200">
+    <div id="nav" class="flex justify-between p-2 bg-gray-500">
+      <p class="my-auto text-2xl text-white cursor-pointer" @click="moveToMain">moiveX</p>
+      <div v-if="isLogin" class="mx-auto my-auto">
         <router-link to="/">Main</router-link> |
         <router-link to="/community/forum/">Forum</router-link> |
         <router-link to="/movies/">Search</router-link> |
@@ -10,14 +10,14 @@
         <a href="http://127.0.0.1:8000/admin">Admin</a>
       </div>
       <div class="flex">
-        <movie-eval></movie-eval>
-        <accounts-dropdown :menu="menu" @toggle="toggleMenu" class="mydropdown" v-if="isLogin"></accounts-dropdown>
-        <span v-else>
+        <movie-eval class="p-1 mx-2 my-auto bg-gray-400 rounded hover:bg-gray-600" v-if="isLogin"></movie-eval>
+        <accounts-dropdown :menu="menu" @toggle="toggleMenu" class="mydropdown " v-if="isLogin"></accounts-dropdown>
+        <span v-else class="my-auto">
           <router-link to="/accounts/login/">Login</router-link>
         </span>
       </div>
     </div>
-    <div class="container px-4 py-4 mx-auto dark:bg-gray-800">
+    <div class="container px-4 py-4 mx-auto rounded dark:bg-gray-800">
       <router-view @login="login"/>
     </div>
     <!-- <div id="footer">
@@ -44,6 +44,11 @@ export default ({
     }
   },
   methods: {
+    moveToMain: function () {
+      if (this.isLogin) {
+        this.$router.push({name:'Home'})
+      }
+    },
     offMenu: function (event) {
       if (!event.target.classList.contains('mydropdown')){
         this.menu = false
@@ -89,20 +94,15 @@ export default ({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 10px;
 }
 
 #nav a {
   font-weight: bold;
-  color: #2c3e50;
 }
 
 #nav a.router-link-exact-active {
-  color: #84b9a2;
+  /* color: #84b9a2; */
+  @apply text-green-400
 }
 
 
