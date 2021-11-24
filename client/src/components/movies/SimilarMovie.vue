@@ -1,8 +1,8 @@
 <template>
-  <div class='p-2 popular' @click="moveToDetail(movie.tmdb_id)">
+  <div class='p-2 popular' @click="moveToDetail(movie.id)">
       <img :src="imgSrc" alt="popularmovie" class="object-cover h-full">
-      <div class="overlay">
-      <h3 class="description">{{ movie.title }}</h3>
+      <div class="overlay" @click="moveToDetail(movie.id)">
+      <h3 class="description" @click="moveToDetail(movie.id)">{{ movie.title }}</h3>
     </div>
   </div>
 </template>
@@ -31,5 +31,37 @@ export default {
 </script>
 
 <style>
-
+.popular {
+  position: relative;
+}
+.popular:hover h4 {
+  display: none;
+} 
+.popular:hover .overlay {
+  display: block;
+  height: 100%;
+}
+.popular .overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 0;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+      -webkit-transition: .6s ease;
+      transition: .6s ease;
+}
+.popular .overlay .description {
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
 </style>

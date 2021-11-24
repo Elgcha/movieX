@@ -1,32 +1,32 @@
 <template>
-  <div>
-    
-    <!-- 게시판 부분 -->
-    
+  <div class="flex flex-wrap">
     <table class="w-full text-white rounded table-fixed bg-gradient-to-r from-gray-900 to-gray-800">
       <thead>
-        <tr>
-          <th class="w-6/12">Title</th>
-          <th class="w-4/12">Author</th>
-          <th class="w-1/12">Time</th>
-          <th class="w-1/12">Views</th>
+        <tr class="">
+          <th class="w-6/12 p-1">Title</th>
+          <th class="w-4/12 p-1">Author</th>
+          <th class="w-1/12 p-1">Time</th>
+          <th class="w-1/12 p-1">Views</th>
         </tr>
       </thead>
       
-      <tbody class="divide-y divide-gray-500 rounded">
-        <tr v-for="article in pagenatedArticles" :key="article.id"  class="rounded cursor-pointer hover:bg-gray-600"  @click="ArticleDetail(article)">
-          <td class="p-2 px-4 text-left rounded">{{ article.title }}</td>
-          <td class="p-2">{{ article.username }}</td>
-          <td class="p-2">{{ calDate(article.created_at) }}</td>
-          <td class="p-2 rounded">{{ article.views_num }}</td>
+      <tbody class="divide-y divide-gray-500">
+        <tr v-for="article in pagenatedArticles" :key="article.id"  class="cursor-pointer hover:bg-gray-600"  @click="moveToArticleDetail(article.item.id)">
+          <td class="p-2 px-4 text-left rounded-l">{{ article.item.title }}</td>
+          <td class="p-2">{{ article.item.username }}</td>
+          <td class="p-2">{{ calDate(article.item.created_at) }}</td>
+          <td class="p-2 rounded-r">{{ article.item.views_num }}</td>
           <hr>
         </tr>
       </tbody>
     </table>
-    <div class="flex justify-end mt-1">
-      <button class="m-1 btn btn-blue" @click="ArticleCreate">글 작성</button>
-    </div>
-    <div class="container flex justify-center mx-auto my-2">
+    <!-- <div v-for="article in pagenatedArticles" :key="article.id" class='grid w-full grid-cols-2 gap-2 p-2 text-left bg-gray-700 border hover:bg-gray-600 popular' @click="moveToArticleDetail(article.item.id)">
+        <div class="text-white">
+          <p>{{ article.item.title }}</p>
+        </div>
+      </div> -->
+      <!-- 페이지네이션 -->
+      <div class="container flex justify-center mx-auto my-2">
         <ul class="flex">
             <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600 rounded-l hover:bg-gray-100" :disabled="pageNum === 0" @click="prevPage">Prev</button></li>
             <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum > 1" @click="pageNum=0">1</button></li>
@@ -39,40 +39,26 @@
             <li><button class="h-10 px-5 text-gray-600 bg-white border border-gray-600 rounded-r hover:bg-gray-100" :disabled="pageNum >= pageCount - 1" @click="nextPage">Next</button></li>
         </ul>
     </div>
-    
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
-  name: 'Forum',
+  name: 'articlePage',
   data: function () {
     return {
-      articles: [],
-      pageNum: 0,
+      pageNum: 0
     }
   },
   props: {
+    articles: {
+      type: Array,
+    },
     pageSize: {
       type: Number,
       required: false,
-      default: 20
+      default: 10
     },
-  },
-  computed: {
-    pageCount: function() {
-      let articleNum = this.articles.length
-      let articleSize = this.pageSize
-      let page = Math.floor((articleNum-1) / articleSize) + 1
-      return page
-    },
-    pagenatedArticles: function () {
-      const start = this.pageNum * this.pageSize
-      const end = start + this.pageSize
-      return this.articles.slice(start, end)
-    }
   },
   methods: {
     calDate: function (date) {
@@ -89,28 +75,23 @@ export default {
     prevPage: function () {
       this.pageNum -= 1;
     },
-    ArticleCreate: function () {
-      this.$router.push({name: 'ArticleCreate'})
+    moveToArticleDetail: function (articlePk) {
+      this.$router.push({name: 'ArticleDetail', params: {articlePk: articlePk}})
     },
-    getArticles: function () {
-      axios({
-        method: 'get',
-        url: 'http://127.0.0.1:8000/community/'
-      })
-        .then(res => {
-          this.articles = res.data
-        })
-        .catch(err => {
-          console.log(err)
-        })
+  },
+  computed: {
+    pageCount: function() {
+      let articleNum = this.articles.length
+      let articleSize = this.pageSize
+      let page = Math.floor((articleNum-1) / articleSize) + 1
+      return page
     },
-    ArticleDetail : function (article) {
-      this.$router.push({name: 'ArticleDetail', params: {articlePk: article.id}})
+    pagenatedArticles: function () {
+      const start = this.pageNum * this.pageSize
+      const end = start + this.pageSize
+      return this.articles.slice(start, end)
     }
   },
-  created: function() {
-    this.getArticles()
-  }
 }
 </script>
 

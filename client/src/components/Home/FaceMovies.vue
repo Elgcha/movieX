@@ -1,27 +1,27 @@
 <template>
-  <div id="face" @click="moveToDetail(movie.id)">
-    <img :src="imgSrc" alt="" v-if="movie" class='w-full opacity-50'  >
-    <span v-if='movie' class="title">
-      <p>{{ movie.title }}</p>
+  <div class='w-full h-auto cursor-pointer popular'>
+      <img :src="imgSrc" alt="popularmovie" class="w-full h-full transform rounded hover:scale-110" @click="moveToDetail(movie.id)">
 
-      {{ movie.overview }}
-      </span>
-    <span>
-      <face-movies-similar :movie="movie"></face-movies-similar>
-    </span>
   </div>
 </template>
 
 <script>
-import FaceMoviesSimilar from '@/components/Home/FaceMoviesSimilar.vue'
+// import FaceMoviesSimilar from '@/components/Home/FaceMoviesSimilar.vue'
 import { mapActions } from 'vuex'
 
 export default {
-  components: { FaceMoviesSimilar },
+  components: {  },
   name:'FaceMovies',
   props: {
     movie: {
       type: Object,
+    }
+  },
+  filters: {
+    truncate: function(data, num){
+        const reqdString = 
+          data.slice(0, num)
+        return reqdString +'...';
     }
   },
   methods: {
@@ -31,22 +31,13 @@ export default {
   },
   computed: {
     imgSrc: function () {
-      return 'https://image.tmdb.org/t/p/w500/' + this.movie.backdrop_path
+      return 'https://image.tmdb.org/t/p/w500/' + this.movie.poster_path
     }
   },
 }
 </script>
 
 <style>
-#face {
-  position: relative;
-}
-#face span {
-  position: absolute;
-  z-index: 1;
-  color: white;
-  top: 20px;
-  left:20px;
-}
+
 
 </style>

@@ -1,15 +1,15 @@
 <template>
   <div>
     <h1>글 작성</h1>
-    <div>
-      <label for="title">제목 </label>
-      <input type="text" @input="inputTitle" id='title'>
+    <div class="w-full">
+      <label class="block m-2 text-lg font-bold text-left text-white" for="title">제목 </label>
+      <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:border-green-800" type="text" @input="inputTitle" id='title'>
     </div>
-    <div>
-      <label for="content">내용 </label>
-      <input type="text" @input="inputContent" id='content'>
+    <div class="w-full">
+      <label class="block m-2 text-lg font-bold text-left text-white" for="content">내용 </label>
+      <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:border-green-800" @input="inputContent" id='content' style="min-height:20vh"></textarea>
     </div>
-    <button @click="ArticleUpdate">제출</button>
+    <button @click="ArticleUpdate" class="m-3 btn btn-blue">수정</button>
   </div>
 </template>
 
@@ -27,6 +27,13 @@ export default {
     }
   },
   methods: {
+    setToken: function () {
+      const token = localStorage.getItem('jwt')
+      const config = {
+        Authorization: `JWT ${token}`
+      }
+      return config
+    },
     // 정보 입력
     inputTitle: function(event) {
       this.Article.title = event.target.value
@@ -36,9 +43,10 @@ export default {
     },
     // 원래 정보 입력
     getArticle: function () {
+      const url = process.env.VUE_APP_URL + `community/${this.articlePk}`
       axios({
         method: 'get',
-        url: `http://127.0.0.1:8000/community/${this.articlePk}/`
+        url: url,
       })
         .then(res => {
           console.log(res)
@@ -55,13 +63,15 @@ export default {
     },
     // 게시글 수정
     ArticleUpdate: function() {
+      const url = process.env.VUE_APP_URL + `community/${this.articlePk}/`
       axios({
         method: 'put',
-        url: `http://127.0.0.1:8000/community/${this.articlePk}/`,
+        url: url,
         data: this.Article,
+        headers: this.setToken(),
       })
         .then(()=>{
-          
+          this.$router.push({name:'ArticleDetail', params:{articlePk:this.articlePk}})
         })
         .catch(() => {
 

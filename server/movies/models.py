@@ -11,22 +11,25 @@ class Genre(models.Model):
 
 class People(models.Model):
     name = models.CharField(max_length=100)
+    birthday = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     popularity = models.FloatField(validators=[MinValueValidator(0)])
-    profile_path = models.TextField()
+    profile_path = models.TextField(null=True)
     adult = models.BooleanField()
     gender = models.IntegerField()
     tmdb_id = models.IntegerField()
     also_known_as = models.JSONField(null=True)
+    known_for_department = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
 
-
 class Movie(models.Model):
     title = models.CharField(max_length=100)
+    runtime = models.IntegerField(blank=True, null=True)
     release_date = models.DateField()
+    backdrop_path = models.TextField(null=True)
     popularity = models.FloatField(validators=[MinValueValidator(0)])
-    poster_path = models.TextField()
+    poster_path = models.TextField(null=True)
     vote_count = models.IntegerField(validators=[MinValueValidator(0)])
     vote_average = models.FloatField(validators=[MinValueValidator(0),MaxValueValidator(10)])
     adult = models.BooleanField()
@@ -35,7 +38,7 @@ class Movie(models.Model):
     people = models.ManyToManyField(People, related_name='people_movies')
     tmdb_id = models.IntegerField()
     overview = models.TextField()
-    want = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='user_wants')
+    want = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='user_wants', blank=True)
 
     def __str__(self):
         return self.title
@@ -49,7 +52,14 @@ class MovieComment(models.Model): # 유저하나가 영화 하나만 평가할�
     content = models.CharField(max_length=200, validators=[MinLengthValidator(0)], blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    rate = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(10)])
+    rate = models.IntegerField(validators=[MinValueValidator(1),MaxValueValidator(10)])
 
     def __str__(self):
-        return self.content
+        return self.movie.title
+
+class MovieSite(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    site = models.CharField(max_length=200)
+    link =  models.CharField(max_length=200, blank=True)
+    price = models.IntegerField(default=0)

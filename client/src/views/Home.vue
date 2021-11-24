@@ -1,9 +1,22 @@
 <template>
-  <div class="home">
-    <face :movies="playingMovie"></face>
-    <h2>인기 있는 영화</h2>
-    <div>
+  <div class="dark:text-white home">
+    <main-top></main-top>
+    <div class="container">
+
+    <h2 class="mt-10 mb-2 text-left">#인기 영화</h2>
+    <div class="p-2">
       <popular :movies="newMovie"></popular>
+    </div>
+    <div>
+    <h2 class="mt-10 mb-2 text-left">#추천 영화</h2>
+    </div>
+    <div class="p-2">
+      <recommend :movies="recommendMovies"></recommend>
+    </div>
+    <h2 class="mt-3 text-left">#{{ randomGenre }}</h2>
+    <div>
+      <face :movies="randomMovie"></face>
+    </div>
     </div>
   </div>
 </template>
@@ -13,19 +26,28 @@
 import Face from '@/components/Home/Face.vue'
 import axios from 'axios'
 import Popular from '@/components/Home/Popular.vue'
+import Recommend from '../components/Home/Recommend.vue'
+import MainTop from '@/components/Home/MainTop.vue'
+import _ from 'lodash'
 
 
 export default {
+
   name: 'Home',
   components: {
     Face,
     Popular,
+    Recommend,
+    MainTop
   },
   data: function () {
     return {
-      playingMovie: [], // 상영 중 영화
+      randomMovie: [], // 랜덤 장르 영화
       newMovie: [], // 인기 영화
       key: process.env.VUE_APP_TMDB,
+      recommendMovies: [],
+      randomGenre: null,
+      
       
     }
   },
@@ -37,21 +59,19 @@ export default {
       }
       return config
     },
-    // 메인 이미지 영화 가져오기 - 상영 중인 것 중 인기작
-    getBestPlayingMovie: function () {
-      const key = this.key
-      const url = 'https://api.themoviedb.org/3/movie/now_playing'
+    // 메인 이미지 영화 가져오기 
+    getRandomMovie: function () {
+      const genre = ['액션', '전쟁', '모험', '판타지', '애니메이션', '드라마', '공포', '코미디', '로맨스', '가족', 'SF']
+      const nowGenre = _.sample(genre)
+      this.randomGenre = nowGenre
+      const url = process.env.VUE_APP_URL + `movies/${nowGenre}/`
 
       axios({
         method: 'get',
         url: url,
-        params: {
-          api_key: key,
-          language: 'ko-KR',
-        }
       })
         .then(res => {
-          this.playingMovie = res.data.results
+          this.randomMovie = res.data
         })
         .catch(err => {
           console.log(err)
@@ -67,11 +87,24 @@ export default {
         .then(res => {
           this.newMovie = res.data
         })
+    },
+    getRecommendMovie: function () {
+      const username = localStorage.getItem('username')
+      const url = process.env.VUE_APP_URL + `movies/${username}/test/recommend/`
+
+      axios({
+        method: 'get',
+        url: url,
+      })
+        .then(res => {
+          this.recommendMovies = res.data
+        })
     }
   },
   created: function () {
-    this.getBestPlayingMovie()
+    this.getRandomMovie()
     this.getNewMovies()
+    this.getRecommendMovie()
   }
 }
 </script>

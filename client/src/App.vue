@@ -1,24 +1,23 @@
 <template >
-  <div id="app" @click="offMenu">
-    <div id="nav" class="flex justify-between bg-gray-400">
-      <p class="my-0 text-white">moiveX</p>
-      <div>
-        <router-link to="/">Home</router-link> |
-        <router-link to="/community/forum/">Forum</router-link> |
-        <router-link to="/movies/">Search</router-link> |
-        <span v-if="isLogin">
-          <router-link to="#" @click.native="goProfile" >profile</router-link> |
-          <router-link @click.native="logout" to='#'>logout</router-link> |
+  <div id="app" @click="offMenu" class="dark:text-gray-200">
+    <div id="nav" class="flex p-2 bg-black">
+      <p class="pl-2 my-auto text-2xl text-white cursor-pointer font-jalnan" @click="moveToMain">moiveX</p>
+      <div v-if="isLogin" class="my-auto ml-3 text-gray-400">
+        <router-link class="mx-2 hover:text-gray-200" to="/">Main</router-link>
+        <router-link class="mx-2 hover:text-gray-200" to="/community/forum/">Forum</router-link>
+        <router-link class="mx-2 hover:text-gray-200" to="/movies/">Search</router-link>
+        <router-link class="mx-2 hover:text-gray-200" to="/movies/add/search/">Add</router-link>
+        <!-- <a href="http://127.0.0.1:8000/admin">Admin</a> -->
+      </div>
+      <div class="flex ml-auto">
+        <movie-eval class="mx-2 my-auto rounded " v-if="isLogin"></movie-eval>
+        <accounts-dropdown :menu="menu" @toggle="toggleMenu" class="mydropdown " v-if="isLogin"></accounts-dropdown>
+        <span v-else class="my-auto">
+          <router-link to="/accounts/login/" class="btn btn-blue">Login</router-link>
         </span>
-        <span v-else>
-          <router-link to="/accounts/login/">Login</router-link> |
-          <router-link to="/accounts/signup/">signup</router-link> |
-        </span>
-        <a href="http://127.0.0.1:8000/admin">Admin</a> |
-        <accounts-dropdown :menu="menu" @toggle="toggleMenu" class="mydropdown"></accounts-dropdown>
       </div>
     </div>
-    <div class="container px-4 mx-auto">
+    <div class="px-4 py-4 mx-auto rounded dark:bg-black">
       <router-view @login="login"/>
     </div>
     <!-- <div id="footer">
@@ -30,11 +29,13 @@
 <script>
 import {mapState} from 'vuex'
 import accountsDropdown from '@/components/Home/accountsDropdown.vue'
+import movieEval from '@/components/movies/movieEval.vue'
 
 export default ({
   name: 'App',
   components: {
     accountsDropdown,
+    movieEval
   },
   data: function () {
     return {
@@ -43,6 +44,11 @@ export default ({
     }
   },
   methods: {
+    moveToMain: function () {
+      if (this.isLogin) {
+        this.$router.push({name:'Home'})
+      }
+    },
     offMenu: function (event) {
       if (!event.target.classList.contains('mydropdown')){
         this.menu = false
@@ -55,15 +61,20 @@ export default ({
     logout: function () {
       localStorage.removeItem('jwt')
       this.$router.push({ name: 'Login' })
-      this.$store.dispatch('userLogin', '')
+      this.$store.dispatch('userLogin', '', '')
     },
     login: function () {
       const token = localStorage.getItem('jwt')
-      this.$store.dispatch('userLogin', token)
+      if (token) {
+        const username = localStorage.getItem('username')
+        this.$store.dispatch('userLogin', token, username)
+      } else {
+        this.$router.push({name:'Login'})
+      }
     },
     goProfile: function() {
       this.$router.push({ name: 'Profile', params: {username: this.username}})
-    }
+    },
     
   },
   created: function () {
@@ -83,20 +94,15 @@ export default ({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 10px;
 }
 
 #nav a {
   font-weight: bold;
-  color: #2c3e50;
 }
 
 #nav a.router-link-exact-active {
-  color: #84b9a2;
+  /* color: #84b9a2; */
+  @apply text-gray-50
 }
 
 

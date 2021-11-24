@@ -66,6 +66,8 @@ for i in range(len(movie_list.get('results'))):
         'fields': {
             'title': movies.get('title'),
             'release_date': movies.get('release_date'),
+            # 'runtime': ,#movies.get('runtime'),
+            'backdrop_path': movies.get('backdrop_path'),
             'poster_path': movies.get('poster_path'),
             'vote_count': movies.get('vote_count'),
             'vote_average': movies.get('vote_average'),
@@ -86,7 +88,7 @@ with open('movies.json', 'w', encoding='UTF-8') as file:
 
 ###########################
 
-# 인기영화 아이디 값만 추출 하기
+# 인기영화 아이디 값만 추출 하기 #영화속 인물 몇개출력할 건지 
 movie_list_id = []
 for movie_id_num in range(0,20):
     movie_list_id.append(movie_list.get('results')[movie_id_num].get('id'))
@@ -136,11 +138,13 @@ for i in range(20): #샘플로 20개 까지만 range(len(movie_list_id)):
             'fields': {
                 'name': person.get('name'),
                 'popularity': person.get('popularity'),
+                'birthday': person.get('birthday'),
                 'profile_path': person.get('profile_path'),
                 'adult': person.get('adult'),
                 'gender': person.get('gender'),
-                'tmdb_id': person.get('id')
-            #  'also_known_as': person.get('al')
+                'tmdb_id': person.get('id'),
+                'also_known_as': person.get('also_know_as'),
+                "known_for_department": person.get("known_for_department"),
             #  'birthday': get('birthday')
             }
         }
@@ -158,7 +162,7 @@ for i in range(len(person_database)):
 
 
 ##########
-# 인물 상세페이지로 가기 '또다른이름' 추개헛 한글이름도 추가해준거임
+# 인물 상세페이지로 가기 '또다른이름' 추가 한글이름도 추가해준거임
 profile_count = 0
 for i in person_database_id:
     person_api = get_request_url(method=f"/person/{i}") #바이오그라피가 한글로 나올라면 한글설정추가
@@ -169,6 +173,8 @@ for i in person_database_id:
     # print(len(person_database_id))
     #pprint(person_database)
     person_database[profile_count]['fields']['also_known_as'] = person_profile_database['also_known_as']
+    person_database[profile_count]['fields']['birthday'] = person_profile_database['birthday']
+    
     profile_count += 1
    
 # 인물 목록 출력하기

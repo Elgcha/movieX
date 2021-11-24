@@ -1,9 +1,9 @@
 <template>
-  <div class='w-full h-auto cursor-pointer popular' @click="moveToDetail(movie.id)">
-      <img :src="imgSrc" alt="popularmovie" class="object-cover w-full h-full">
-      <div class="overlay" @click="moveToDetail(movie.id)">
-      <h3 class="description" @click="moveToDetail(movie.id)">{{ movie.title }}</h3>
-    </div>
+  <div class='w-full h-auto cursor-pointer popular'>
+      <img :src="imgSrc" alt="popularmovie" class="w-full h-full transform rounded hover:scale-110" @click="moveToDetail(movie.id)">
+      <!-- <div class="overlay" @click="moveToDetail(movie.id)">
+      <h3 class="description">{{ movie.title }}</h3> -->
+    <!-- </div> -->
   </div>
 </template>
 
@@ -29,8 +29,8 @@ export default {
 }
 </script>
 
-<style>
-.popular {
+<style scoped>
+/* .popular {
   position: relative;
 }
 .popular:hover h4 {
@@ -66,5 +66,5 @@ export default {
 
 /* .popular img {
   height: 300px;
-} */
+/* } */
 </style>

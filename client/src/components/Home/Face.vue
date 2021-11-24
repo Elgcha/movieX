@@ -1,6 +1,6 @@
 <template>
-  <div v-swiper:mySwiper="swiperOption" class="swiper-container" id="face-container">
-    <div class="swiper-wrapper">
+  <div v-swiper:mySwiper="swiperOption" class="my-2 swiper-container" id="face-container">
+    <div class="p-2 swiper-wrapper">
       <face-movies v-for="movie in movies" :key="movie.id" :movie="movie" class="cursor-pointer swiper-slide"></face-movies>
     </div>
   </div>
@@ -16,11 +16,36 @@ export default {
   data: function () {
     return {
       swiperOption: {
-        loop: true,
-        autoplay: {
-          delay:5000,
+        touchStartPreventDefault: false,
+        slidesPerView: 6,
+        spaceBetween: 10,
+        // loop: true,
+        // autoplay: {
+        //   delay:5000,
+        // },
+        breakpoints: {
+          320: {
+            slidesPerView: 2,
+            spaceBetween: 20
+          },
+          480: {
+            slidesPerView: 3,
+            spaceBetween: 30
+          },
+          640: {
+            slidesPerView: 4,
+            spaceBetween: 40
+          },
+          1280: {
+            slidesPerView: 6,
+            spaceBetween: 40
+          }
         },
-      }
+        navigation: {
+          nextEl: '.swiper-button-next', 
+          prevEl: '.swiper-button-prev' 
+        },
+      },
     }
   },
   props: {

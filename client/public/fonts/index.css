@@ -1,0 +1,6 @@
+@font-face {
+  font-family: 'Jalnan';
+  /* font-style: normal; */
+  /* font-weight: 400; */
+  src: local('Jalnan'), url('./Jalnan/Jalnan.ttf') format('ttf');
+}

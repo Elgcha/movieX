@@ -1,8 +1,11 @@
 module.exports = {
   purge: ['./public/**/*.html', './src/**/*.vue'],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
+      fontFamily: {
+        'jalnan': ['Jalnan']
+      },
       flex: {
         '3': '0 0 33.3333%',
         '6': '0 0 16.666%',
@@ -18,6 +21,7 @@ module.exports = {
       flex: ['hover', 'focus'],
       borderCollapse: ['hover', 'focus'],
       tableLayout: ['hover', 'focus'],
+      animation: ['motion-safe'],
     },
   },
   plugins: [],

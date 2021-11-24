@@ -1,15 +1,10 @@
-from django.shortcuts import get_object_or_404, render
-from rest_framework import serializers, status
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-
-from movies.models import MovieComment
-from movies.serializers import MovieCommentSerializer
-
-from .models import Profile, User
-from .serializers import MovieCommentListSerializer, ProfileSerializer, RecommendSerializer, UserSerializer
-from django.contrib.auth import get_user, get_user_model
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from .serializers import MovieCommentListSerializer, RecommendSerializer, UserSerializer
 # Create your views here.
 
 #### user #####################################
@@ -19,53 +14,50 @@ def signup(request):
     # Client에서 데이터 받아오기
     password = request.data.get('password')
     passwordConfirmation = request.data.get('passwordConfirmation')
-
+    username = request.data.get('username')
+    email = request.data.get('email')
     # 일치여부 확인
-    if password != passwordConfirmation:
-        return Response({ ' error': '비밀번호가 일치하지 않습니다.'})
-
-	#UserSerializer를 통해 데이터 직렬화
-
-    serializer = UserSerializer(data=request.data)
+    try:
+        if password != passwordConfirmation:
+            return Response({ 'error': '비밀번호가 일치하지 않습니다.'})
+        UserModel = get_user_model()
+        person = UserModel.objects.filter(username=username)
+        if person:
+            return Response({ 'error': '이미 존재하는 닉네임입니다.'})
+        # UserSerializer를 통해 데이터 직렬화
+        if  email != '@' not in email or not (email[-4:] == '.com') :
+            return Response({ 'error': '잘못된 이메일 형식입니다.'})
+        serializer = UserSerializer(data=request.data)
     
         #validation 작업 진행 -> password도 같이 직렬화 진행
-    if serializer.is_valid(raise_exception=True):
-        user = serializer.save()
-        #비밀번호 해싱 후 
-        user.set_password(request.data.get('password'))
-        user.save()
-        # password는 직렬화 과정에는 포함 되지만 → 표현(response)할 때는 나타나지 않는다.
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.save()
+            #비밀번호 해싱 후 
+            user.set_password(request.data.get('password'))
+            user.save()
+            # password는 직렬화 과정에는 포함 되지만 → 표현(response)할 때는 나타나지 않는다.
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    except TypeError:
+        return Response({ "error": '입력하지 않은 칸이 있습니다.'})
 
 
 #####################프로필 페이지 구성할거 가져오기 
-########마이 프로필이랑 다른사람의 프로필하려고 구별했는데 합쳐도 될듯
 @api_view(['GET'])
-@permission_classes([AllowAny])
 def profile(request, username):
     user = get_object_or_404(get_user_model(), username=username)
     serializer = UserSerializer(user)
     return Response(serializer.data)
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def other_profile(request, username):
-     user = get_object_or_404(get_user_model(), username=username)
-     serializer = UserSerializer(user)
-
-     return Response(serializer.data)
 #############################################
 
 @api_view(['POST'])
 def follow(request, username):
     #팔로우할 대상
-    # person = get_object_or_404(get_user_model(), pk= user_pk)
     person = get_object_or_404(get_user_model(), username=username)
      
     #나
     user = request.user
     if person != user:
-        if user.followers.filter(pk=person.pk).exists():
+        if person.followers.filter(pk=user.pk).exists():
             person.followers.remove(user)
             isFollowed = False
         else:
@@ -76,6 +68,7 @@ def follow(request, username):
             'followers_count': person.followers.count(),
             'followings_count': person.followings.count(),
         }
+        print(data)
         return Response(data)
     else:
         data = {
@@ -102,63 +95,57 @@ def user_count(request, username):
         'followings_count': user.followings.count(),
     }
     return Response(data)
+    #### 팔로우 리스트, 팔로잉 리스트 목록
+@api_view(['GET'])
+def follow_list(request, username):
+    user = get_object_or_404(get_user_model(), username=username)
+    followings = user.followings.all()
+    followers = user.followers.all()
+    wings_list = []
+    er_list = []
+    for a in followings:
+        wings_list.append(a.username)
+    for b in followers:
+        er_list.append(b.username)
+        
+    data = {
+        'followings': wings_list,
+        'followers': er_list,
+    }
+    return Response(data)
 
 #####
-## 유저 평점 기반 추천 알고리즘
+## 유저가 평가한 영화목록을 보여주는데
 @api_view(['GET'])
 def user_recommend(request,username):
     user = get_object_or_404(get_user_model(), username=username)
-    #rated_movie = user.user_wants.all()
     serializer = RecommendSerializer(user)
     
     return Response(serializer.data)
 
-
-
-
-
-
-##################################################################
-def login(request):
-    pass
-
-def update(request):
-    pass
-
-def delete(request):
-    pass
-
-def password_change(request):
-    pass
-
-
-#temp
-
 @api_view(["PUT",'GET'])
-def temp(request, user_pk):
+# @permission_classes([AllowAny])
+def image(request, username):
 
-    user= get_object_or_404(get_user_model(), pk=user_pk)
+    user= get_object_or_404(get_user_model(), username=username)
 
     if request.method == "GET":
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+        data = user.image_path
+        return Response(data)
         
     if request.method == "PUT":
-        # user = get_object_or_404(get_user_model(),  pk=request.user.pk)
-        serializer = UserSerializer(user, data= request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-@api_view(["PUT",'GET'])
-def temp2(request, profile_pk):
-    profile= get_object_or_404(Profile, pk=profile_pk)
+        src = request.data['image']
+        user.image_path = src
+        user.save()
+        return Response(status=status.HTTP_200_OK)
 
-    if request.method == "GET":
-        serializer = ProfileSerializer(profile)
-        return Response(serializer.data)
-        
-    if request.method == "PUT":
-        serializer = ProfileSerializer(profile, data= request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+@api_view(["PUT"])
+def email_change(request, username):
+    users = get_user_model()
+    person = get_object_or_404(users, username=username)
+    email = request.data.get('email')
+    if '@' not in email or not (email[-4:] == '.com'):
+         return Response({ 'error': '잘못된 이메일 형식입니다.'})
+    person.email = email
+    person.save()
+    return Response(status=status.HTTP_200_OK)
