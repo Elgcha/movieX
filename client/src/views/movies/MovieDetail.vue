@@ -1,5 +1,57 @@
 <template>
   <div class="dark:text-white">
+    <!-- moviesite 추가 -->
+    <div class="fixed inset-0 z-10 hidden w-full h-full overflow-y-auto bg-gray-600 bg-opacity-50"  role="alert" id="myAlert_moviesite">
+      <div class="relative p-5 mx-auto text-white bg-gray-600 border rounded-md shadow-lg top-20 w-96">
+      <div>{{errMessage}}</div>
+      <div class="mb-1">
+        <label for="site" class="block mb-2 text-sm font-bold text-white">site </label>
+        <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" id="site" v-model="SiteData.site">
+      </div>
+      <div class="mb-1">
+        <label for="link" class="block mb-2 text-sm font-bold text-white">link </label>
+        <input @keyup.enter="login" class = "w-full px-3 py-2 mb-3 leading-tight text-gray-700 border rounded appearance-none hadow focus:outline-none focus:shadow-outline" type="text" id="link" v-model="SiteData.link" >
+      </div>
+      <div class="mb-1">
+        <label for="price" class="block mb-2 text-sm font-bold text-white">price </label>
+        <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" id="price" v-model="SiteData.price">
+      </div>
+      <button @click="addMovieSite">추가</button>
+      <span class="absolute inset-y-0 right-0 flex items-center mr-4" @click="alertClose">
+        <svg class="w-4 h-4 transform fill-current hover:scale-110" role="button" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+      </span>
+      </div>
+    </div>
+    <!-- moviesite 목록 -->
+    <div class="fixed inset-0 z-10 hidden w-full h-full overflow-y-auto bg-gray-600 bg-opacity-50"  role="alert" id="myAlert_moviesiteView">
+      <div class="relative p-5 mx-auto text-white bg-gray-600 border rounded-md shadow-lg top-20" style="width:50vw;">
+      <span class="float-right mb-3" @click="alertClose">
+        <svg class="w-4 h-4 transform fill-current hover:scale-110" role="button" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+      </span>
+      <table class="w-full text-white rounded table-fixed bg-gradient-to-r from-gray-900 to-gray-800">
+        <thead>
+          <tr>
+            <th class="w-4/12">site</th>
+            <th class="w-6/12">link</th>
+            <th class="w-1/12">price</th>
+            <th class="w-1/12"></th>
+          </tr>
+        </thead>
+      
+        <tbody class="divide-y divide-gray-500 rounded">
+          <tr v-for="site in movieSiteDatas" :key="site.id"  class="rounded hover:bg-gray-600">
+            <td class="p-2 px-4 text-left rounded">{{ site.site }}</td>
+            <td class="p-2">{{ site.link }}</td>
+            <td class="p-2 rounded">{{ site.price }}</td>
+            <td class="p-2 rounded cursor-pointer" @click="deleteMovieSite(site.id)">삭제</td>
+            <hr>
+          </tr>
+        </tbody>
+      </table>
+      <button @click="alertOn">추가</button>
+      </div>
+    </div>
+    <!-- 메인 -->
     <div v-if="movie.title">
       <div class="flex w-full">
         <img :src="imgSrc" alt="" class="p-3">
@@ -17,6 +69,7 @@
               </div>
             </div>
             <p class="p-3 text-left bg-gray-700">{{ movie.overview }}</p>
+            <button @click="alertViewOn">MovieSite</button>
           </div>
         </div>
       </div>
@@ -80,6 +133,7 @@ export default {
     this.getMovieDetail()
     this.getSimilarMovies()
     this.getUserRate()
+    this.youWantIt()
   },
   data: function () {
     return {
@@ -87,6 +141,7 @@ export default {
       movie: {},
       similarMovies: [],
       movieVideo: null,
+      movieSiteDatas: {},
       swiperOption: {
         slidesPerView: 6,
         spaceBetween: 10,
@@ -101,6 +156,11 @@ export default {
       },
       wanted: false,
       userRate: null,
+      SiteData: {
+        site: null,
+        link: null,
+        price: null,
+      }
     }
   },
   computed: {
@@ -216,6 +276,63 @@ export default {
     },
     moveToPeopleDetail: function(peoplePk) {
       this.$router.push({name:'PeopleDetail', params: {peoplePk: peoplePk}})
+    },
+    alertClose: function () {
+      let alert = document.getElementById("myAlert_moviesite")
+      let alert1 = document.getElementById("myAlert_moviesiteView")
+      alert.style.display = "none"
+      alert1.style.display = "none"
+    },
+    alertOn: function () {
+      let alert = document.getElementById("myAlert_moviesiteView")
+      alert.style.display = "none"
+      let alert1 = document.getElementById("myAlert_moviesite")
+      alert1.style.display = "block"
+    },
+    alertViewOn: function () {
+      this.getMovieSite()
+      let alert = document.getElementById("myAlert_moviesiteView")
+      alert.style.display = "block"
+    },
+    addMovieSite: function () {
+      const url = process.env.VUE_APP_URL + `movies/${this.moviePk}/site/create/`
+      axios({
+        method: 'post',
+        url: url,
+        data: this.SiteData,
+        headers: this.setToken(),
+      })
+        .then(() => {
+          this.getMovieSite()
+          let alert = document.getElementById("myAlert_moviesite")
+          alert.style.display = "none"
+          let alert1 = document.getElementById("myAlert_moviesiteView")
+          alert1.style.display = "block"
+        })
+    },
+    getMovieSite: function () {
+      const url = process.env.VUE_APP_URL + `movies/${this.moviePk}/site/view/`
+      axios({
+        method: 'get',
+        url: url,
+        data: this.SiteData,
+        headers: this.setToken(),
+      })
+      .then(res => {
+        this.movieSiteDatas = res.data
+      })
+    },
+    deleteMovieSite: function (siteId) {
+      const url = process.env.VUE_APP_URL + `movies/${this.moviePk}/site/delete/${siteId}/`
+      axios({
+        method: 'delete',
+        url: url,
+        data: this.SiteData,
+        headers: this.setToken(),
+      })
+      .then(() => {
+        this.getMovieSite()
+      })
     }
     
   },
@@ -223,6 +340,7 @@ export default {
     this.getMovieDetail()
     this.getSimilarMovies()
     this.getUserRate()
+    this.getMovieSite()
   },
 
 }

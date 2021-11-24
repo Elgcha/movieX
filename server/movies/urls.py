@@ -46,6 +46,10 @@ urlpatterns = [
 
 # ### search
 # path(<'search/<str:keyword>/', views.search),
+   # 영화 site 추가
+    path('<int:movie_pk>/site/view/', views.site_get),
+    path('<int:movie_pk>/site/create/', views.site_create),
+    path('<int:movie_pk>/site/delete/<int:site_id>/', views.site_delete),
 
 ]
 

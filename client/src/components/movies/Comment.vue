@@ -206,6 +206,7 @@ export default {
     }
   },
   created: function () {
+    this.getComments()
   },
   watch: {
     // 평가 정보 가져오기

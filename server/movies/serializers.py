@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.utils import field_mapping
 
-from .models import Movie, People, Genre, MovieComment
+from .models import Movie, People, Genre, MovieComment, MovieSite
 
 class GenreSerializer(serializers.ModelSerializer):
    # name = Genre.objects.filter()
@@ -77,3 +77,10 @@ class PeopleMovieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = People
         fields = ('name', 'movie_title',)
+
+class MovieSiteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MovieSite
+        fields = '__all__'
+        read_only_fields = ('movie', 'user',)

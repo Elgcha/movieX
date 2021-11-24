@@ -1,7 +1,7 @@
 <template>
-  <div class="relative inline-block text-left">
+  <div class="relative my-auto text-left">
   <div @click="toggleMenu">
-    <button type="button" class="inline-flex justify-center w-full px-4 py-1 text-sm font-medium text-white bg-gray-400 border border-gray-300 rounded-md shadow-sm mydropdown hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
+    <button type="button" class="inline-flex justify-center w-full text-sm font-medium rounded-md shadow-sm text-grat-400 mydropdown hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
       {{ username }}
       <!-- 아래 화살표 이미지 -->
       <svg class="w-5 h-5 ml-2 -mr-1 mydropdown" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

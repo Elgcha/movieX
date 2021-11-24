@@ -1,23 +1,23 @@
 <template >
   <div id="app" @click="offMenu" class="dark:text-gray-200">
-    <div id="nav" class="flex justify-between p-2 bg-gray-500">
-      <p class="my-auto text-2xl text-white cursor-pointer" @click="moveToMain">moiveX</p>
-      <div v-if="isLogin" class="mx-auto my-auto">
-        <router-link to="/">Main</router-link> |
-        <router-link to="/community/forum/">Forum</router-link> |
-        <router-link to="/movies/">Search</router-link> |
-        <router-link to="/movies/add/search/">Add</router-link> |
-        <a href="http://127.0.0.1:8000/admin">Admin</a>
+    <div id="nav" class="flex p-2 bg-black">
+      <p class="pl-2 my-auto text-2xl text-white cursor-pointer font-jalnan" @click="moveToMain">moiveX</p>
+      <div v-if="isLogin" class="my-auto ml-3 text-gray-400">
+        <router-link class="mx-2 hover:text-gray-200" to="/">Main</router-link>
+        <router-link class="mx-2 hover:text-gray-200" to="/community/forum/">Forum</router-link>
+        <router-link class="mx-2 hover:text-gray-200" to="/movies/">Search</router-link>
+        <router-link class="mx-2 hover:text-gray-200" to="/movies/add/search/">Add</router-link>
+        <!-- <a href="http://127.0.0.1:8000/admin">Admin</a> -->
       </div>
-      <div class="flex">
-        <movie-eval class="p-1 mx-2 my-auto bg-gray-400 rounded hover:bg-gray-600" v-if="isLogin"></movie-eval>
+      <div class="flex ml-auto">
+        <movie-eval class="mx-2 my-auto rounded " v-if="isLogin"></movie-eval>
         <accounts-dropdown :menu="menu" @toggle="toggleMenu" class="mydropdown " v-if="isLogin"></accounts-dropdown>
         <span v-else class="my-auto">
-          <router-link to="/accounts/login/">Login</router-link>
+          <router-link to="/accounts/login/" class="btn btn-blue">Login</router-link>
         </span>
       </div>
     </div>
-    <div class="container px-4 py-4 mx-auto rounded dark:bg-gray-800">
+    <div class="container px-4 py-4 mx-auto rounded dark:bg-black">
       <router-view @login="login"/>
     </div>
     <!-- <div id="footer">
@@ -102,7 +102,7 @@ export default ({
 
 #nav a.router-link-exact-active {
   /* color: #84b9a2; */
-  @apply text-green-400
+  @apply text-gray-50
 }
 
 
