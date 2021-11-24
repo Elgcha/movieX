@@ -16,7 +16,7 @@ class User(AbstractUser):
         options={'quality': 90},
         default='profile_TZC8OoC.jpg'
     )
-
-
+    introduce = models.TextField(blank=True)
+    
     # user가 상대편을 팔로우하면 follwings, 팔로우를 당하면 followers
     followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')

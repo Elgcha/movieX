@@ -12,8 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     #필드에 없으니 필수로입력하지않아도되네(signup)
     class Meta:
         model = get_user_model()
-        #fields = ('__all__')
-        fields = ('username', 'password', 'email', 'followings', 'followers', 'article_set', 'comment_set', 'image_path', 'user_wants',)
+        fields = ('username', 'password', 'email', 'followings', 'followers', 'article_set', 'comment_set', 'image_path', 'user_wants', 'introduce',)
 
         # 유저등록시 작성할 필요가 없도록 read_only_fields
         read_only_fields = ('followings', 'followers', 'article_set', 'comment_set',)
