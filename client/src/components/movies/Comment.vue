@@ -12,7 +12,7 @@
       <input v-else v-show="wantEdit" type="text" rows="3" class="w-full p-2 text-black border rounded" @input="inputChange" placeholder="" id="Moviecontent">
       <button 
       @click="editClick"
-      class="h-full px-4 py-2 font-light text-white bg-gray-400 rounded hover:bg-gray-200"
+      class="h-full px-4 py-2 font-light text-white bg-gray-400 rounded hover:bg-gray-600"
       v-if="comment_user.indexOf(username) >= 0"
       v-show="!wantEdit"
       >
@@ -20,14 +20,14 @@
       </button>
       <div><button 
       @click="createComment"
-      class="h-full px-4 py-2 font-light text-white bg-gray-400 rounded hover:bg-gray-200"
+      class="h-full px-4 py-2 font-light text-white bg-gray-400 rounded hover:bg-gray-600"
       v-if="comment_user.indexOf(username) < 0"
       >
       Submit
       </button>
       <button 
       @click="editComment"
-      class="h-full px-4 py-2 font-light text-white bg-gray-400 rounded hover:bg-gray-200"
+      class="h-full px-4 py-2 font-light text-white bg-gray-400 rounded hover:bg-gray-600"
       v-else
       v-show="wantEdit"
       >
@@ -41,7 +41,10 @@
     <div v-for="(comment, index) in comments" :key="index" class="px-3 py-1 text-left">
       <div>
         <div class="flex px-2 bg-gray-700 rounded">
-          <p @click="moveToProfile(comment.username)" class="p-2 my-auto cursor-pointer">{{comment.username}}</p>
+          <span class="flex mr-20">
+            <img class="object-cover w-5 h-5 my-auto mr-2 border-2 rounded-full" :src="profileImage + comment.user_image.image_path" alt="profile">
+            <p @click="moveToProfile(comment.username)" class="p-2 my-auto cursor-pointer">{{comment.username}}</p>
+          </span>
 
           <div v-for="i in 5" :class="{ 'mr-1': i < 5 }" :key="i" class="my-auto text-sm d-inline">
             <svg class="block w-6 h-6" :class="[ comment.rate >= i ? 'text-yellow-500': 'text-grey-500']" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
@@ -79,7 +82,11 @@ export default {
     ]),
     movieId: function () {
       return this.movie.id
-    }
+    },
+    profileImage: function () {
+      const img = process.env.VUE_APP_URL.slice(0, -1)
+      return img
+    },
   },
   methods: {
     editClick: function () {
@@ -224,7 +231,10 @@ export default {
       })
       this.comment_user = username
     }
-  }
+  },
+  updated: function () {
+    this.$emit('changeOccur')
+  },
 }
 </script>
 

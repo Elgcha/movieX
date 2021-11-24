@@ -5,18 +5,23 @@
         <img :src="imgSrc" alt="" class="p-3">
         <div class="w-full">
           <iframe class="w-full" :src="movieVideo" title="YouTube video player" frameborder="0" allowfullscreen id="my-iframe"></iframe>
-          <div class="p-2 text-2xl text-left">평점 : {{ movie.vote_average }}</div>
-          <div class="flex justify-between bg-gray-600 border-b">
-            <h2 class="p-2 text-left ">{{ movie.title }} {{ movie.release_date }}</h2>
-            <div class="p-2">
-              <span v-for="genre in movie.genres" :key="genre" class="p-3 text-right">{{ genre.name }} </span>
-            </div>
+          <div class="flex">
+            <div class="px-2 py-1 text-2xl text-left">평점 : {{ movie.vote_average }}</div>
+            <div class="p-2 py-1 my-auto text-2xl text-left">x-score: {{ userRate }}</div>
           </div>
-          <p class="p-3 text-left bg-gray-700">{{ movie.overview }}</p>
+          <div class="pr-4">
+            <div class="flex justify-between bg-gray-600 border-b">
+              <h2 class="p-2 text-lg font-bold text-left">{{ movie.title }} <span class="text-sm text-gray-200">{{ movie.release_date }}</span></h2>
+              <div class="p-2 my-auto">
+                <span v-for="(genre, index) in movie.genres" :key="index" class="p-3 my-auto text-right">{{ genre.name }} </span>
+              </div>
+            </div>
+            <p class="p-3 text-left bg-gray-700">{{ movie.overview }}</p>
+          </div>
         </div>
       </div>
     </div>
-    <h3>출연</h3>
+    <h3 v-if="movie.people[0]" class="text-left">#출연</h3>
     <div v-swiper:mySwiper="swiperOption" class="my-2 bg-gray-600 swiper-container">
       <div class="swiper-wrapper">
         <div
@@ -33,10 +38,10 @@
       <div class="swiper-button-next" slot="button-next"></div>
     </div>
     <div class="m-3">
-      <button v-show="!wanted" @click='iWantThisMovie'>보고싶은 영화에 추가</button>
-      <button v-show="wanted" @click='iWantThisMovie'>보고싶은 영화에서 제거</button>
+      <button class="btn btn-blue" v-show="!wanted" @click='iWantThisMovie'>보고싶은 영화에 추가</button>
+      <button class="btn btn-blue" v-show="wanted" @click='iWantThisMovie'>보고싶은 영화에서 제거</button>
     </div>
-    <h3>비슷한 영화</h3>
+    <h3 class="p-1 text-left">#비슷한 영화</h3>
     <div v-swiper:mySwipers="swiperOption" class="my-2 bg-gray-600 swiper-container">
       <div class="swiper-wrapper">
         <similar-movie 
@@ -50,7 +55,7 @@
       <div class="swiper-button-next" slot="button-next"></div>
     </div>
     <div>
-      <comment :movie="movie"></comment>
+      <comment :movie="movie" @changeOccur="getUserRate"></comment>
     </div>
   </div>
 </template>
@@ -74,6 +79,7 @@ export default {
     this.moviePk = this.$route.params.moviePk,
     this.getMovieDetail()
     this.getSimilarMovies()
+    this.getUserRate()
   },
   data: function () {
     return {
@@ -94,6 +100,7 @@ export default {
         },
       },
       wanted: false,
+      userRate: null,
     }
   },
   computed: {
@@ -152,7 +159,16 @@ export default {
         .then(res => {
           this.movie = res.data
         })
-
+    },
+    getUserRate: function () {
+      const url = process.env.VUE_APP_URL + `movies/${this.moviePk}/rate/moviex/`
+      axios({
+        method: 'get',
+        url: url,
+      })
+        .then(res => {
+          this.userRate = res.data.score
+        })
     },
     getSimilarMovies: function () {
       const url = process.env.VUE_APP_URL + `movies/${this.moviePk}/same/`
@@ -206,6 +222,7 @@ export default {
   created: function () {
     this.getMovieDetail()
     this.getSimilarMovies()
+    this.getUserRate()
   },
 
 }

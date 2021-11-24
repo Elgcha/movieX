@@ -50,12 +50,7 @@ def detail(request, article_pk):
             'message': '글이 삭제 되었습니다.',
         }
         return Response(data, status=status.HTTP_204_NO_CONTENT)
-        
-def update(request):
-    pass
 
-def delete(request):
-    pass
 
 @api_view(['GET', 'POST'])
 def comment_create(request, article_pk):
@@ -70,8 +65,6 @@ def comment_create(request, article_pk):
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
-def comment_detail(request):
-    pass
 
 @api_view(['PUT', 'DELETE'])
 def comment_update(request, article_pk, comment_pk):
@@ -94,11 +87,9 @@ def comment_update(request, article_pk, comment_pk):
         }
         return Response(data, status.HTTP_204_NO_CONTENT)
 
-def comment_delete(request):
-    pass
 
-@api_view(['GET'])
-@permission_classes([AllowAny])
+@api_view(['POST'])
+# @permission_classes([AllowAny])
 def view_count(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
     if not (request.user == article.user):

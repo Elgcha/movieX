@@ -39,9 +39,10 @@ export default {
       this.Article.content = event.target.value
     },
     ArticleCreate: function() {
+      const url = process.env.VUE_APP_URL + 'community/create/'
       axios({
         method: 'post',
-        url: 'http://127.0.0.1:8000/community/create/',
+        url: url,
         data: this.Article,
         headers: this.setToken(),
       })

@@ -1,6 +1,6 @@
 <template>
   <div class='w-full h-auto cursor-pointer popular'>
-      <img :src="imgSrc" alt="popularmovie" class="object-cover w-full h-full rounded" @click="moveToDetail(movie.id)">
+      <img :src="imgSrc" alt="popularmovie" class="object-cover w-full h-full rounded " @click="moveToDetail(movie.id)">
       <div class="overlay" @click="moveToDetail(movie.id)">
       <h3 class="description">{{ movie.title }}</h3>
     </div>

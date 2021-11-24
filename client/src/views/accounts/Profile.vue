@@ -7,10 +7,7 @@
             <!-- profile image -->
             <img class="object-cover w-20 h-20 p-1 border-2 border-pink-600 rounded-full md:w-40 md:h-40" :src="profileImage" alt="profile">
           </div>
-          <!-- 프로필 수정 -->
-          <!-- <div v-if="sameperson">
-            <input type="file" name="" id="" @change="imageUpload" ref="profileImage">
-          </div> -->
+
 
 
           <!-- profile meta -->
@@ -192,24 +189,26 @@ export default {
       const username = this.$route.params.username
       const token = localStorage.getItem('jwt')
       this.file = event.target.files[0]
-      let data = new FormData()
-      data.append('image', this.file)
-      const url = process.env.VUE_APP_URL + `accounts/profiles/${username}/`
-      axios({
-        method: 'put',
-        url: url,
-        data: data,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `JWT ${token}`
-        },
-      })
-        .then(res => {
-          console.log(res)
+      if (this.file) {
+        let data = new FormData()
+        data.append('image', this.file)
+        const url = process.env.VUE_APP_URL + `accounts/profiles/${username}/`
+        axios({
+          method: 'put',
+          url: url,
+          data: data,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `JWT ${token}`
+          },
         })
-        .catch(err => {
-          console.log(err)
-        })
+          .then(() => {
+            this.getProfile()
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
     }
     
   },

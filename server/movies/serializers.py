@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.utils import field_mapping
 
@@ -31,7 +32,14 @@ class MovieCommentSerializer(serializers.ModelSerializer):
 # pk말고 이름을 명시할 수 있도록
     def get_username(self, obj):
         return obj.user.username
-   
+
+    class UserSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = get_user_model()
+            fields = ('image_path',)
+        
+    user_image = UserSerializer(source='user', read_only='True') 
+
     class Meta:
         model = MovieComment
         fields= '__all__'

@@ -308,6 +308,8 @@ def people_update(request):
 @api_view(['POST'])
 def comment_create(request, movie_pk):
     movie = get_object_or_404(Movie, pk= movie_pk)
+    if movie.moviecomment_set.filter(user=request.user):
+        return Response(status=status.HTTP_200_OK)
     serializer = MovieCommentSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.save(movie=movie, user=request.user)
@@ -315,11 +317,12 @@ def comment_create(request, movie_pk):
 
 #영화별 자체 알고리즘을 통한 영화지수 보여주기
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def rate_movie(request, movie_pk):
     
     movie = get_object_or_404(Movie, pk=movie_pk)
     if movie.moviecomment_set.count():
-        rate_ratio = movie.moviecomment_set.aggregate(Avg('rate')).get('rate__avg') * 0.6
+        rate_ratio = movie.moviecomment_set.aggregate(Avg('rate')).get('rate__avg') * 0.8
     else:
         rate_ratio = 3
 

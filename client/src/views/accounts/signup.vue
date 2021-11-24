@@ -47,12 +47,10 @@ export default {
   },
   methods: {
     signup: function () {
-      // if (this.credentials.password !== this.credentials.passwordConfirmation) {
-      //   this.passwordError = true
-      // }
+      const url = process.env.VUE_APP_URL + 'accounts/signup/'
       axios({
         method: 'post',
-        url: 'http://127.0.0.1:8000/accounts/signup/',
+        url: url,
         data: this.credentials
       })
         .then(res => {

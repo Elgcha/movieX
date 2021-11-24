@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from movies.models import Movie, MovieComment
-from movies.serializers import MovieSerializer, MovieCommentSerializer, GenreSerializer
+from movies.serializers import MovieSerializer, GenreSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):

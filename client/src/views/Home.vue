@@ -1,14 +1,14 @@
 <template>
   <div class="dark:text-white home">
     <face :movies="playingMovie"></face>
-    <h2>인기 영화</h2>
-    <div class="p-2 bg-gray-600">
+    <h2 class="mt-10 mb-2 text-left">#인기 영화</h2>
+    <div class="p-2 dark:bg-gray-600">
       <popular :movies="newMovie"></popular>
     </div>
     <div>
-    <h2 class="mt-10">추천 영화</h2>
+    <h2 class="mt-10 mb-2 text-left">#추천 영화</h2>
     </div>
-    <div class="p-2 bg-gray-500">
+    <div class="p-2 dark:bg-gray-500">
       <recommend :movies="recommendMovies"></recommend>
     </div>
   </div>

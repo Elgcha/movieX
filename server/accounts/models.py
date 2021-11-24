@@ -14,6 +14,7 @@ class User(AbstractUser):
         processors=[Thumbnail(200,300)],
         format='JPEG',
         options={'quality': 90},
+        default='profile_TZC8OoC.jpg'
     )
 
 
