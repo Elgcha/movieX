@@ -3,6 +3,9 @@ module.exports = {
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
+      fontFamily: {
+        'jalnan': ['Jalnan']
+      },
       flex: {
         '3': '0 0 33.3333%',
         '6': '0 0 16.666%',

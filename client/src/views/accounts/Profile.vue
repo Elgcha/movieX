@@ -31,7 +31,7 @@
 
     <main class="mt-3 bg-gray-100 bg-opacity-25" style="min-height:100vh;">
       <div class="mb-8 lg:mx-auto">
-        <header class="flex flex-wrap items-center w-8/12 p-4 md:py-8">
+        <header class="flex flex-wrap items-center w-full p-4 md:py-8">
           <div class="md:w-3/12 md:ml-16">
             <!-- profile image -->
             <img class="object-cover w-20 h-20 p-1 border-2 border-pink-600 rounded-full md:w-40 md:h-40" :src="profileImage" alt="profile">
@@ -49,16 +49,16 @@
 
 
               <!-- follow button -->
-              <div v-if="!sameperson" @click="follow" class="block px-2 py-1 text-sm font-semibold text-center text-white bg-blue-500 rounded cursor-pointer sm:inline-block">Follow</div>
+              <div v-if="!sameperson & !isFollowed" @click="follow" class="block px-2 py-1 text-sm font-semibold text-center text-white bg-blue-500 rounded cursor-pointer sm:inline-block">Follow</div>
+              <div v-if="!sameperson & isFollowed" @click="follow" class="block px-2 py-1 text-sm font-semibold text-center text-white bg-blue-500 rounded cursor-pointer sm:inline-block">unFollow</div>
             </div>
 
             <!-- post, following, followers list for medium screens -->
-            <ul class="hidden mb-4 space-x-8 md:flex">
+            <ul class="flex-wrap hidden mb-4 space-x-8 md:flex">
               <li>
                 <span class="font-semibold">{{ me.article_set.length }}</span>
                 articles
               </li>
-
               <li>
                 <span class="font-semibold cursor-pointer" @click="openFollowers">{{ me.followers.length }}</span>
                 followers
@@ -67,6 +67,15 @@
                 <span class="font-semibold cursor-pointer" @click="openFollowings">{{ me.followings.length }}</span>
                 following
               </li>
+              <li>
+                <span class="font-semibold">{{ wantMovies.length}}</span>
+                wantMovies
+              </li>
+              <li>
+                <span class="font-semibold">{{evalMovies.length}}</span>
+                evalMovies
+              </li>
+              
             </ul>
 
             <!-- user meta form medium screens -->
@@ -112,7 +121,7 @@
           <div class="h-full"  style="min-heigth:20vh;">
             <!-- column -->
             <div v-swiper:mySwiperT="swiperOption" class="h-full my-2 swiper-container">
-              <div class="h-full bg-dark swiper-wrapper">
+              <div class="h-full p-2 bg-dark swiper-wrapper">
                 <div
                 v-for="movie in wantMovies"
                 :key="movie.id"
@@ -143,8 +152,9 @@
                 :movie="movie"
                 class="justify-center h-auto swiper-slide"
                 >
-                  <div class='w-full h-auto cursor-pointer popular' @click="moveToDetail(movie.id)">
+                  <div class='w-full h-auto cursor-pointer popular' @click="moveToDetail(movie.movie.id)">
                     <img :src="'https://image.tmdb.org/t/p/w500/' + movie.movie.poster_path" alt="" class="object-cover w-full h-full transform hover:scale-110">
+                    <div>{{ movie.rate * 2 }}</div>
                   </div>
                 </div>
                 </div>
@@ -290,6 +300,10 @@ export default {
         .then(res => {
           console.log(res)
           this.mydata = res.data
+          const me = localStorage.getItem('username')
+          if (this.mydata.followers.indexOf(me) >= 0) {
+            this.isFollowed = true
+          }
         })
         .catch(err => {
           console.log(err)
@@ -321,6 +335,9 @@ export default {
       })
         .then(res => {
           this.isFollowed = res.data.isFollowed
+          console.log(res)
+          this.getProfile()
+          this.getmyData()
         })
     },
     imageUpload: function (event) {
@@ -365,7 +382,14 @@ export default {
     this.getProfile()
     this.getEvalMovies()
     this.getmyData()
-  }
+  },
+  beforeRouteUpdate: function (to, from, next) {
+    next()
+    this.getProfile()
+    this.getEvalMovies()
+    this.getmyData()
+    
+  },
 }
 </script>
 

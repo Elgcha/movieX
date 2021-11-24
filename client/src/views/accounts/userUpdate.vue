@@ -96,6 +96,7 @@ export default {
             this.errorMessage = res.data.error
           } else {
             this.getProfile()
+            this.errorMessage = null
           }
         })
         .catch(err => {

@@ -7,7 +7,7 @@
     </div>
     <div class="mb-6">
       <label for="password" class="block mb-2 text-sm font-bold text-gray-700">Password </label>
-      <input @keyup.enter="login" class = "w-full px-3 py-2 mb-3 leading-tight text-gray-700 border border-red-500 rounded appearance-none hadow focus:outline-none focus:shadow-outline" type="password" id="password" v-model="credentials.password" >
+      <input @keyup.enter="login" class = "w-full px-3 py-2 mb-3 leading-tight text-gray-700 border border-red-500 rounded appearance-none hadow focus:border-0 focus:outline-none focus:shadow-outline" type="password" id="password" v-model="credentials.password" >
     </div>
     <li v-show="errOccur" class="mb-3 text-sm">아이디와 비밀번호를 확인해주세요.</li>
 

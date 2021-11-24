@@ -36,8 +36,17 @@ urlpatterns = [
    path('search/<int:keyword>/', views.db_update),
 
  #영화 추천 알고리즘
-   path('<int:user_pk>/test/', views.recommend_for),
-   path('<username>/test/recommend/', views.recommend_for),
+
+    path('<int:user_pk>/test/', views.recommend_for),
+    path('<username>/test/recommend/', views.recommend_for),
+
+# ### search
+# path(<'search/<str:keyword>/', views.search),
+   # 영화 site 추가
+    path('<int:movie_pk>/site/view/', views.site_get),
+    path('<int:movie_pk>/site/create/', views.site_create),
+    path('<int:movie_pk>/site/delete/<int:site_id>/', views.site_delete),
+
 
 ]
 

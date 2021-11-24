@@ -11,8 +11,11 @@
 
 
 
-  <button class="px-2 mx-3 my-auto text-white" type="button" data-modal-toggle="movieEval" @click="toggle" id="movieModal">
+  <button class="hidden px-2 mx-3 my-auto text-gray-400 md:block hover:text-gray-50" type="button" data-modal-toggle="movieEval" @click="toggle" id="movieModal">
     영화 평가
+  </button>
+  <button class="px-2 mx-3 my-auto text-gray-400 md:hidden hover:text-gray-50" type="button" data-modal-toggle="movieEval" @click="toggle" id="movieModal">
+    E
   </button>
 
   <!-- Main modal -->

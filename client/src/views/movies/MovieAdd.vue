@@ -9,9 +9,16 @@
       </div>
     </div>
     <!-- 검색 -->
+    <div class="flex">
+
     <div class="flex w-1/3 mx-auto my-3">
       <input type="text" @input="inputChange" @keyup.enter="searchMovie" class="w-full py-2 text-gray-700 border rounded shadow appearance-none place-self-auto focus:outline-none focus:shadow-outline" id="search_input">
       <button @click="searchMovie" class="place-self-auto btn btn-blue btn-blue:hover"><img src="https://raw.githubusercontent.com/filippo-quacquarelli/tag-search/master/search.png" alt="search"></button>
+    </div>
+    <div class="flex">
+      <button class="btn btn-blue">업데이트</button>
+      <button class="btn btn-blue">연결</button>
+    </div>
     </div>
     
     <!-- 출력 -->

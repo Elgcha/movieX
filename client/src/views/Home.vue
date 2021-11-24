@@ -1,16 +1,17 @@
 <template>
   <div class="dark:text-white home">
+    <main-top></main-top>
     <h2 class="mt-10 mb-2 text-left">#인기 영화</h2>
-    <div class="p-2 dark:bg-gray-600">
+    <div class="p-2">
       <popular :movies="newMovie"></popular>
     </div>
     <div>
     <h2 class="mt-10 mb-2 text-left">#추천 영화</h2>
     </div>
-    <div class="p-2 dark:bg-gray-500">
+    <div class="p-2">
       <recommend :movies="recommendMovies"></recommend>
     </div>
-    <h2>{{ randomGenre }}</h2>
+    <h2 class="mt-3 text-left">#{{ randomGenre }}</h2>
     <div>
       <face :movies="randomMovie"></face>
     </div>
@@ -23,6 +24,7 @@ import Face from '@/components/Home/Face.vue'
 import axios from 'axios'
 import Popular from '@/components/Home/Popular.vue'
 import Recommend from '../components/Home/Recommend.vue'
+import MainTop from '@/components/Home/MainTop.vue'
 import _ from 'lodash'
 
 
@@ -33,6 +35,7 @@ export default {
     Face,
     Popular,
     Recommend,
+    MainTop
   },
   data: function () {
     return {

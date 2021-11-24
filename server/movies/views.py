@@ -8,8 +8,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.serializers import Serializer
-from .models import Movie, People, Genre, MovieComment
-from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer
+from accounts.models import User
+from .models import Movie, MovieSite, People, Genre, MovieComment
+from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer, MovieSiteSerializer
+
 
 import random
 import requests
@@ -514,3 +516,26 @@ def recommend_for(request, username):
         return Response(serializer.data)
         
     return Response(data)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def site_get(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    moviesites = MovieSite.objects.filter(movie=movie)
+    serializer = MovieSiteSerializer(moviesites, many=True)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+def site_create(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    serializer = MovieSiteSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user, movie=movie)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['DELETE'])
+def site_delete(request, movie_pk, site_id):
+    moviesite = get_object_or_404(MovieSite, pk=site_id)
+    moviesite.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+

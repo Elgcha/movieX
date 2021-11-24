@@ -56,3 +56,10 @@ class MovieComment(models.Model): # 유저하나가 영화 하나만 평가할�
 
     def __str__(self):
         return self.movie.title
+
+class MovieSite(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    site = models.CharField(max_length=200)
+    link =  models.CharField(max_length=200, blank=True)
+    price = models.IntegerField(default=0)

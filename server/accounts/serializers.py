@@ -50,7 +50,7 @@ class RecommendSerializer(serializers.ModelSerializer):
             genres = GenreSerializer(many=True, read_only=True)
             class Meta:
                 model = Movie
-                fields = ('genres', 'tmdb_id', 'title', 'popularity', 'vote_count', 'vote_average', 'poster_path')
+                fields = ('genres', 'tmdb_id', 'title', 'popularity', 'vote_count', 'vote_average', 'poster_path', 'id')
         
         title = serializers.SerializerMethodField()
         movie = MovieSerializer() #many=True가 아니였음
