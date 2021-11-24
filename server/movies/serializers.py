@@ -77,13 +77,3 @@ class PeopleMovieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = People
         fields = ('name', 'movie_title',)
-
-
-
-
-class Movie2Serializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Movie
-        exclude = ('tmdb_id','id')
-    

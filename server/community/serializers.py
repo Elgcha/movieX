@@ -13,13 +13,14 @@ class ArticleSerializer(serializers.ModelSerializer):
             model = get_user_model()
             fields = ('image_path',)
         
-    user_image = UserSerializer(source='user', read_only='True') 
+    user_image = UserSerializer(source='user', read_only=True) 
 
 
     class Meta:
         model = Article
         fields = ('id', 'username', 'user', 'title', 'content', 'created_at', 'updated_at','views_num', 'user_image',)
         read_only_fields = ('user', 'user_image',)
+
 
 
 class CommentSerializer(serializers.ModelSerializer):

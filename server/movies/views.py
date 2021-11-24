@@ -11,7 +11,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.serializers import Serializer
 from accounts.models import User
 from .models import Movie, People, Genre, MovieComment
-from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer, Movie2Serializer
+from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer
 
 import random
 import requests
@@ -83,29 +83,116 @@ def movie_update(request):
 #     tmdb_id = data['results'][0]["id"]
 #     print(tmdb_id)
 #     return tmdb_id
-
-def tests(keyword):#movie_create_api(request, keyword):
+def tests(tmdb_id):#movie_create_api(request, keyword):
     #url을 영화만 보여줄건지 search/multi로 인물도 같이 보여줄건지
-    url = get_request_url(method='search/movie',region='KR', language='ko', query=f'{keyword}')#f'{uri_to_iri(keyword)}' )
-    data = requests.get(url).json()
-    tmdb_id = data['results'][0]["id"]
-    url2 = get_request_url(method=f'movie/{tmdb_id}')
+    # url = get_request_url(method='search/movie',region='KR', language='ko', query=f'{tmdb_id}')#f'{uri_to_iri(keyword)}' )
+    # data = requests.get(url).json()
+    # tmdb_id = data['results'][0]["id"]
+    # tmdb_id받으면이거만쓰면됌
+    url2 = get_request_url(method=f'movie/{tmdb_id}',region='KR', language='ko') #영화라면
     data2= requests.get(url2).json()
     return Response(data2)
 
-@api_view(['GET'])
+def movie_credits(tmdb_id): #인물을 위한 크레딧페이지 불러와서 인물 추출하기
+    url = get_request_url(method=f'movie/{tmdb_id}/credits',region='KR', language='ko') 
+    data= requests.get(url).json()
+    return Response(data)
+
+def people_credits(tmdb_id): #인물 상세정보추가를 위한 인물디테일불러오기
+    url = get_request_url(method=f'/person/{tmdb_id}',region='KR', language='ko') 
+    data= requests.get(url).json()
+    return Response(data)
+
+def people_movie_credits(tmdb_id): #인물 상세정보추가를 위한 인물출연영화목록불러오기
+    url = get_request_url(method=f'/person/{tmdb_id}/movie_credits',region='KR', language='ko') 
+    data= requests.get(url).json()
+    return Response(data)
+
+@api_view(['GET',"POST"]) #불러와서저장하는 함수 #영화를 불러오면 인물도 같이 가져와서저장해주자
 def test(request, keyword):#movie_save(request,keyword):
-    data = tests(f'{uri_to_iri(keyword)}')
-    serializer = Movie2Serializer(data.data)
-    return Response(serializer.data)
 
-## 검색해서 영화json 까지는 가져옴, 이 json을 어떻게 저장시킬꺼냐가 필요하다
+    if request.user.is_superuser:      
+        if Movie.objects.filter(tmdb_id=keyword):
+            data = {
+                'message': '이미 저장되어있는 영화입니다.'
+            }
+            return Response(data, status=status.HTTP_208_ALREADY_REPORTED)
+        else:
+            data = tests(keyword) #영화라면
+            pk = Movie.objects.count() +1
+            genre = []
+            for i in data.data.get('genres'):
+                genre.append(i.get('id'))
 
-## 영화검색한거 받아서 저장하기
-@api_view(['POST'])
-def test2(request):
-    serialzer = MovieSerializer(data = request.data)
+            created = Movie.objects.create(
+                    id = pk,   
+                    adult = data.data.get('adult'),
+                    backdrop_path = data.data.get('backdrop_path'),
+                    tmdb_id= data.data.get('id'),
+                    original_title= data.data.get('original_title'),
+                    overview= data.data.get('overview'),
+                    popularity = data.data.get('popularity'),
+                    poster_path =  data.data.get('poster_path'),
+                    release_date = data.data.get('release_date'),
+                    runtime = data.data.get('runtime'),
+                    title = data.data.get('title'),
+                    vote_average = data.data.get('vote_average'),
+                    vote_count = data.data.get('vote_count')
+                )
+            created.genres.set(genre)
+            created.save()
+    #인물저장하기
+            credits = movie_credits(keyword)
+            person_id = []
+            for i in range(5): #일단은 5명만
+                data = credits.data.get('cast')[i]
 
+                if People.objects.filter(tmdb_id=data.get('id')): #에러임 없다는걸알아야됌v필터;;
+                    continue
+                else:
+                    pk = People.objects.count()+1
+                    created_people = People.objects.create(
+                        id = pk,   
+                        name = data.get('name'),
+                        popularity = data.get('popularity'),
+                        tmdb_id= data.get('id'),
+                        birthday= data.get('birthday'),
+                        profile_path= data.get('profile_path'),
+                        adult = data.get('adult'),
+                        gender = data.get('gender'),
+                        also_known_as = data.get('also_known_as'),
+                        known_for_department = data.get('known_for_department')
+                        )
+                    created_people.save() 
+
+                person_id.append(data.get('id'))
+
+
+            for j in person_id:
+                ## 영화와 인물연결
+                db_movie_list = set() # 디비의영화리스트
+                people_db = People.objects.get(tmdb_id= j).people_movies.all()
+                for k in people_db:
+                    db_movie_list.add(k.tmdb_id)
+                person_credits  = people_movie_credits(j).data
+                person_movie_list = set() #api영화 출연목록
+                #db에 영화가 있으면 추가하자
+                #db영화목록 불러와서 
+                for person_movies in person_credits.get('cast'): #출연영화개수만큼가져오기
+                    # person_movie_list.add(person_credits.get('cast')[person_movies].get('id'))
+                    person_movie_list.add(person_movies.get('id'))
+                result = set.intersection(db_movie_list, person_movie_list)
+                person = People.objects.get(tmdb_id=j)
+                person.people_movies.set(result)
+                # person.save()
+            ## 인물 추가정보 저장
+                people_add = people_credits(j).data
+                person.also_known_as = people_add.get('also_known_as')
+                person.birthday = people_add.get('birthday')
+                person.save()
+
+
+    return Response(status=status.HTTP_201_CREATED)    
 
 ##
 
