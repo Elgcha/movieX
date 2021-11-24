@@ -1,8 +1,37 @@
 <template>
   <div class="text-white" >
-    <main class="mt-3 bg-gray-100 bg-opacity-25" style="min-height:80vh;">
-      <div class="mb-8 lg:w-8/12 lg:mx-auto">
-        <header class="flex flex-wrap items-center p-4 md:py-8">
+    <!-- follower modal -->
+    <div class="fixed inset-0 z-10 hidden w-full h-full overflow-y-auto bg-gray-600 bg-opacity-50"  role="alert" id="myAlert3">
+      <div class="relative p-5 mx-auto text-white bg-gray-600 border rounded-md shadow-lg top-20 w-96">
+        <div v-if="mydata.followers[0]">
+          <div v-for="(follower, index) in mydata.followers" :key="index">{{follower}}</div>
+        </div>
+        <div v-else>
+          아직 팔로워가 없어요....
+        </div>
+      <span class="absolute inset-y-0 right-0 flex items-center mr-4" @click="alertClose">
+        <svg class="w-4 h-4 transform fill-current hover:scale-110" role="button" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+      </span>
+      </div>
+    </div>
+    <!-- following modal -->
+    <div class="fixed inset-0 z-10 hidden w-full h-full overflow-y-auto bg-gray-600 bg-opacity-50"  role="alert" id="myAlert4">
+      <div class="relative p-5 mx-auto text-white bg-gray-600 border rounded-md shadow-lg top-20 w-96">
+        <div v-if="mydata.followings[0]">
+          <div v-for="(following, index) in mydata.followings" :key="index">{{following}}</div>
+        </div>
+        <div v-else>
+          아직 아무도 팔로우하지 않았어요...
+        </div>
+      <span class="absolute inset-y-0 right-0 flex items-center mr-4" @click="alertClose">
+        <svg class="w-4 h-4 transform fill-current hover:scale-110" role="button" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+      </span>
+      </div>
+    </div>
+
+    <main class="mt-3 bg-gray-100 bg-opacity-25" style="min-height:100vh;">
+      <div class="mb-8 lg:mx-auto">
+        <header class="flex flex-wrap items-center w-8/12 p-4 md:py-8">
           <div class="md:w-3/12 md:ml-16">
             <!-- profile image -->
             <img class="object-cover w-20 h-20 p-1 border-2 border-pink-600 rounded-full md:w-40 md:h-40" :src="profileImage" alt="profile">
@@ -17,13 +46,10 @@
                 {{ me.username }}
               </h2>
 
-              <!-- badge -->
-              <span class="relative inline-block mr-6 text-xl text-blue-500 transform -translate-y-2 fas fa-certificate fa-lg" aria-hidden="true">
-                <i class="absolute inset-x-0 mt-px ml-1 text-xs text-white fas fa-check"></i>
-              </span>
+
 
               <!-- follow button -->
-              <div v-if="!sameperson" @click="follow" class="block px-2 py-1 text-sm font-semibold text-center text-white bg-blue-500 rounded sm:inline-block">Follow</div>
+              <div v-if="!sameperson" @click="follow" class="block px-2 py-1 text-sm font-semibold text-center text-white bg-blue-500 rounded cursor-pointer sm:inline-block">Follow</div>
             </div>
 
             <!-- post, following, followers list for medium screens -->
@@ -34,11 +60,11 @@
               </li>
 
               <li>
-                <span class="font-semibold">{{ me.followers.length }}</span>
+                <span class="font-semibold cursor-pointer" @click="openFollowers">{{ me.followers.length }}</span>
                 followers
               </li>
               <li>
-                <span class="font-semibold">{{ me.followings.length }}</span>
+                <span class="font-semibold cursor-pointer" @click="openFollowings">{{ me.followings.length }}</span>
                 following
               </li>
             </ul>
@@ -46,13 +72,6 @@
             <!-- user meta form medium screens -->
             
 
-          </div>
-
-          <!-- user meta form small screens -->
-          <div class="my-2 text-sm md:hidden">
-            <h1 class="font-semibold">Mr Travlerrr...</h1>
-            <span>Travel, Nature and Music</span>
-            <p>Lorem ipsum dolor sit amet consectetur</p>
           </div>
 
         </header>
@@ -90,10 +109,10 @@
             
           </ul>
           <!-- flexbox grid -->
-          <div class="-mx-px md:-mx-3">
+          <div class="h-full"  style="min-heigth:20vh;">
             <!-- column -->
-            <div v-swiper:mySwiper="swiperOption" class="my-2 swiper-container">
-              <div class="bg-dark swiper-wrapper">
+            <div v-swiper:mySwiperT="swiperOption" class="h-full my-2 swiper-container">
+              <div class="h-full bg-dark swiper-wrapper">
                 <div
                 v-for="movie in wantMovies"
                 :key="movie.id"
@@ -101,13 +120,35 @@
                 class="justify-center h-auto swiper-slide"
                 >
                   <div class='w-full h-auto cursor-pointer popular' @click="moveToDetail(movie.id)">
-                    <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" alt="" class="object-cover w-full h-full">
-                    <div class="overlay" @click="moveToDetail(movie.id)">
-                    <h3 class="description" @click="moveToDetail(movie.id)">{{ movie.title }}</h3>
+                    <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" alt="" class="object-cover w-full h-full transform hover:scale-110">
                   </div>
                 </div>
                 </div>
-              </div>
+
+              <div class="swiper-button-prev" slot="button-prev"></div> 
+              <div class="swiper-button-next" slot="button-next"></div>
+
+
+            </div>
+
+          </div>
+          <h2> 평가한 영화</h2>
+          <div class="h-full">
+            <!-- column -->
+            <div v-swiper:mySwiperR="swiperOptionR" class="h-full swiper-container">
+              <div class="h-full p-2 bg-dark swiper-wrapper">
+                <div
+                v-for="movie in evalMovies"
+                :key="movie.id"
+                :movie="movie"
+                class="justify-center h-auto swiper-slide"
+                >
+                  <div class='w-full h-auto cursor-pointer popular' @click="moveToDetail(movie.id)">
+                    <img :src="'https://image.tmdb.org/t/p/w500/' + movie.movie.poster_path" alt="" class="object-cover w-full h-full transform hover:scale-110">
+                  </div>
+                </div>
+                </div>
+
               <div class="swiper-button-prev" slot="button-prev"></div> 
               <div class="swiper-button-next" slot="button-next"></div>
 
@@ -133,12 +174,63 @@ export default {
     return {
       file: null,
       me: {},
+      mydata: null,
       isFollowed: false,
       wantMovies: [],
+      evalMovies: [],
       swiperOption: {
         slidesPerView: 6,
         spaceBetween: 10,
         loop: false,
+        breakpoints: {
+          320: {
+            slidesPerView: 2,
+            spaceBetween: 10
+          },
+          480: {
+            slidesPerView: 3,
+            spaceBetween: 15
+          },
+          640: {
+            slidesPerView: 4,
+            spaceBetween: 20
+          },
+          1280: {
+            slidesPerView: 6,
+            spaceBetween: 20
+          }
+        },
+        navigation: {
+          nextEl: '.swiper-button-next', 
+          prevEl: '.swiper-button-prev' 
+        },
+      },
+      swiperOptionR: {
+        touchStartPreventDefault: false,
+        slidesPerView: 6,
+        spaceBetween: 10,
+        // loop: true,
+        // autoplay: {
+        //   delay:5000,
+        // },
+        breakpoints: {
+          320: {
+            slidesPerView: 2,
+            spaceBetween: 10
+          },
+          480: {
+            slidesPerView: 3,
+            spaceBetween: 15
+          },
+          640: {
+            slidesPerView: 4,
+            spaceBetween: 20
+          },
+          1280: {
+            slidesPerView: 6,
+            spaceBetween: 20
+          }
+        },
         navigation: {
           nextEl: '.swiper-button-next', 
           prevEl: '.swiper-button-prev' 
@@ -150,12 +242,58 @@ export default {
     ...mapActions([
       'moveToDetail',
     ]),
+    openFollowers: function () {
+      let alert = document.getElementById("myAlert3")
+      alert.style.display = "block"
+    },
+    openFollowings: function () {
+      let alert = document.getElementById("myAlert4")
+      alert.style.display = "block"
+    },
+    alertClose: function () {
+      let alert = document.getElementById("myAlert3")
+      let alert1 = document.getElementById("myAlert4")
+      alert.style.display = "none"
+      alert1.style.display = "none"
+    },
     setToken: function () {
       const token = localStorage.getItem('jwt')
       const config = {
         Authorization: `JWT ${token}`
       }
       return config
+    },
+    getEvalMovies: function () {
+      const username = this.$route.params.username
+      const url = process.env.VUE_APP_URL + `accounts/profile/${username}/recommend/` // profile/<username>/recommend/
+      axios({
+        method: 'get',
+        url: url,
+        headers: this.setToken(),
+      })
+        .then(res => {
+          console.log(res)
+          this.evalMovies = res.data.moviecomment_set_name
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    getmyData: function () {
+      const username = this.$route.params.username
+      const url = process.env.VUE_APP_URL + `accounts/profile/${username}/follow/list/` // profile/<username>/follow/list/
+      axios({
+        method: 'get',
+        url: url,
+        headers: this.setToken(),
+      })
+        .then(res => {
+          console.log(res)
+          this.mydata = res.data
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     getProfile: function () {
       const username = this.$route.params.username
@@ -225,6 +363,8 @@ export default {
   },
   created: function () {
     this.getProfile()
+    this.getEvalMovies()
+    this.getmyData()
   }
 }
 </script>

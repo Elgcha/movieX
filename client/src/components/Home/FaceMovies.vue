@@ -3,8 +3,6 @@
     <img :src="imgSrc" alt="" v-if="movie" class='w-full rounded'  >
     <span v-if='movie' class="title">
       <p>{{ movie.title }}</p>
-
-      {{ movie.overview|truncate(150) }}
       </span>
     <span>
       <face-movies-similar :movie="movie"></face-movies-similar>
@@ -38,22 +36,13 @@ export default {
   },
   computed: {
     imgSrc: function () {
-      return 'https://image.tmdb.org/t/p/w500/' + this.movie.backdrop_path
+      return 'https://image.tmdb.org/t/p/w500/' + this.movie.poster_path
     }
   },
 }
 </script>
 
 <style>
-#face {
-  position: relative;
-}
-#face span {
-  position: absolute;
-  z-index: 1;
-  color: white;
-  top: 20px;
-  left:20px;
-}
+
 
 </style>

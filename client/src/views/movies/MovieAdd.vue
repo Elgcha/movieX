@@ -1,5 +1,13 @@
 <template>
   <div>
+    <div class="fixed inset-0 z-10 hidden w-full h-full overflow-y-auto bg-gray-600 bg-opacity-50"  role="alert" id="myAlert2">
+      <div class="relative p-5 mx-auto text-white bg-gray-600 border rounded-md shadow-lg top-20 w-96">
+      <div>{{errMessage}}</div>
+      <span class="absolute inset-y-0 right-0 flex items-center mr-4" @click="alertClose">
+        <svg class="w-4 h-4 transform fill-current hover:scale-110" role="button" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+      </span>
+      </div>
+    </div>
     <!-- 검색 -->
     <div class="flex w-1/3 mx-auto my-3">
       <input type="text" @input="inputChange" @keyup.enter="searchMovie" class="w-full py-2 text-gray-700 border rounded shadow appearance-none place-self-auto focus:outline-none focus:shadow-outline" id="search_input">
@@ -27,9 +35,14 @@ export default {
     return {
       search: null,
       searchedMovies: [],
+      errMessage: null,
     }
   },
   methods: {
+    alertClose: function () {
+      let alert = document.getElementById("myAlert2")
+      alert.style.display = "none"
+    },
     setToken: function () {
       const token = localStorage.getItem('jwt')
       const config = {
@@ -63,13 +76,27 @@ export default {
     },
     // db에 추가
     addMovie: function (tmdbId) {
-      const url = process.env.VUE_APP_URL + `movies/create/${tmdbId}/`
+      const url = process.env.VUE_APP_URL + `movies/search/${tmdbId}/`
+      const url2 = process.env.VUE_APP_URL + 'movies/connect/mtop/'
       axios({
         method: 'post',
-        url: url
+        url: url,
+        headers: this.setToken()
       })
-        .then(() => {
-          
+        .then((res) => {
+          if (res.data.message) {
+            this.errMessage = res.data.message
+            let alert = document.getElementById("myAlert2")
+            alert.style.display = "block"
+          } else {
+            this.errMessage = '추가되었습니다.'
+            let alert = document.getElementById("myAlert2")
+            alert.style.display = "block"
+            axios({
+              method: 'get',
+              url: url2,
+            })
+          }
         })
         .catch(err => {
           console.log(err)
