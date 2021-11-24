@@ -3,7 +3,6 @@
     <!-- moviesite 추가 -->
     <div class="fixed inset-0 z-10 hidden w-full h-full overflow-y-auto bg-gray-600 bg-opacity-50"  role="alert" id="myAlert_moviesite">
       <div class="relative p-5 mx-auto text-white bg-gray-600 border rounded-md shadow-lg top-20 w-96">
-      <div>{{errMessage}}</div>
       <div class="mb-1">
         <label for="site" class="block mb-2 text-sm font-bold text-white">site </label>
         <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" id="site" v-model="SiteData.site">
@@ -78,8 +77,8 @@
     <div v-swiper:mySwiper="swiperOption" class="my-2 bg-gray-600 swiper-container">
       <div class="swiper-wrapper">
         <div
-        v-for="people in movie.people"
-        :key="people.id"
+        v-for="(people, index) in movie.people"
+        :key="index"
         class="justify-center h-auto swiper-slide"
         @click="moveToPeopleDetail(people.id)"
         >
@@ -95,13 +94,13 @@
       <button class="btn btn-blue" v-show="wanted" @click='iWantThisMovie'>보고싶은 영화에서 제거</button>
     </div>
     <h3 class="p-1 text-left">#비슷한 영화</h3>
-    <div v-swiper:mySwipers="swiperOption" class="my-2 bg-gray-600 swiper-container">
-      <div class="swiper-wrapper">
+    <div v-swiper:mySwipers="swiperOption" class="bg-gray-600 swiper-container">
+      <div class="p-2 swiper-wrapper">
         <similar-movie 
-        v-for="similarMovie in similarMovies"
-        :key="similarMovie.id"
+        v-for="(similarMovie, index) in similarMovies"
+        :key="index"
         :movie="similarMovie"
-        class="justify-center h-auto swiper-slide"
+        class="justify-center swiper-slide"
         ></similar-movie>
       </div>
       <div class="swiper-button-prev" slot="button-prev"></div> 
@@ -143,12 +142,31 @@ export default {
       movieVideo: null,
       movieSiteDatas: {},
       swiperOption: {
+        touchStartPreventDefault: false,
         slidesPerView: 6,
         spaceBetween: 10,
         loop: false,
         // autoplay: {
         //   delay:5000,
         // },
+        breakpoints: {
+          320: {
+            slidesPerView: 2,
+            spaceBetween: 20
+          },
+          480: {
+            slidesPerView: 3,
+            spaceBetween: 20
+          },
+          640: {
+            slidesPerView: 4,
+            spaceBetween: 20
+          },
+          1280: {
+            slidesPerView: 6,
+            spaceBetween: 20
+          }
+        },
         navigation: {
           nextEl: '.swiper-button-next', 
           prevEl: '.swiper-button-prev' 
