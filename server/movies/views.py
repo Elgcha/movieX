@@ -232,7 +232,6 @@ def movie_same(request, movie_pk):
         movie = Movie.objects.filter(genres=j).exclude(pk=movie_pk)
         movie_set.add(movie)
     result = list(chain.from_iterable(movie_set))
-    print(result)
     serializer = MovieSerializer(result, many=True)
     return Response(serializer.data)
 
