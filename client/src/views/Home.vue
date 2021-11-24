@@ -1,6 +1,5 @@
 <template>
   <div class="dark:text-white home">
-    <face :movies="playingMovie"></face>
     <h2 class="mt-10 mb-2 text-left">#인기 영화</h2>
     <div class="p-2 dark:bg-gray-600">
       <popular :movies="newMovie"></popular>
@@ -11,6 +10,10 @@
     <div class="p-2 dark:bg-gray-500">
       <recommend :movies="recommendMovies"></recommend>
     </div>
+    <h2>{{ randomGenre }}</h2>
+    <div>
+      <face :movies="randomMovie"></face>
+    </div>
   </div>
 </template>
 
@@ -20,9 +23,11 @@ import Face from '@/components/Home/Face.vue'
 import axios from 'axios'
 import Popular from '@/components/Home/Popular.vue'
 import Recommend from '../components/Home/Recommend.vue'
+import _ from 'lodash'
 
 
 export default {
+
   name: 'Home',
   components: {
     Face,
@@ -31,10 +36,11 @@ export default {
   },
   data: function () {
     return {
-      playingMovie: [], // 상영 중 영화
+      randomMovie: [], // 랜덤 장르 영화
       newMovie: [], // 인기 영화
       key: process.env.VUE_APP_TMDB,
       recommendMovies: [],
+      randomGenre: null,
       
       
     }
@@ -48,15 +54,18 @@ export default {
       return config
     },
     // 메인 이미지 영화 가져오기 
-    getBestPlayingMovie: function () {
-      const url = process.env.VUE_APP_URL + 'movies/대문/'
+    getRandomMovie: function () {
+      const genre = ['액션', '전쟁', '모험', '판타지', '애니메이션', '드라마', '공포', '코미디', '로맨스', '가족', 'SF']
+      const nowGenre = _.sample(genre)
+      this.randomGenre = nowGenre
+      const url = process.env.VUE_APP_URL + `movies/${nowGenre}/`
 
       axios({
         method: 'get',
         url: url,
       })
         .then(res => {
-          this.playingMovie = res.data
+          this.randomMovie = res.data
         })
         .catch(err => {
           console.log(err)
@@ -87,7 +96,7 @@ export default {
     }
   },
   created: function () {
-    this.getBestPlayingMovie()
+    this.getRandomMovie()
     this.getNewMovies()
     this.getRecommendMovie()
   }

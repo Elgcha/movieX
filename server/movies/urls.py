@@ -38,7 +38,7 @@ urlpatterns = [
    path('connect/mtop/', views.people_to_movie), #DB안에 인물과 영화를 연결시킨다
  
    #test
-    path('search/<str:keyword>/', views.test), #검색결과 보여줍니다 #영화리스트를 보여준다 #인물리스트를 보여준다
+    path('search/<int:keyword>/', views.test), #검색결과 보여줍니다 #영화리스트를 보여준다 #인물리스트를 보여준다
 
  #영화 추천 알고리즘
     path('<int:user_pk>/test/', views.recommend_for),

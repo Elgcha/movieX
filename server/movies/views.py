@@ -35,6 +35,7 @@ def get_request_url(method='movie/popular', **kwargs):
 ## 가져온 영화값에 인물이 연결되어있지 않다.
 ## 인물 크레딧에 영화정보가 있고 그걸 연결한다
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def people_to_movie(request): 
     movies = Movie.objects.all()
     people = People.objects.all()
