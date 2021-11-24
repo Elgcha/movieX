@@ -66,6 +66,7 @@ for i in range(len(movie_list.get('results'))):
         'fields': {
             'title': movies.get('title'),
             'release_date': movies.get('release_date'),
+            # 'runtime': ,#movies.get('runtime'),
             'backdrop_path': movies.get('backdrop_path'),
             'poster_path': movies.get('poster_path'),
             'vote_count': movies.get('vote_count'),
@@ -137,11 +138,13 @@ for i in range(20): #샘플로 20개 까지만 range(len(movie_list_id)):
             'fields': {
                 'name': person.get('name'),
                 'popularity': person.get('popularity'),
+                'birthday': person.get('birthday'),
                 'profile_path': person.get('profile_path'),
                 'adult': person.get('adult'),
                 'gender': person.get('gender'),
-                'tmdb_id': person.get('id')
-            #  'also_known_as': person.get('al')
+                'tmdb_id': person.get('id'),
+                'also_known_as': person.get('also_know_as'),
+                "known_for_department": person.get("known_for_department"),
             #  'birthday': get('birthday')
             }
         }
@@ -170,6 +173,8 @@ for i in person_database_id:
     # print(len(person_database_id))
     #pprint(person_database)
     person_database[profile_count]['fields']['also_known_as'] = person_profile_database['also_known_as']
+    person_database[profile_count]['fields']['birthday'] = person_profile_database['birthday']
+    
     profile_count += 1
    
 # 인물 목록 출력하기

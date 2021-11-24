@@ -1,26 +1,115 @@
-from django.http.response import Http404, JsonResponse
-from re import search
-from django.http import response
-from django.shortcuts import get_object_or_404, render
-import requests
-from requests.sessions import Request
-from community.serializers import CommentSerializer
-from rest_framework import serializers, status
+from django.http.response import Http404
+from django.shortcuts import get_object_or_404
+from django.utils.encoding import uri_to_iri
+from django.db.models import Avg
+from django.contrib.auth import get_user_model
+from requests import api
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from django.contrib.auth import get_user_model
-from accounts.models import User
-
-from accounts.serializers import RecommendSerializer
-from .models import Movie, People, Genre, MovieComment
-from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer
 from rest_framework.permissions import AllowAny
-from django.utils.encoding import uri_to_iri
+from rest_framework.serializers import Serializer
+from accounts.models import User
+from .models import Movie, People, Genre, MovieComment
+from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer, Movie2Serializer
+
 import random
-from django.db.models import Avg
+import requests
+
+from movies import serializers
 
 
 # Create your views here.
+## api 관련
+api_key = '953a5848d0ceb3adab0a2109622b61b6'
+def get_request_url(method='movie/popular', **kwargs):
+    base_url = 'https://api.themoviedb.org/3/'
+    request_url = base_url + method
+    request_url += f'?api_key={api_key}'
+    for k, v in kwargs.items():
+        request_url += f'&{k}={v}'
+    return request_url
+### 이 두 함수는 데이터베이스의 값을 갱신하는 함수이다
+## movie connect people
+# 빈리스트 가져와서 비교하는 방식으로바꿔보자 #
+## 가져온 영화값에 인물이 연결되어있지 않다.
+## 인물 크레딧에 영화정보가 있고 그걸 연결한다
+@api_view(['GET'])
+def people_to_movie(request): 
+    movies = Movie.objects.all()
+    people = People.objects.all()
+    movieset = []
+    for movie_code in movies:
+        movieset.append(movie_code.tmdb_id)
+    # 사람의 id값을 조회해서 영화목록을 가져오자
+    for person_code in people:
+        person = People.objects.get(tmdb_id=person_code.tmdb_id)
+        url = get_request_url(method=f'person/{person_code.tmdb_id}/movie_credits')
+        data = requests.get(url).json()
+        dataset = []
+        update_set =[]
+      # 출연한영화 목록을 리스트로 만들어준다.  
+        for i in range(len(data.get('cast'))):
+            dataset.append(data.get('cast')[i].get('id'))
+        for j in movieset:
+            if j in dataset:
+                update_set.append(j)
+        for k in update_set:
+            movie = Movie.objects.get(tmdb_id=k)
+            movie.people.add(person)
+    return Response(status=status.HTTP_200_OK)
+
+#전체영화의 변동정보 업데이트
+def movie_update(request):
+    movies = Movie.objects.all()
+    for i in movies:
+        url = get_request_url(f'movie/{i.tmdb_id}')
+        data = requests.get(url).json()
+        movie = Movie.objects.get(tmdb_id=i.tmdb_id)
+        movie.popularity = data.get('popularity')
+        movie.vote_average = data.get('vote_average')
+        movie.vote_count = data.get('vote_count')
+        movie.runtime = data.get('runtime')
+        movie.save()
+    return Response(status=status.HTTP_200_OK)
+###
+
+# 영화검색 시리얼라이저로 보여줌
+# @api_view(['GET'])
+# def test(request, keyword):#movie_create_api(request, keyword):
+#     #url을 영화만 보여줄건지 search/multi로 인물도 같이 보여줄건지
+#     url = get_request_url(method='search/movie',region='KR', language='ko', query=f'{uri_to_iri(keyword)}' )
+#     data = requests.get(url).json()
+#     tmdb_id = data['results'][0]["id"]
+#     print(tmdb_id)
+#     return tmdb_id
+
+def tests(keyword):#movie_create_api(request, keyword):
+    #url을 영화만 보여줄건지 search/multi로 인물도 같이 보여줄건지
+    url = get_request_url(method='search/movie',region='KR', language='ko', query=f'{keyword}')#f'{uri_to_iri(keyword)}' )
+    data = requests.get(url).json()
+    tmdb_id = data['results'][0]["id"]
+    url2 = get_request_url(method=f'movie/{tmdb_id}')
+    data2= requests.get(url2).json()
+    return Response(data2)
+
+@api_view(['GET'])
+def test(request, keyword):#movie_save(request,keyword):
+    data = tests(f'{uri_to_iri(keyword)}')
+    serializer = Movie2Serializer(data.data)
+    return Response(serializer.data)
+
+## 검색해서 영화json 까지는 가져옴, 이 json을 어떻게 저장시킬꺼냐가 필요하다
+
+## 영화검색한거 받아서 저장하기
+@api_view(['POST'])
+def test2(request):
+    serialzer = MovieSerializer(data = request.data)
+
+
+##
+
+##
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def index(request): #전체 영화 목록 조회
@@ -56,9 +145,6 @@ def movie_create(request, tmdb_id):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-def movie_update(request, movie_pk):
-    pass
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -230,58 +316,7 @@ def want_check(request, movie_pk):
     return Response(data)
 
 
-api_key = '953a5848d0ceb3adab0a2109622b61b6'
-def get_request_url(method='movie/popular', **kwargs):
-    base_url = 'https://api.themoviedb.org/3/'
-    request_url = base_url + method
-    request_url += f'?api_key={api_key}'
-    for k, v in kwargs.items():
-        request_url += f'&{k}={v}'
-    return request_url
 
-## movie connect people
-# 빈리스트 가져와서 비교하는 방식으로바꿔보자 #
-## 가져온 영화값에 인물이 연결되어있지 않다.
-## 인물 크레딧에 영화정보가 있고 그걸 연결한다
-@api_view(['GET'])
-def people_to_movie(request): 
-    movies = Movie.objects.all()
-    people = People.objects.all()
-    movieset = []
-    for movie_code in movies:
-        movieset.append(movie_code.tmdb_id)
-    # 사람의 id값을 조회해서 영화목록을 가져오자
-    for person_code in people:
-        person = People.objects.get(tmdb_id=person_code.tmdb_id)
-        url = get_request_url(method=f'person/{person_code.tmdb_id}/movie_credits')
-        data = requests.get(url).json()
-        dataset = []
-        update_set =[]
-      # 출연한영화 목록을 리스트로 만들어준다.  
-        for i in range(len(data.get('cast'))):
-            dataset.append(data.get('cast')[i].get('id'))
-        for j in movieset:
-            if j in dataset:
-                update_set.append(j)
-        for k in update_set:
-            movie = Movie.objects.get(tmdb_id=k)
-            movie.people.add(person)
-    return Response(status=status.HTTP_200_OK)
-
-def movie_update(request):
-    movies = Movie.objects.all()
-    for i in movies:
-        url = get_request_url(f'movie/{i.tmdb_id}')
-        data = requests.get(url).json()
-        movie = Movie.objects.get(tmdb_id=i.tmdb_id)
-        movie.popularity = data.get('popularity')
-        movie.vote_average = data.get('vote_average')
-        movie.vote_count = data.get('vote_count')
-        movie.save()
-    return Response(status=status.HTTP_200_OK)
-
-# def movie_create_api(request, keyword):
-#     get_request_url(method='search/movie',region='KR', language='ko', query=f'{uri_to_iri('keyword'))
 
 
                   
