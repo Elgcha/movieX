@@ -9,7 +9,7 @@
     <!-- 자동완성 -->
 
     <div class="absolute z-10 w-full text-left text-black bg-white divide-y rounded-md" v-show="autosearch" tabindex="-1">
-      <div v-for="autoMovie in autoCompleted" :key=autoMovie.score class="p-1 hover:bg-gray-300" @click="autoCompleteSearch(autoMovie.item.title)">
+      <div v-for="(autoMovie, index) in autoCompleted" :key="index" class="p-1 hover:bg-gray-300" @click="autoCompleteSearch(autoMovie.item.title)">
         {{ autoMovie.item.title }}
       </div>
     </div>
