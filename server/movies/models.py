@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinLengthValidator, MinValueValidator
-from birthday import BirthdayField
 
 # Create your models here.
 class Genre(models.Model): 
@@ -21,10 +20,8 @@ class People(models.Model):
     also_known_as = models.JSONField(null=True)
     known_for_department = models.CharField(max_length=100)
 
-
     def __str__(self):
         return self.name
-
 
 class Movie(models.Model):
     title = models.CharField(max_length=100)
@@ -41,7 +38,7 @@ class Movie(models.Model):
     people = models.ManyToManyField(People, related_name='people_movies')
     tmdb_id = models.IntegerField()
     overview = models.TextField()
-    want = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='user_wants')
+    want = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='user_wants', blank=True)
 
     def __str__(self):
         return self.title
