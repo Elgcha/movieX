@@ -20,6 +20,7 @@ def community(request):
         return Response(serializer.data)
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def create(request):
     serializer = ArticleSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
