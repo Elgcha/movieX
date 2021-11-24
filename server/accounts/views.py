@@ -1,15 +1,10 @@
-from django.shortcuts import get_object_or_404, render
-from rest_framework import serializers, status
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-
-from movies.models import MovieComment
-from movies.serializers import MovieCommentSerializer
-
-from .models import User
-from .serializers import MovieCommentListSerializer, RecommendSerializer, UserSerializer
-from django.contrib.auth import get_user, get_user_model
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from .serializers import MovieCommentListSerializer, RecommendSerializer, UserSerializer
 # Create your views here.
 
 #### user #####################################
@@ -20,7 +15,8 @@ def signup(request):
     password = request.data.get('password')
     passwordConfirmation = request.data.get('passwordConfirmation')
     username = request.data.get('username')
-    email = request.data.get('email')
+    email = request.dataget('email')
+    print(request.data.email)
     # 일치여부 확인
     if password != passwordConfirmation:
         return Response({ 'error': '비밀번호가 일치하지 않습니다.'})
@@ -29,8 +25,8 @@ def signup(request):
     if person:
        return Response({ 'error': '이미 존재하는 닉네임입니다.'})
 	#UserSerializer를 통해 데이터 직렬화
-    if '@' not in email or not (email[-4:] == '.com'):
-         return Response({ 'error': '잘못된 이메일 형식입니다.'})
+    # if requst.data  or '@' not in email or not (email[-4:] == '.com') :
+    #      return Response({ 'error': '잘못된 이메일 형식입니다.'})
     serializer = UserSerializer(data=request.data)
     
         #validation 작업 진행 -> password도 같이 직렬화 진행
@@ -44,9 +40,7 @@ def signup(request):
 
 
 #####################프로필 페이지 구성할거 가져오기 
-########마이 프로필이랑 다른사람의 프로필하려고 구별했는데 합쳐도 될듯
 @api_view(['GET'])
-@permission_classes([AllowAny])
 def profile(request, username):
     user = get_object_or_404(get_user_model(), username=username)
     serializer = UserSerializer(user)
@@ -61,7 +55,7 @@ def follow(request, username):
     #나
     user = request.user
     if person != user:
-        if user.followers.filter(pk=person.pk).exists():
+        if person.followers.filter(pk=user.pk).exists():
             person.followers.remove(user)
             isFollowed = False
         else:
@@ -72,6 +66,7 @@ def follow(request, username):
             'followers_count': person.followers.count(),
             'followings_count': person.followings.count(),
         }
+        print(data)
         return Response(data)
     else:
         data = {
@@ -122,39 +117,9 @@ def follow_list(request, username):
 @api_view(['GET'])
 def user_recommend(request,username):
     user = get_object_or_404(get_user_model(), username=username)
-    #rated_movie = user.user_wants.all()
     serializer = RecommendSerializer(user)
     
     return Response(serializer.data)
-
-
-
-
-
-
-##################################################################
-#temp
-
-@api_view(["PUT",'GET'])
-def temp(request, username):
-
-    user= get_object_or_404(get_user_model(), pk=username)
-
-    if request.method == "GET":
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-        
-    if request.method == "PUT":
-        # user = get_object_or_404(get_user_model(),  pk=request.user.pk)
-        serializer = UserSerializer(user, data= request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        src = request.data['image']
-        user.image_path = src
-        user.save()
-        return Response(status=status.HTTP_200_OK)
-
 
 @api_view(["PUT",'GET'])
 # @permission_classes([AllowAny])

@@ -14,6 +14,4 @@ urlpatterns = [
     path('profiles/<username>/', views.image),
     path('<username>/update/', views.email_change),
 
-    # temp
-    path('profiles/<int:user_pk>/name/', views.temp), # 이름바꾸기
 ]
