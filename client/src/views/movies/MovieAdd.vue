@@ -16,8 +16,8 @@
       <button @click="searchMovie" class="place-self-auto btn btn-blue btn-blue:hover"><img src="https://raw.githubusercontent.com/filippo-quacquarelli/tag-search/master/search.png" alt="search"></button>
     </div>
     <div class="flex">
-      <button class="btn btn-blue">업데이트</button>
-      <button class="btn btn-blue">연결</button>
+      <button class="btn btn-blue" @click="allMovieUpdate">업데이트</button>
+      <button class="btn btn-blue" @click="peopleMovieConnect">연결</button>
     </div>
     </div>
     
@@ -107,6 +107,30 @@ export default {
         })
         .catch(err => {
           console.log(err)
+        })
+    },
+    peopleMovieConnect: function () {
+      const url = process.env.VUE_APP_URL + 'movies/connect/mtop/'
+      axios({
+        method: 'get',
+        url: url,
+      })
+        .then(() => {
+          this.errMessage = '완료되었습니다.'
+          let alert = document.getElementById("myAlert2")
+          alert.style.display = "block"
+        })
+    },
+    allMovieUpdate: function () {
+      const url = process.env.VUE_APP_URL + 'movies/update/movies/all/' 
+      axios({
+        method: 'get',
+        url: url,
+      })
+      .then(() => {
+          this.errMessage = '완료되었습니다.'
+          let alert = document.getElementById("myAlert2")
+          alert.style.display = "block"
         })
     },
   }

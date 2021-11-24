@@ -30,6 +30,7 @@ urlpatterns = [
 
    ### API관련
    #영화정보 업데이트 
+   path('update/movies/all/', views.movie_update),
    #인물과 영화 연결시키는 함수
    path('connect/mtop/', views.people_to_movie), #DB안에 인물과 영화를 연결시킨다
    #영화 DB추가

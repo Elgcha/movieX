@@ -1,21 +1,16 @@
 <template>
-  <div id="face" @click="moveToDetail(movie.id)">
-    <img :src="imgSrc" alt="" v-if="movie" class='w-full rounded'  >
-    <span v-if='movie' class="title">
-      <p>{{ movie.title }}</p>
-      </span>
-    <span>
-      <face-movies-similar :movie="movie"></face-movies-similar>
-    </span>
+  <div class='w-full h-auto cursor-pointer popular'>
+      <img :src="imgSrc" alt="popularmovie" class="w-full h-full transform rounded hover:scale-110" @click="moveToDetail(movie.id)">
+
   </div>
 </template>
 
 <script>
-import FaceMoviesSimilar from '@/components/Home/FaceMoviesSimilar.vue'
+// import FaceMoviesSimilar from '@/components/Home/FaceMoviesSimilar.vue'
 import { mapActions } from 'vuex'
 
 export default {
-  components: { FaceMoviesSimilar },
+  components: {  },
   name:'FaceMovies',
   props: {
     movie: {

@@ -1,6 +1,6 @@
 <template>
   <div v-swiper:mySwiper="swiperOption" class="my-2 swiper-container" id="face-container">
-    <div class="swiper-wrapper">
+    <div class="p-2 swiper-wrapper">
       <face-movies v-for="movie in movies" :key="movie.id" :movie="movie" class="cursor-pointer swiper-slide"></face-movies>
     </div>
   </div>
