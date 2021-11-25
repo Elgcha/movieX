@@ -1,7 +1,8 @@
 <template>
-  <div class="relative my-auto text-left">
-  <div @click="toggleMenu">
-    <button type="button" class="inline-flex justify-center w-full text-sm font-medium rounded-md shadow-sm text-grat-400 mydropdown hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
+  <div class="relative p-1 my-auto text-left">
+  <div @click="toggleMenu" class="flex">
+    <img class="object-cover w-5 h-5 p-1 rounded-full md:w-8 md:h-8" :src="profileImage" alt="">
+    <button type="button" class="inline-flex justify-center w-full p-1 text-sm font-medium text-white rounded-md shadow-sm mydropdown hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
       {{ username }}
       <!-- 아래 화살표 이미지 -->
       <svg class="w-5 h-5 ml-2 -mr-1 mydropdown" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -35,18 +36,21 @@
 
 <script>
 import {mapState} from 'vuex'
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   name: 'Dropdown',
   props: {
     menu: {
       type: Boolean,
+    },
+    me: {
+      type: Object,
     }
   },
   data: function () {
     return {
       username: localStorage.getItem('username'),
-      me: {},
+
     }
   },
   methods: {
@@ -57,21 +61,7 @@ export default {
       }
       return config
     },
-    getProfile: function () {
-      const username = this.$route.params.username
-      const url = process.env.VUE_APP_URL + `accounts/profile/${username}/`
-      axios({
-        method: 'get',
-        url: url,
-        headers: this.setToken(),
-      })
-        .then(res => {
-          this.me = res.data
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    },
+ 
     toggleMenu: function () {
       this.$emit('toggle')
     },
@@ -91,7 +81,14 @@ export default {
     ...mapState([
       'isLogin',
     ]),
+    profileImage: function () {
+      const img = process.env.VUE_APP_URL.slice(0, -1) + this.me.image_path
+      return img
+    }
   },
+  created: function() {
+    this.getProfile()
+  }
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-wrap">
-    <table class="w-full text-white rounded table-fixed bg-gradient-to-r from-gray-900 to-gray-800">
+    <table class="w-full text-white rounded table-fixed ">
       <thead>
         <tr class="">
           <th class="w-6/12 p-1">Title</th>
@@ -12,7 +12,7 @@
       
       <tbody class="divide-y divide-gray-500">
         <tr v-for="article in pagenatedArticles" :key="article.id"  class="cursor-pointer hover:bg-gray-600"  @click="moveToArticleDetail(article.item.id)">
-          <td class="p-2 px-4 text-left rounded-l">{{ article.item.title }}</td>
+          <td class="p-2 px-4 text-center rounded-l">{{ article.item.title }}</td>
           <td class="p-2">{{ article.item.username }}</td>
           <td class="p-2">{{ calDate(article.item.created_at) }}</td>
           <td class="p-2 rounded-r">{{ article.item.views_num }}</td>
@@ -26,19 +26,22 @@
         </div>
       </div> -->
       <!-- 페이지네이션 -->
-      <div class="container flex justify-center mx-auto my-2">
-        <ul class="flex">
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600 rounded-l hover:bg-gray-100" :disabled="pageNum === 0" @click="prevPage">Prev</button></li>
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum > 1" @click="pageNum=0">1</button></li>
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum > 2" >...</button></li>
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum" @click="prevPage">{{ pageNum }}</button></li>
-            <li><button class="h-10 px-5 text-white bg-gray-600 border border-r-0 border-gray-600 ">{{ pageNum + 1 }}</button></li>
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600 hover:bg-gray-100" v-if="pageNum < pageCount - 1" @click="nextPage">{{ pageNum + 2 }}</button></li>
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum < pageCount - 3" >...</button></li>
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-r-0 border-gray-600" v-if="pageNum < pageCount - 2" @click="pageNum=pageCount-1">{{ pageCount }}</button></li>
-            <li><button class="h-10 px-5 text-gray-600 bg-white border border-gray-600 rounded-r hover:bg-gray-100" :disabled="pageNum >= pageCount - 1" @click="nextPage">Next</button></li>
+      <div class="relative w-full mx-auto mb-20">
+        
+      <div class="container absolute w-full mx-auto my-2" style="left:34vw">
+        <ul class="flex w-full mx-auto">
+            <li><button class="h-10 px-5 text-white border border-r-0 border-gray-600 rounded-l hover:bg-gray-500" :disabled="pageNum === 0" @click="prevPage">Prev</button></li>
+            <li><button class="h-10 px-5 text-white border border-r-0 border-gray-600 hover:bg-gray-500" v-if="pageNum > 1" @click="pageNum=0">1</button></li>
+            <li><button class="h-10 px-5 text-white border border-r-0 border-gray-600" v-if="pageNum > 1" >...</button></li>
+            <li><button class="h-10 px-5 text-white border border-r-0 border-gray-600 hover:bg-gray-500" v-if="pageNum" @click="prevPage">{{ pageNum }}</button></li>
+            <li><button class="h-10 px-5 text-white border border-r-0 border-gray-600 hover:bg-gray-500">{{ pageNum + 1 }}</button></li>
+            <li><button class="h-10 px-5 text-white border border-r-0 border-gray-600 hover:bg-gray-500" v-if="pageNum < pageCount - 1" @click="nextPage">{{ pageNum + 2 }}</button></li>
+            <li><button class="h-10 px-5 text-white border border-r-0 border-gray-600" v-if="pageNum < pageCount - 2" >...</button></li>
+            <li><button class="h-10 px-5 text-white border border-r-0 border-gray-600 hover:bg-gray-500" v-if="pageNum < pageCount - 2" @click="pageNum=pageCount-1">{{ pageCount }}</button></li>
+            <li><button class="h-10 px-5 text-white border border-gray-600 rounded-r hover:bg-gray-500" :disabled="pageNum >= pageCount - 1" @click="nextPage">Next</button></li>
         </ul>
     </div>
+      </div>
   </div>
 </template>
 

@@ -3,12 +3,13 @@
   <!-- 검색창 -->
   <div class="relative w-full mx-auto my-3 md:w-1/3">
     <div class="flex w-full">
-      <input type="text" @input="inputChange" @keyup.enter="searchMovie" class="w-full py-2 text-gray-700 border rounded shadow appearance-none place-self-auto focus:outline-none focus:shadow-outline" id="search_input">
-      <button @click="searchMovie" class="place-self-auto btn btn-blue btn-blue:hover"><img src="https://raw.githubusercontent.com/filippo-quacquarelli/tag-search/master/search.png" alt="search"></button>
+      <v-text-field dark clearable label="Search" @input="inputChange($event)" @keyup.enter="searchMovie" id="search_input" autocomplete="off"></v-text-field>
+      <!-- <input type="text" @input="inputChange" @keyup.enter="searchMovie" class="w-full py-2 text-gray-700 border rounded shadow appearance-none place-self-auto focus:outline-none focus:shadow-outline" id="search_input"> -->
+      <!-- <button @click="searchMovie" class="place-self-auto btn btn-blue btn-blue:hover"><img src="https://raw.githubusercontent.com/filippo-quacquarelli/tag-search/master/search.png" alt="search"></button> -->
     </div>
     <!-- 자동완성 -->
 
-    <div class="absolute z-10 w-full text-left text-black bg-white divide-y rounded-md" v-show="autosearch" tabindex="-1">
+    <div class="absolute z-10 w-full text-left text-white bg-gray-700 top-12 rounded-b-md" v-show="autosearch" tabindex="-1">
       <div v-for="(autoMovie, index) in autoCompleted" :key="index" class="p-1 hover:bg-gray-300" @click="autoCompleteSearch(autoMovie.item.title)">
         {{ autoMovie.item.title }}
       </div>
@@ -105,7 +106,8 @@ export default {
         })
     },
     inputChange: function(event) {
-      this.search = event.target.value.trim()
+      console.log(event)
+      this.search = event.trim()
       if (this.search) {
         let num = 1
         if (this.search.length > 1) {

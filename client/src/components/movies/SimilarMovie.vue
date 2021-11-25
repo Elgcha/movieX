@@ -1,6 +1,6 @@
 <template>
   <div class='w-full p-2 popular' @click="moveToDetail(movie.id)">
-      <img :src="imgSrc" alt="popularmovie" class="object-cover w-full h-full">
+      <img :src="imgSrc" alt="popularmovie" class="object-cover w-full h-full transform cursor-pointer hover:scale-105">
   </div>
 </template>
 

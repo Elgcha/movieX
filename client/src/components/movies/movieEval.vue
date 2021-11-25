@@ -11,10 +11,10 @@
 
 
 
-  <button class="hidden px-2 mx-3 my-auto text-gray-400 md:block hover:text-gray-50" type="button" data-modal-toggle="movieEval" @click="toggle" id="movieModal">
+  <button class="hidden mx-3 my-auto text-white md:block hover:text-gray-50" type="button" data-modal-toggle="movieEval" @click="toggle" id="movieModal">
     영화 평가
   </button>
-  <button class="px-2 mx-3 my-auto text-gray-400 md:hidden hover:text-gray-50" type="button" data-modal-toggle="movieEval" @click="toggle" id="movieModal">
+  <button class="px-2 mx-3 my-auto text-white md:hidden hover:text-gray-50" type="button" data-modal-toggle="movieEval" @click="toggle" id="movieModal">
     E
   </button>
 
@@ -33,9 +33,73 @@
   >
   <div
     v-if="movie"
-    class="relative p-5 mx-auto text-white bg-gray-600 border rounded-md shadow-lg top-20 w-96"
+    class="relative mx-auto border rounded-md shadow-lg top-20 w-96"
   >
-    <div class="grid mt-3 text-center">
+    <v-card
+    class="w-full mx-auto border-none"
+    dark
+  >
+    <v-img
+      :src="movie.poster_path ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path : '@/assets/images/default_poster.png'"
+      class="h-full"
+    ></v-img>
+
+    <v-card-title>
+      {{movie.title}}
+    </v-card-title>
+
+    <v-card-subtitle>
+      {{movie.release_date}}
+      <div class="flex">
+        <star-rating v-model="rate"></star-rating>
+        <v-btn elevation="2" class="ml-auto mr-1 " @click="createComment">next</v-btn>
+        <v-btn elevation="2" class="mx-1 ml-auto " @click="getMovie">pass</v-btn>
+      </div>
+      <v-btn
+          id="ok-btn"
+          elevation="2"
+          color="secondary"
+          @click="endModal"
+          class="w-1/2 px-4 py-2 my-2 text-base font-medium"
+        >
+          End
+        </v-btn>
+    </v-card-subtitle>
+
+    <v-card-actions>
+      <v-btn
+        color="orange lighten-2"
+        text
+      >
+        detail
+      </v-btn>
+
+      <v-spacer></v-spacer>
+
+      <v-btn
+        icon
+        @click="show = !show"
+      >
+        <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+      </v-btn>
+    </v-card-actions>
+
+    <v-expand-transition>
+      <div v-show="show">
+        <v-divider></v-divider>
+
+        <v-card-text class="text-left">
+          <div class="flex justify-center">
+            <div v-for="(genre, index) in movie.genres" :key="index" class="mx-2 my-1"> {{ genre.name }} </div>
+          </div>
+         <span v-if="movie.overview">{{movie.overview}}</span>
+         <span v-else> 이 영화는 줄거리가 제공되지 않습니다.</span>
+        </v-card-text>
+      </div>
+    </v-expand-transition>
+  </v-card>
+    
+    <!-- <div class="grid mt-3 text-center">
       <div>
         <div>
           <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" alt="poster" class="p-1">
@@ -44,11 +108,6 @@
           <h3 class="mt-2 text-lg font-medium leading-6">{{movie.title}}</h3>
           <div class="flex justify-center">
             <div v-for="(genre, index) in movie.genres" :key="index" class="mx-2"> {{ genre.name }} </div>
-          </div>
-          <div class="py-3 mt-2 px-7">
-            <p class="p-1 text-sm text-left">
-              {{movie.overview}}
-            </p>
           </div>
         </div>
       </div>
@@ -66,7 +125,7 @@
           End
         </button>
       </div>
-    </div>
+    </div> -->
   </div>
   </div>
   </transition>
@@ -84,10 +143,15 @@ export default {
   data: function () {
     return {
       movie: null,
+      show: false,
       rate: 3,
+
     }
   },
   methods: {
+    decide (choice) {
+      this.$refs.tinder.decide(choice)
+    },
     alertClose: function () {
       let alert = document.getElementById("myAlert")
       alert.style.display = "none"
@@ -145,6 +209,7 @@ export default {
 
           })
     },
+    
   },
   created: function () {
     

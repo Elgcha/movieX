@@ -1,19 +1,23 @@
 <template>
   <div class="dark:text-white home">
     <main-top></main-top>
-    <div class="container">
+    <div class="">
 
-    <h2 class="mt-10 mb-2 text-left">#인기 영화</h2>
+    <h2 class="mt-10 mb-2 text-lg text-left font-notosans">#인기 영화</h2>
     <div class="p-2">
       <popular :movies="newMovie"></popular>
     </div>
     <div>
-    <h2 class="mt-10 mb-2 text-left">#추천 영화</h2>
+    <h2 class="mt-10 mb-2 text-lg text-left font-notosans">#추천 영화</h2>
     </div>
-    <div class="p-2">
+    <div v-if="recommendMovies" class="p-2">
       <recommend :movies="recommendMovies"></recommend>
     </div>
-    <h2 class="mt-3 text-left">#{{ randomGenre }}</h2>
+    <div v-else><v-progress-circular
+      indeterminate
+      color="primary"
+    ></v-progress-circular></div>
+    <h2 class="mt-10 mb-2 text-lg text-left font-notosans">#{{ randomGenre }}</h2>
     <div>
       <face :movies="randomMovie"></face>
     </div>
@@ -45,7 +49,7 @@ export default {
       randomMovie: [], // 랜덤 장르 영화
       newMovie: [], // 인기 영화
       key: process.env.VUE_APP_TMDB,
-      recommendMovies: [],
+      recommendMovies: null,
       randomGenre: null,
       
       

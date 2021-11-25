@@ -1,6 +1,6 @@
 <template>
   <div class='w-full h-auto cursor-pointer popular'>
-      <img :src="imgSrc" alt="popularmovie" class="w-full h-full transform rounded hover:scale-110" @click="moveToDetail(movie.id)">
+      <img :src="movie.poster_path ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path : require('@/assets/images/default_poster.png')" alt="popularmovie" class="w-full h-full transform rounded hover:scale-110" @click="moveToDetail(movie.id)">
       <!-- <div class="overlay" @click="moveToDetail(movie.id)">
       <h3 class="description">{{ movie.title }}</h3> -->
     <!-- </div> -->

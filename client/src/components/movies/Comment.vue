@@ -8,8 +8,8 @@
       </div>
     </div>
     <div class="flex w-full p-3">
-      <input v-if="comment_user.indexOf(username) < 0" type="text" rows="3" class="w-full p-2 text-black border rounded" @input="inputChange" placeholder="" id="Moviecontent">
-      <input v-else v-show="wantEdit" type="text" rows="3" class="w-full p-2 text-black border rounded" @input="inputChange" placeholder="" id="Moviecontent">
+      <input v-if="comment_user.indexOf(username) < 0" type="text" rows="3" class="w-full p-2 text-black bg-white border rounded" @input="inputChange" placeholder="" id="Moviecontent">
+      <input v-else v-show="wantEdit" type="text" rows="3" class="w-full p-2 text-black bg-white border rounded" @input="inputChange" placeholder="" id="Moviecontent">
       <button 
       @click="editClick"
       class="h-full px-4 py-2 font-light text-white bg-gray-400 rounded hover:bg-gray-600"
@@ -40,16 +40,17 @@
   <div v-if="comments" class="">
     <div v-for="(comment, index) in comments" :key="index" class="px-3 py-1 text-left">
       <div>
-        <div class="flex px-2 bg-gray-700 rounded">
-          <span class="flex mr-20">
-            <img class="object-cover w-5 h-5 my-auto mr-2 border-2 rounded-full" :src="profileImage + comment.user_image.image_path" alt="profile">
-            <p @click="moveToProfile(comment.username)" class="p-2 my-auto cursor-pointer">{{comment.username}}</p>
-          </span>
+        <div class="flex w-full px-2 bg-gray-700 rounded">
 
-          <div v-for="i in 5" :class="{ 'mr-1': i < 5 }" :key="i" class="my-auto text-sm d-inline">
-            <svg class="block w-6 h-6" :class="[ comment.rate >= i ? 'text-yellow-500': 'text-grey-500']" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+          <img class="object-cover w-5 h-5 my-auto mr-2 border-2 rounded-full" :src="profileImage + comment.user_image.image_path" alt="profile">
+          <p @click="moveToProfile(comment.username)" class="p-2 my-auto cursor-pointer">{{comment.username}}</p>
+
+          <div class="flex ml-3 mr-auto">
+            <div v-for="i in 5" :class="{ 'mr-1': i < 5 }" :key="i" class="my-auto text-sm d-inline">
+              <svg class="block w-6 h-6" :class="[ comment.rate >= i ? 'text-yellow-500': 'text-grey-500']" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+            </div>
           </div>
-          <div v-if="comment.username === username" class="p-3 m-2 my-auto cursor-pointer btn btn-blue" @click="deleteComment">삭제</div>
+          <v-btn v-if="comment.username === username" class="p-3 m-2 my-auto cursor-pointer" @click="deleteComment">delete</v-btn>
         </div>
         <p class="p-2">{{comment.content}}</p>
       </div>
@@ -89,6 +90,20 @@ export default {
     },
   },
   methods: {
+    getProfile: function () {
+      const url = process.env.VUE_APP_URL + `accounts/profile/get/self/`
+      axios({
+        method: 'get',
+        url: url,
+        headers: this.setToken(),
+      })
+        .then(res => {
+          this.username = res.data.username
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
     editClick: function () {
       this.wantEdit = true
       this.comments.map(comment => {
@@ -207,6 +222,7 @@ export default {
   },
   created: function () {
     this.getComments()
+    this.getProfile()
   },
   watch: {
     // 평가 정보 가져오기
