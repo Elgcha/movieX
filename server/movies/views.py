@@ -12,7 +12,6 @@ from accounts.models import User
 from .models import Movie, MovieSite, People, Genre, MovieComment
 from .serializers import MovieSerializer, PeopleMovieListSerializer, PeopleSerializer, MovieCommentSerializer, MovieSiteSerializer
 
-
 import random
 import requests
 from itertools import chain
@@ -231,8 +230,7 @@ def movie_same(request, movie_pk):
     for j in movie_list:
         movie = Movie.objects.filter(genres=j).exclude(pk=movie_pk)
         movie_set.add(movie)
-    result = list(chain.from_iterable(movie_set))
-    print(result)
+    result = set(chain.from_iterable(movie_set))
     serializer = MovieSerializer(result, many=True)
     return Response(serializer.data)
 
@@ -284,6 +282,9 @@ def comment_create(request, movie_pk):
     serializer = MovieCommentSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.save(movie=movie, user=request.user)
+        if movie.want.filter(pk=request.user.pk).exists():
+            movie.want.remove(request.user)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 #영화별 자체 알고리즘을 통한 영화지수 보여주기
@@ -423,8 +424,12 @@ def jaccrdsimilarity(A, B):
     mom = a.union(b).count()
     son = a.intersection(b).count()
     return round(son/mom,2)
+import time
+
 
 def extract_sim(user_pk): #한 영화의 모든영화의 유사도
+    global countfor
+    countfor= 0
     movie_on = Movie.objects.get(pk=user_pk)
     A = movie_on
     movies = Movie.objects.count()
@@ -433,6 +438,7 @@ def extract_sim(user_pk): #한 영화의 모든영화의 유사도
             'id':A.pk
         }
     for m in range(1, movies+1):
+        countfor += 1
         if m == user_pk:
             continue
         movie = Movie.objects.get(pk=m)
@@ -443,17 +449,26 @@ def extract_sim(user_pk): #한 영화의 모든영화의 유사도
             'poster_path': movie.poster_path,
             'similarity': jaccrdsimilarity(A,B),
             }
+ 
+
+
     return sim
 ### 영화의 유사성으로 추천페이지 구성하기
 ##############################
 #내가 평가한 모든 영화의 유사성을 구한다
 def extract(username):
+    global start, end, counts
+    counts = 0
+    start = time.time()
     user = get_object_or_404(get_user_model(),username=username)
     all_rate = user.moviecomment_set.all()
+    # all_rate = user.moviecomment_set.filter(rate__gte=6)
     all_sims = [] #평가한 영화를 기준으로 모드영화의 유사성을 나타낸 것
     #평가한 모든영화의 유사성을 담는다
     for i in all_rate:
         all_sims.append(extract_sim(i.movie.pk)) 
+        counts += 1 
+    end = time.time()
     return all_sims
 
 ## 내가평가하모든 영화의유사성
@@ -478,9 +493,9 @@ def extract_recommend(username):
                         continue
                     j[result]['recommend'] = round((  
                     j[result]['similarity'] *    #내가 평가한 영화와의 유사도
-                    data[f'{rated}']['rate'] + #내가 평가한 영화의 평점
-                    Movie.objects.get(pk= f'{result}').vote_average # 이 영화의 db 평점
-                    # Movie.objects.get(pk= f'{rated}').popularity #내가 평가한영화의 인기도
+                    data[f'{rated}']['rate'] * #내가 평가한 영화의 평점
+                    Movie.objects.get(pk= f'{result}').vote_average + # 이 영화의 db 평점
+                    (Movie.objects.get(pk= f'{rated}').popularity *0.001)#내가 평가한영화의 인기도
                 ),3)
     return(all_sims) # 모든영화의 유사도를 구하고
 ###################################
@@ -488,6 +503,7 @@ def extract_recommend(username):
     ##### 높은 순으로 필터 하기
     ##리커멘드로 정렬
 def recommend_sort(username):
+    start2= time.time()
     all_sims = extract_recommend(username)
     # print(all_sims)
     temp_sort = []
@@ -504,6 +520,11 @@ def recommend_sort(username):
         if p['title'] not in title_temp:
             recommendation.append(p)
             title_temp.append(p['title'])
+    print(f'start = {start:.5f}')
+    print(f'end = {end- start:.5f}')
+    print(f'카운트횟수{counts}')
+    print(f'final end = {time.time()-start2}')
+    print(f'extrasim count{countfor}')
     return recommendation
 
 # 추천api보낼 함수:
