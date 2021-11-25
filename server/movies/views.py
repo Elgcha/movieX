@@ -423,8 +423,6 @@ def jaccrdsimilarity(A, B):
     mom = a.union(b).count()
     son = a.intersection(b).count()
     return round(son/mom,2)
-import time
-
 
 def extract_sim(user_pk): #한 영화의 모든영화의 유사도
     global countfor
@@ -449,8 +447,6 @@ def extract_sim(user_pk): #한 영화의 모든영화의 유사도
             'similarity': jaccrdsimilarity(A,B),
             }
  
-
-
     return sim
 ### 영화의 유사성으로 추천페이지 구성하기
 ##############################
@@ -458,7 +454,6 @@ def extract_sim(user_pk): #한 영화의 모든영화의 유사도
 def extract(username):
     global start, end, counts
     counts = 0
-    start = time.time()
     user = get_object_or_404(get_user_model(),username=username)
     all_rate = user.moviecomment_set.all()
     # all_rate = user.moviecomment_set.filter(rate__gte=6)
@@ -467,7 +462,6 @@ def extract(username):
     for i in all_rate:
         all_sims.append(extract_sim(i.movie.pk)) 
         counts += 1 
-    end = time.time()
     return all_sims
 
 ## 내가평가하모든 영화의유사성
@@ -502,9 +496,7 @@ def extract_recommend(username):
     ##### 높은 순으로 필터 하기
     ##리커멘드로 정렬
 def recommend_sort(username):
-    start2= time.time()
     all_sims = extract_recommend(username)
-    # print(all_sims)
     temp_sort = []
     for k in all_sims:
         for result in k:
@@ -519,11 +511,6 @@ def recommend_sort(username):
         if p['title'] not in title_temp:
             recommendation.append(p)
             title_temp.append(p['title'])
-    print(f'start = {start:.5f}')
-    print(f'end = {end- start:.5f}')
-    print(f'카운트횟수{counts}')
-    print(f'final end = {time.time()-start2}')
-    print(f'extrasim count{countfor}')
     return recommendation
 
 # 추천api보낼 함수:
