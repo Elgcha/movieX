@@ -2,7 +2,7 @@ import requests
 import json
 from pprint import pprint
 
-api_key = '953a5848d0ceb3adab0a2109622b61b6'
+api_key = ''
 
 def get_request_url(method='/movie/popular', **kwargs):
     """API 요청에 필요한 주소를 구성합니다.
