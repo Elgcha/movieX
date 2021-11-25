@@ -2,6 +2,7 @@
 <v-parallax src="../../assets/images/login-back.jpg" height="600" class="rounded-md">
 <div class="w-full max-w-xs mx-auto my-5">
   <div class="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md">
+  <h2 class="text-2xl text-black">Login</h2>
     <div class="mb-4">
       <v-text-field label="username" v-model="credentials.username"></v-text-field>
       <!-- <label for="username" class="block mb-2 text-sm font-bold text-gray-700">Username </label>
@@ -62,7 +63,7 @@ export default {
         })
     },
     moveToSignup: function () {
-      this.$router.push({name:'Signup'})
+      this.$router.push({name:'signup'})
     }
 
   }

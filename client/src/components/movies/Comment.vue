@@ -1,6 +1,6 @@
 <template>
   <div>
-  <div v-if="isLogin" class="w-1/2 p-2 pt-4 rounded ">
+  <div v-if="isLogin" class="w-full p-2 pt-4 rounded md:w-1/2 ">
     <p class="text-left">평가 작성</p>
     <div class="flex justify-between mx-3 mt-3" >
         <star-rating v-model="ratings"></star-rating>

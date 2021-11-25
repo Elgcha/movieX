@@ -42,28 +42,28 @@
             <td class="p-2 px-4 text-left rounded">{{ site.site }}</td>
             <td class="p-2 my-auto cursor-pointer" @click="move(site.link)">{{ site.link }}</td>
             <td class="p-2 rounded">{{ site.price }}</td>
-            <td class="p-2 rounded cursor-pointer" @click="deleteMovieSite(site.id)">delete</td>
+            <td v-if="isAdmin" class="p-2 rounded cursor-pointer" @click="deleteMovieSite(site.id)">delete</td>
             <hr>
           </tr>
         </tbody>
       </table>
-      <v-btn elevation="2" @click="alertOn" class="mt-10">add</v-btn>
+      <v-btn v-if="isAdmin" elevation="2" @click="alertOn" class="mt-10">add</v-btn>
       </div>
     </div>
     <!-- 메인 -->
     <div v-if="movie.title">
-      <div class="flex w-full">
+      <div class="w-full md:flex">
         <img :src="movie.poster_path ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path : require('@/assets/images/default_poster.png')" alt="" class="p-3">
         <div class="w-full">
           <iframe class="w-full" :src="movieVideo" title="YouTube video player" frameborder="0" allowfullscreen id="my-iframe"></iframe>
-          <div class="flex">
+          <div class="md:flex">
             <div class="px-2 py-1 text-2xl text-left">평점 : {{ movie.vote_average }}</div>
             <div class="p-2 py-1 my-auto text-2xl text-left">x-score: {{ userRate }}</div>
-            <div class="ml-auto">
+            <div class="my-5 ml-auto md:my-0">
               <v-btn elevation="2" class="" v-show="!wanted" @click='iWantThisMovie'>add want Movie</v-btn>
               <v-btn elevation="2" class="" v-show="wanted" @click='iWantThisMovie'>remove want Movie</v-btn>
             </div>
-            <v-btn elevation="2" @click="alertViewOn" class="ml-3 mr-4">Link</v-btn>
+            <v-btn elevation="2" @click="alertViewOn" class="mb-3 ml-3 mr-4 md:mb-0">Link</v-btn>
           </div>
           <div class="pr-4">
             <div class="flex justify-between bg-gray-600 border-b">
@@ -77,7 +77,7 @@
         </div>
       </div>
     </div>
-    <h3 v-if="movie.people[0]" class="text-left">#출연</h3>
+    <h3 v-if="movie.people[0]" class="text-xl text-left">#출연</h3>
     <div v-swiper:mySwiper="swiperOption" class="my-2 swiper-container">
       <div class="swiper-wrapper">
         <div
@@ -94,7 +94,7 @@
       <div class="swiper-button-next" slot="button-next"></div>
     </div>
     
-    <h3 class="p-1 text-left">#비슷한 영화</h3>
+    <h3 class="p-1 text-xl text-left">#비슷한 영화</h3>
     <div v-swiper:mySwipers="swiperOption" class=" swiper-container">
       <div class="p-2 swiper-wrapper">
         <similar-movie 
@@ -140,6 +140,7 @@ export default {
     return {
       moviePk: this.$route.params.moviePk,
       movie: {},
+      isAdmin: false,
       similarMovies: [],
       movieVideo: null,
       movieSiteDatas: {},
@@ -272,6 +273,20 @@ export default {
       })
         .then(() => {
           this.wanted = !this.wanted
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    adminCheck: function () {
+      const url = process.env.VUE_APP_URL + `accounts/check/super/user/`
+      axios({
+        method: 'get',
+        url: url,
+        headers: this.setToken(),
+      })
+        .then(res => {
+          this.isAdmin = res.data.use
         })
         .catch(err => {
           console.log(err)

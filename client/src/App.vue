@@ -1,13 +1,13 @@
 <template >
   <div id="app" @click="offMenu" class="text-gray-200">
     <div id="nav" class="flex w-full p-2 bg-black">
-      <img src="@/assets/images/logo.png" @click="moveToMain" alt="" class="w-1/12 cursor-pointer">
+      <img src="@/assets/images/logo.png" @click="moveToMain" alt="" class="hidden w-1/12 cursor-pointer md:block">
       <!-- <p class="pl-2 my-auto text-2xl text-white cursor-pointer font-jalnan" @click="moveToMain">moiveX</p> -->
       <div v-if="isLogin" class="w-9/12 my-auto ml-3 text-left text-gray-400">
         <router-link class="mx-2 hover:text-gray-200" to="/">Main</router-link>
         <router-link class="mx-2 hover:text-gray-200" to="/community/forum/">Forum</router-link>
         <router-link class="mx-2 hover:text-gray-200" to="/movies/">Search</router-link>
-        <router-link class="mx-2 hover:text-gray-200" to="/movies/add/search/">Add</router-link>
+        <router-link v-if="isAdmin" class="mx-2 hover:text-gray-200" to="/movies/add/search/">Add</router-link>
         <!-- <a href="http://127.0.0.1:8000/admin">Admin</a> -->
       </div>
       <div class="flex ml-auto">
@@ -32,6 +32,7 @@ import {mapState} from 'vuex'
 import accountsDropdown from '@/components/Home/accountsDropdown.vue'
 import movieEval from '@/components/movies/movieEval.vue'
 import axios from 'axios'
+
 export default ({
   name: 'App',
   components: {
@@ -43,6 +44,7 @@ export default ({
       username: localStorage.getItem('username'),
       menu: false,
       me: {},
+      isAdmin: false,
     }
   },
   methods: {
@@ -67,6 +69,20 @@ export default ({
           console.log(err)
         })
     },
+    adminCheck: function () {
+      const url = process.env.VUE_APP_URL + `accounts/check/super/user/`
+      axios({
+        method: 'get',
+        url: url,
+        headers: this.setToken(),
+      })
+        .then(res => {
+          this.isAdmin = res.data.use
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
     moveToMain: function () {
       if (this.isLogin) {
         this.$router.push({name:'Home'})
@@ -83,6 +99,7 @@ export default ({
     },
     logout: function () {
       localStorage.removeItem('jwt')
+      localStorage.removeItem('username')
       this.$router.push({ name: 'Login' })
       this.$store.dispatch('userLogin', '', '')
     },
@@ -103,6 +120,7 @@ export default ({
   created: function () {
     this.login()
     this.getProfile()
+    this.adminCheck()
   },
   computed: {
     ...mapState([

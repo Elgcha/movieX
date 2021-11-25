@@ -51,7 +51,7 @@ export default {
       editContent: null,
       content: null,
       comments: [],
-      username: localStorage.getItem('username')
+      username: null,
     }
   },
   methods: {
@@ -76,7 +76,7 @@ export default {
       input.value = commentContent
     },
     editInputChange: function (event) {
-      this.editContent = event
+      this.editContent = event.target.value
     },
     setToken: function () {
       const token = localStorage.getItem('jwt')
