@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'jalnan': ['Jalnan']
+        'notosans': ['Noto Sans Kr', 'sans-serif']
       },
       flex: {
         '3': '0 0 33.3333%',

@@ -231,7 +231,7 @@ def movie_same(request, movie_pk):
     for j in movie_list:
         movie = Movie.objects.filter(genres=j).exclude(pk=movie_pk)
         movie_set.add(movie)
-    result = list(chain.from_iterable(movie_set))
+    result = set(chain.from_iterable(movie_set))
     print(result)
     serializer = MovieSerializer(result, many=True)
     return Response(serializer.data)
@@ -362,7 +362,6 @@ def want_check(request, movie_pk):
     if movie.want.filter(pk=request.user.pk).exists():
         wanted = True
     else:
-        movie.want.add(request.user)
         wanted = False
     data = {
         'wanted' : wanted,

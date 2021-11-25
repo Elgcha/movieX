@@ -26,7 +26,7 @@ class People(models.Model):
 class Movie(models.Model):
     title = models.CharField(max_length=100)
     runtime = models.IntegerField(blank=True, null=True)
-    release_date = models.DateField()
+    release_date = models.DateField(blank=True, null=True)
     backdrop_path = models.TextField(null=True)
     popularity = models.FloatField(validators=[MinValueValidator(0)])
     poster_path = models.TextField(null=True)

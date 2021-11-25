@@ -1,6 +1,6 @@
 <template>
   <div class='w-full h-auto cursor-pointer popular'>
-      <img :src="imgSrc" alt="popularmovie" class="object-cover w-full h-full transform rounded hover:scale-105" @click="moveToDetail(movie.id)">
+      <img :src="movie.poster_path ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path : require('@/assets/images/default_poster.png')" alt="popularmovie" class="object-cover w-full h-full transform rounded hover:scale-105" @click="moveToDetail(movie.id)">
   </div>
 </template>
 
