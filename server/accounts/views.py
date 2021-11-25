@@ -48,6 +48,11 @@ def profile(request, username):
     serializer = UserSerializer(user)
     return Response(serializer.data)
 #############################################
+@api_view(['GET'])
+def profile_self(request):
+    user = get_object_or_404(get_user_model(), username=request.user.username)
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
 
 @api_view(['POST'])
 def follow(request, username):
@@ -149,3 +154,12 @@ def email_change(request, username):
     person.email = email
     person.save()
     return Response(status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+def admin_check(request):
+    if request.user.is_superuser:
+        return Response(data = {'use': True})
+    else:
+        return Response(data = {'use': False})
+
+

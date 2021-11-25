@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
 
 import Login from '@/views/accounts/Login.vue'
-import Signup from '@/views/accounts/Signup.vue'
+import signup from '@/views/accounts/signup.vue'
 import Profile from '@/views/accounts/Profile.vue'
 import Admin from '@/views/accounts/Admin.vue'
 import userUpdate from '@/views/accounts/userUpdate.vue'
@@ -79,8 +79,8 @@ const routes = [
   },
   {
     path: '/accounts/signup/',
-    name: 'Signup',
-    component: Signup,
+    name: 'signup',
+    component: signup,
   },
   {
     path: '/accounts/:username/',

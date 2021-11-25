@@ -7,7 +7,7 @@
           <div v-for="(follower, index) in mydata.followers" :key="index">{{follower}}</div>
         </div>
         <div v-else>
-          아직 팔로워가 없어요....
+          팔로워가 없어요....
         </div>
       <span class="absolute inset-y-0 right-0 flex items-center mr-4" @click="alertClose">
         <svg class="w-4 h-4 transform fill-current hover:scale-110" role="button" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
@@ -21,7 +21,7 @@
           <div v-for="(following, index) in mydata.followings" :key="index">{{following}}</div>
         </div>
         <div v-else>
-          아직 아무도 팔로우하지 않았어요...
+          아무도 팔로우하지 않았어요...
         </div>
       <span class="absolute inset-y-0 right-0 flex items-center mr-4" @click="alertClose">
         <svg class="w-4 h-4 transform fill-current hover:scale-110" role="button" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <main class="mt-3 bg-gray-100 bg-opacity-25" style="min-height:100vh;">
+    <main class="mt-3 bg-opacity-25" style="min-height:100vh;">
       <div class="mb-8 lg:mx-auto">
         <header class="flex flex-wrap items-center w-full p-4 md:py-8">
           <div class="md:w-3/12 md:ml-16">
@@ -106,29 +106,24 @@
           </ul>
 
           <!-- insta freatures -->
-          <ul class="flex items-center justify-around space-x-12 text-xs font-semibold tracking-widest text-white border-t md:justify-center">
+          
             <!-- posts tab is active -->
 
-            <li>
-              <a class="inline-block p-3" href="#">
-                <i class="text-xl far fa-square md:text-xs"></i>
-                <span class="hidden md:inline">want movies</span>
-              </a>
-            </li>
+            <h2 class="mt-3">보고싶은 영화</h2>
             
-          </ul>
+
           <!-- flexbox grid -->
           <div class="h-full"  style="min-heigth:20vh;">
             <!-- column -->
-            <div v-swiper:mySwiperT="swiperOption" class="h-full my-2 swiper-container">
-              <div class="h-full p-2 bg-dark swiper-wrapper">
+            <div v-swiper:mySwiperT="swiperOption" class="my-2 swiper-container">
+              <div class="p-2 bg-dark swiper-wrapper">
                 <div
                 v-for="movie in wantMovies"
                 :key="movie.id"
                 :movie="movie"
                 class="justify-center h-auto swiper-slide"
                 >
-                  <div class='w-full h-auto cursor-pointer popular' @click="moveToDetail(movie.id)">
+                  <div class='w-full h-full cursor-pointer popular' @click="moveToDetail(movie.id)">
                     <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" alt="" class="object-cover w-full h-full transform hover:scale-110">
                   </div>
                 </div>
@@ -152,9 +147,8 @@
                 :movie="movie"
                 class="justify-center h-auto swiper-slide"
                 >
-                  <div class='w-full h-auto cursor-pointer popular' @click="moveToDetail(movie.movie.id)">
+                  <div class='w-full h-full cursor-pointer popular' @click="moveToDetail(movie.movie.id)">
                     <img :src="'https://image.tmdb.org/t/p/w500/' + movie.movie.poster_path" alt="" class="object-cover w-full h-full transform hover:scale-110">
-                    <div>{{ movie.rate * 2 }}</div>
                   </div>
                 </div>
                 </div>
@@ -282,7 +276,6 @@ export default {
         headers: this.setToken(),
       })
         .then(res => {
-          console.log(res)
           this.evalMovies = res.data.moviecomment_set_name
         })
         .catch(err => {
