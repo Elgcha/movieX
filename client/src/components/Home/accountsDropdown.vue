@@ -1,7 +1,7 @@
 <template>
   <div class="relative p-1 my-auto text-left">
   <div @click="toggleMenu" class="flex">
-    <img class="object-cover w-5 h-5 p-1 rounded-full md:w-8 md:h-8" :src="profileImage" alt="">
+    <img class="hidden object-cover w-5 h-5 p-1 rounded-full md:w-8 md:h-8 md:block" :src="profileImage" alt="">
     <button type="button" class="inline-flex justify-center w-full p-1 text-sm font-medium text-white rounded-md shadow-sm mydropdown hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
       {{ username }}
       <!-- 아래 화살표 이미지 -->

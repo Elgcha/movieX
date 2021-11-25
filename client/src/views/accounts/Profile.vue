@@ -276,7 +276,6 @@ export default {
         headers: this.setToken(),
       })
         .then(res => {
-          console.log(res)
           this.evalMovies = res.data.moviecomment_set_name
         })
         .catch(err => {

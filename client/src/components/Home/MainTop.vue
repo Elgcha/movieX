@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="hidden md:block">
     <!-- <div style="height:40vh;" class="z-0 overflow-hidden rounded ">
       <div class="relative z-0 overflow-hidden">
         <img :src="'https://image.tmdb.org/t/p/w500' + mainMovie.backdrop_path" alt="backdop" class="z-0 hidden md:block from-white bg-gradient-to-b to-black" style="width:100vw;">
