@@ -2,24 +2,24 @@
   <div class="text-white">
     <div class="flex p-3">
       <img :src="'https://image.tmdb.org/t/p/w500/' + people.profile_path" alt="" class="w-1/4 p-3 mt-2">
-      <div>
-        <div class="p-3">{{ people.name }}</div>
-        <div v-if="people.gender === 1">여</div>
-        <div v-else>남</div>
+      <div class="text-left">
+        <div class="p-3 text-2xl">{{ people.name }}</div>
+        <div class="p-3">{{ people.birthday }}</div>
+        <div class="p-3">{{ people.known_for_department }}</div>
       </div>
+        <img :src="movie.poster_path ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path : require('@/assets/images/default_poster.png')" alt="" class="z-0 w-1/4 ml-auto opacity-70">
     </div>
     <!-- 슬라이드 -->
-    <h3>출연</h3>
-    <div v-swiper:mySwiper="swiperOption1" class="my-2 bg-gray-600 swiper-container">
-      <div class="swiper-wrapper">
+    <h3 class="text-left">#출연</h3>
+    <div v-swiper:mySwiper="swiperOption1" class="my-2 swiper-container">
+      <div class="p-2 swiper-wrapper">
         <div
         v-for="movie in people.movie_title"
         :key="movie.id"
         class="justify-center h-auto swiper-slide"
         @click="moveToDetail(movie.id)"
         >
-        <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" alt="" class="p-3">
-        {{ movie.title }}
+        <img :src="movie.poster_path ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path : require('@/assets/images/default_poster.png')" alt="" class="p-3 transform hover:scale-105">
         </div>
       </div>
       <div class="swiper-button-prev1" slot="button-prev"></div> 
@@ -31,6 +31,7 @@
 <script>
 import { mapActions } from 'vuex'
 import axios from 'axios'
+import _ from 'lodash'
 export default {
   name: 'PeopleDetail',
   data: function () {
@@ -77,7 +78,9 @@ export default {
     this.getPeople()
   },
   computed: {
-    
+    movie: function () {
+      return _.sample(this.people.movie_title)
+    }
   }
 }
 </script>

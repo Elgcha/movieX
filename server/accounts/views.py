@@ -48,6 +48,11 @@ def profile(request, username):
     serializer = UserSerializer(user)
     return Response(serializer.data)
 #############################################
+@api_view(['GET'])
+def profile_self(request):
+    user = get_object_or_404(get_user_model(), username=request.user.username)
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
 
 @api_view(['POST'])
 def follow(request, username):

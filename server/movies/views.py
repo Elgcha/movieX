@@ -363,7 +363,6 @@ def want_check(request, movie_pk):
     if movie.want.filter(pk=request.user.pk).exists():
         wanted = True
     else:
-        movie.want.add(request.user)
         wanted = False
     data = {
         'wanted' : wanted,

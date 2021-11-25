@@ -25,6 +25,11 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 # 패치노트
 
+## 11/24
+
+* 개별 영화 링크추가 기능 구현
+* 
+
 ## 11/23
 
 * 댓글 수정, 삭제 기능 추가 -> 따로 페이지 이동할 필요 없이

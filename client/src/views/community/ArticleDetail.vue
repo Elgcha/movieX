@@ -18,8 +18,8 @@
       </div>
       <div class="flex justify-end">
         <button class="mx-1 border btn btn-blue btn-blue:hover" @click="back">목록</button>
-        <button class="mx-1 bg-yellow-500 border btn btn-blue btn-blue:hover" @click="updateArticle">수정</button>
-        <button class="mx-1 bg-red-600 border btn btn-blue btn-blue:hover" @click="deleteArticle">삭제</button>
+        <button class="mx-1 bg-gray-500 border btn btn-blue btn-blue:hover" @click="updateArticle">수정</button>
+        <button class="mx-1 bg-gray-600 border btn btn-blue btn-blue:hover" @click="deleteArticle">삭제</button>
       </div>
     </div>
     <div>
@@ -40,7 +40,7 @@ export default {
     return {
       articlePk: this.$route.params.articlePk,
       article: {},
-      username: localStorage.getItem('username'),
+      username: null,
     }
   },
   methods: {
@@ -101,11 +101,26 @@ export default {
     },
     moveToProfile: function (username) {
       this.$router.push({name:'Profile', params: {username:username}})
-    }
+    },
+    getProfile: function () {
+      const url = process.env.VUE_APP_URL + `accounts/profile/get/self/`
+      axios({
+        method: 'get',
+        url: url,
+        headers: this.setToken(),
+      })
+        .then(res => {
+          this.username = res.data.username
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
   },
   created: function () {
     this.getArticle()
     this.viewCount()
+    this.getProfile()
   },
   computed: {
     ...mapState([
