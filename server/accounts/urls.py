@@ -13,5 +13,5 @@ urlpatterns = [
     path('api-token-auth/', obtain_jwt_token),
     path('profiles/<username>/', views.image),
     path('<username>/update/', views.email_change),
-
+    path('check/', views.admin_check),
 ]

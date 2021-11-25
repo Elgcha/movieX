@@ -149,3 +149,12 @@ def email_change(request, username):
     person.email = email
     person.save()
     return Response(status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+def admin_check(request):
+    if request.user.is_superuser:
+        return Response(data = {'use': True})
+    else:
+        return Response(data = {'use': False})
+
+

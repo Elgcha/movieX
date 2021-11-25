@@ -136,8 +136,8 @@ def db_update(request, keyword):#movie_save(request,keyword):
     #인물저장하기
             credits = movie_credits(keyword)
             person_id = []
-            for i in range(5): #일단은 5명만
-                data = credits.data.get('cast')[i]
+            for i in credits.data.get('cast'): #일단은 5명만
+                data = i
 
                 if People.objects.filter(tmdb_id=data.get('id')): #에러임 없다는걸알아야됌v필터;;
                     created_people = People.objects.get(tmdb_id=data.get('id'))
