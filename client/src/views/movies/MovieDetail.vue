@@ -129,6 +129,7 @@ export default {
   name: 'MovieDetail',
   beforeRouteUpdate: function (to, from, next) {
     next()
+    this.adminCheck()
     this.moviePk = this.$route.params.moviePk,
     this.getMovieDetail()
     this.getSimilarMovies()
@@ -380,6 +381,7 @@ export default {
     
   },
   created: function () {
+    this.adminCheck()
     this.getMovieDetail()
     this.getSimilarMovies()
     this.getUserRate()
